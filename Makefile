@@ -6,6 +6,11 @@
 MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
+ifeq (, $(shell command -v gtar))
+  TAR ?= tar
+endif
+TAR ?= gtar
+
 ifneq (3.82,$(firstword $(sort $(MAKE_VERSION) 3.82)))
   $(error This Make does not support .ONESHELL, use GNU Make 3.82 and newer)
 endif
@@ -13,7 +18,9 @@ endif
 .DEFAULT_GOAL :=help
 
 GITHUB_REF ?= dev
+GIT_REF ?= $(subst refs/heads/,,$(subst refs/tags/,,$(GITHUB_REF)))
 GITHUB_SHA ?= dev
+GIT_SHA ?= $(GITHUB_SHA)
 CGO_ENABLED ?= 0
 GOOS ?= $(shell go env GOOS)
 GOARCH ?= $(shell go env GOARCH)
@@ -26,7 +33,7 @@ CMDS ?= $(shell ls $(CMD_DIR))
 BINS ?= $(addsuffix -$(GOOS)-$(GOARCH),$(addprefix $(BIN_DIR)/,$(CMDS)))
 
 BIN_ARCH ?= $(GOOS)-$(GOARCH)
-RELEASE_SUFFIX ?= $(GITHUB_REF)-$(BIN_ARCH).tar.gz
+RELEASE_SUFFIX ?= $(GIT_REF)-$(BIN_ARCH).tar.gz
 PACKED_BINS ?= $(addsuffix -$(BIN_ARCH),$(addprefix $(PACKED_DIR)/,$(CMDS)))
 RELEASE_ARTIFACTS ?= $(addsuffix -$(RELEASE_SUFFIX),$(addprefix $(RELEASE_DIR)/,$(CMDS)))
 SRC ?= $(shell find . -iname '*.go')
@@ -37,9 +44,9 @@ GOGENERATE ?= $(GOCMD) generate
 UPXCMD ?= upx
 
 debug:
-	echo $(GOOS)
+	echo $(GIT_REF)
 
-all: clean build pack                                               ## Cean, build and pack
+all:        build pack release-artifacts                            ## Cean, build and pack
 .PHONY: all
 
 help:                                                               ## Prints list of tasks
@@ -51,7 +58,7 @@ build: $(BINS)                                                      ## Build bin
 
 $(BIN_DIR)/%-$(BIN_ARCH): generated/* $(SRC)
 	mkdir -p $(BIN_DIR)
-	$(GOBUILD) -ldflags="-s -w -X main.version=$(GITHUB_REF) -X main.git_sha=$(GITHUB_SHA)" \
+	$(GOBUILD) -ldflags="-s -w -X main.version=$(GIT_REF) -X main.git_sha=$(GIT_SHA)" \
 	-o "$@" \
 	"./$(CMD_DIR)/$(*)"
 
@@ -66,7 +73,7 @@ pack: $(PACKED_BINS)                                                ## Pack bina
 
 $(PACKED_DIR)/%-$(BIN_ARCH): $(BIN_DIR)/%-$(BIN_ARCH)
 	mkdir -p $(PACKED_DIR)
-	$(UPXCMD) -3 -f -o "$@" "$<" \
+	$(UPXCMD) --brute -f -o "$@" "$<" \
 	  && touch "$@"
 
 release-artifacts: $(RELEASE_ARTIFACTS)                             ## Create release artifacts
@@ -74,7 +81,7 @@ release-artifacts: $(RELEASE_ARTIFACTS)                             ## Create re
 
 $(RELEASE_DIR)/%-$(RELEASE_SUFFIX): $(PACKED_DIR)/%-$(BIN_ARCH)
 	mkdir -p $(RELEASE_DIR)
-	tar -cvzf "$@" "$<"
+	$(TAR) -cvz --transform 's,$(PACKED_DIR)/$(*)-$(BIN_ARCH),$(*),gi' -f "$@" "$<"
 
 clean:                                                              ## Clean build artifacts
 	rm -rf generated/*	

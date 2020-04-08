@@ -87,6 +87,3 @@ Some future feature ideas:
   - pdf/html?
 - Tests
 - Lint
-
-build -ldflags="-s -w"
-
