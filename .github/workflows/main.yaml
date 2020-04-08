@@ -48,7 +48,7 @@ jobs:
           draft: true
           prerelease: false
       - name: Upload Release Asset - Mac
-        id: upload-release-asset 
+        id: upload-release-asset-mac
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -58,7 +58,7 @@ jobs:
           asset_name: kubent-${{ github.ref }}-darwin-amd64.tar.gz
           asset_content_type: application/tar+gzip
       - name: Upload Release Asset - Linux
-        id: upload-release-asset 
+        id: upload-release-asset-linux
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
