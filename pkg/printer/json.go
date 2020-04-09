@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/stepanstipl/kube-no-trouble/pkg/judge"
+	"github.com/doitintl/kube-no-trouble/pkg/judge"
 )
 
 type JSONPrinter struct {

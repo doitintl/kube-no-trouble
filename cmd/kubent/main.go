@@ -3,10 +3,10 @@ package main
 import (
 	"os"
 
-	"github.com/stepanstipl/kube-no-trouble/pkg/collector"
-	"github.com/stepanstipl/kube-no-trouble/pkg/config"
-	"github.com/stepanstipl/kube-no-trouble/pkg/judge"
-	"github.com/stepanstipl/kube-no-trouble/pkg/printer"
+	"github.com/doitintl/kube-no-trouble/pkg/collector"
+	"github.com/doitintl/kube-no-trouble/pkg/config"
+	"github.com/doitintl/kube-no-trouble/pkg/judge"
+	"github.com/doitintl/kube-no-trouble/pkg/printer"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"

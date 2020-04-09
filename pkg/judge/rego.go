@@ -9,7 +9,7 @@ import (
 	"github.com/rakyll/statik/fs"
 	"github.com/rs/zerolog/log"
 
-	_ "github.com/stepanstipl/kube-no-trouble/generated/statik"
+	_ "github.com/doitintl/kube-no-trouble/generated/statik"
 )
 
 type RegoJudge struct {
