@@ -30,7 +30,10 @@ Configure Kubectl's current context to point to your cluster, `kubent` will
 look for the kube `.config` file in standard locations (you can point it to custom
 location using the `-k` switch). 
 
-**`kubent`** will collect resources from your cluster and report on found issuses:
+**`kubent`** will collect resources from your cluster and report on found issuses.
+
+*Please note that you need to have sufficient permissions to read Secrets in the
+cluster in order to use `Helm*` collectors.*
 
 ```sh
 $./kubent
