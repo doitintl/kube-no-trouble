@@ -73,6 +73,36 @@ Usage of ./kubent:
   -o, --output string       output format - [text|json] (default "text")
 ```
 
+
+## Development
+
+The simplest way to build `kubent` is:
+
+```sh
+# Clone the repository
+git clone https://github.com/doitintl/kube-no-trouble.git
+cd kube-no-trouble/
+# We require statik for generating static embedded files
+go get github.com/rakyll/statik
+# Generate
+go generate
+# Build
+go build -o bin/kubent cmd/kubent/main.go
+```
+
+Otherwise there's `Makefile`
+```sh
+$ make
+make
+all                            Cean, build and pack
+help                           Prints list of tasks
+build                          Build binary
+generate                       Go generate
+pack                           Pack binaries with upx
+release-artifacts              Create release artifacts
+clean                          Clean build artifacts
+```
+
 ## Issues and Contributions
 
 Please open any issues and/or PRs against github.com/doitintl/kube-no-trouble repository.
