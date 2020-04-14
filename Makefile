@@ -19,7 +19,7 @@ endif
 .DEFAULT_GOAL :=help
 
 GITHUB_REF ?= dev
-GIT_REF ?= $(subst refs/heads/,,$(subst refs/tags/,,$(GITHUB_REF)))
+GIT_REF ?= $(shell echo "$(GITHUB_REF)" | sed "s,refs/[^/]*/,," | tr -cd '[:alnum:]._')
 GITHUB_SHA ?= dev
 GIT_SHA ?= $(GITHUB_SHA)
 
