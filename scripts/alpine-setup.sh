@@ -7,6 +7,7 @@ LC_CTYPE=C
 UPX_VERSION="3.96"
 
 apk add --update --no-cache \
+	git \
 	make \
 	tar
 

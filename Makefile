@@ -3,7 +3,7 @@
 .ONESHELL:
 .SECONDEXPANSION:
 .DELETE_ON_ERROR:
-.EXPORT_ALL_VARIABLES
+.EXPORT_ALL_VARIABLES:
 MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
