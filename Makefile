@@ -3,6 +3,7 @@
 .ONESHELL:
 .SECONDEXPANSION:
 .DELETE_ON_ERROR:
+.EXPORT_ALL_VARIABLES
 MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
@@ -21,6 +22,7 @@ GITHUB_REF ?= dev
 GIT_REF ?= $(subst refs/heads/,,$(subst refs/tags/,,$(GITHUB_REF)))
 GITHUB_SHA ?= dev
 GIT_SHA ?= $(GITHUB_SHA)
+
 CGO_ENABLED ?= 0
 GOOS ?= $(shell go env GOOS)
 GOARCH ?= $(shell go env GOARCH)
