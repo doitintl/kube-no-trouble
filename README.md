@@ -18,11 +18,17 @@ particular following tools are supported:
 
 [1]: https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/
 
+
 ## Install
 
-Download [latest
-release](https://github.com/doitintl/kube-no-trouble/releases/latest) for your
-platform, and unpack - `tar -xvzf kubent-*.tar.gz`.
+Run `sh -c "$(curl -sSL https://git.io/install-kubent)"`.
+
+*(The script will download latest version and unpack to `/usr/local/bin`).*
+
+Or download the
+[latest release](https://github.com/doitintl/kube-no-trouble/releases/latest)
+for your platform and unpack manually.
+
 
 ## Usage
 
