@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 # Set strict error checking
-set -emou pipefail
+set -euf
 LC_CTYPE=C
 
 # Enable debug output if $DEBUG is set to true
@@ -67,8 +67,19 @@ curl -sL "https://api.github.com/repos/${GITHUB_REPO}/releases/latest" \
 
 download_version() {
 version="${1}"
+sudo=""
+
+if [ ! -w "${TARGET_DIR}" ]; then
+  if [ -x "$(command -v 'sudo')" ]; then
+    echo "Target diectory (${TARGET_DIR}) is not writable, trying to use sudo"
+    sudo="sudo"
+  fi
+  ${sudo} [ -w "${TARGET_DIR}" ] \
+    || fail "Target diectory (${TARGET_DIR}) is not writable (destination can be changed using \$TARGET_DIR variable)"
+fi
+
 curl -L -o- "https://github.com/${GITHUB_REPO}/releases/download/${version}/${APP_NAME}-${version}-${TARGET_OS}-${TARGET_ARCH}.tar.gz" \
-  | tar -xz -C "${TARGET_DIR}"
+  | ${sudo} tar -xz -C "${TARGET_DIR}"
 }
 
 check_colors
