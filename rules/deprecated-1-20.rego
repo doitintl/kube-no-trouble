@@ -11,11 +11,6 @@ main[return] {
 }
 
 deprecated_resource(r) = old_api {
-  last_applied := json.unmarshal(r.metadata.annotations["kubectl.kubernetes.io/last-applied-configuration"])
-  old_api := deprecated_api(r.kind, last_applied.apiVersion)
-}
-
-deprecated_resource(r) = old_api {
   old_api := deprecated_api(r.kind, r.apiVersion)
 }
 
