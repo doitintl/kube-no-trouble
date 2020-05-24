@@ -1,6 +1,8 @@
 package collector
 
 import (
+	"encoding/json"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/dynamic"
@@ -51,8 +53,17 @@ func (c *ClusterCollector) Get() ([]interface{}, error) {
 			return nil, err
 		}
 
+		var resource interface{}
+
 		for _, r := range rs.Items {
-			results = append(results, r.Object)
+			if jsonManifest, ok := r.GetAnnotations()["kubectl.kubernetes.io/last-applied-configuration"]; ok {
+
+				err := json.Unmarshal([]byte(jsonManifest), &resource)
+				if err != nil {
+					return nil, err
+				}
+				results = append(results, resource)
+			}
 		}
 	}
 
