@@ -48,7 +48,11 @@ UPXCMD ?= upx
 debug:
 	echo $(GIT_REF)
 
-all:        build pack release-artifacts                            ## Cean, build and pack
+test:
+	go generate
+	go test ./...
+
+all:        build pack release-artifacts                            ## Clean, build and pack
 .PHONY: all
 
 help:                                                               ## Prints list of tasks
