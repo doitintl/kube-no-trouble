@@ -5,4 +5,11 @@ generated/
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
-#
+
+# Secrets
+.envrc
+
+# Editor files
+.vscode
+.swp
+
