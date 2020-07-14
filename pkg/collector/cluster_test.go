@@ -18,3 +18,18 @@ func TestNewClusterCollectorBadPath(t *testing.T) {
 		}
 	}
 }
+
+func TestNewClusterCollectorValidEmptyCollector(t *testing.T) {
+	testOpts := ClusterOpts{Kubeconfig: "../../fixtures/kube.config"}
+	collector, err := NewClusterCollector(&testOpts)
+
+	if err != nil {
+		t.Errorf("Should have parsed config instead got: %s", err)
+	}
+
+	result, err := collector.Get()
+
+	if err != nil && result != nil {
+		t.Errorf("Invalid schema")
+	}
+}
