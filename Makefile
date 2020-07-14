@@ -48,10 +48,6 @@ UPXCMD ?= upx
 debug:
 	echo $(GIT_REF)
 
-test:
-	go generate
-	go test ./...
-
 all:        build pack release-artifacts                            ## Clean, build and pack
 .PHONY: all
 
@@ -88,6 +84,11 @@ release-artifacts: $(RELEASE_ARTIFACTS)                             ## Create re
 $(RELEASE_DIR)/%-$(RELEASE_SUFFIX): $(PACKED_DIR)/%-$(BIN_ARCH)
 	mkdir -p $(RELEASE_DIR)
 	$(TAR) -cvz --transform 's,$(PACKED_DIR)/$(*)-$(BIN_ARCH),$(*),gi' -f "$@" "$<"
+
+test: generate                                                      ## Run Go tests 
+	go test ./...
+.PHONY: test
+
 
 clean:                                                              ## Clean build artifacts
 	rm -rf generated/*	

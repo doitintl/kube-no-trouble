@@ -19,7 +19,7 @@ jobs:
     - name: Test
       run: |
         scripts/alpine-setup.sh
-        GOOS=linux GOARCH=amd64 make test
+        make test
   build:
     name: Build
     runs-on: ubuntu-latest
