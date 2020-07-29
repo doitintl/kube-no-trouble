@@ -25,7 +25,7 @@ func NewFromFlags() (*Config, error) {
 	flag.BoolVarP(&config.Debug, "debug", "d", false, "enable debug logging")
 	flag.BoolVar(&config.Helm2, "helm2", true, "enable Helm v2 collector")
 	flag.BoolVar(&config.Helm3, "helm3", true, "enable Helm v3 collector")
-	// flag.StringSliceVarP(&config.Filenames, "filename", "f", []string{}, "manifests to check")
+	flag.StringSliceVarP(&config.Filenames, "filename", "f", []string{}, "manifests to check")
 	flag.StringVarP(&config.Kubeconfig, "kubeconfig", "k", filepath.Join(home, ".kube", "config"), "path to the kubeconfig file")
 	flag.StringVarP(&config.Output, "output", "o", "text", "output format - [text|json]")
 
