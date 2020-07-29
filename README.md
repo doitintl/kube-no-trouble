@@ -12,6 +12,7 @@ workloads first, before upgrading your Kubernetes cluster.
 This tool will be able to detect deprecated APIs depending on how you deploy
 your resources, as we need the original manifest to be stored somewhere. In
 particular following tools are supported:
+- **file**    - local manifests in YAML or JSON
 - **kubectl** - uses the `kubectl.kubernetes.io/last-applied-configuration` annotation
 - **Helm v2** - uses Tiller manifests stored in K8s Secrets or ConfigMaps
 - **Helm v3** - uses Helm manifests stored as Secrets or ConfigMaps directly in individual namespaces
@@ -73,6 +74,7 @@ $./kubent -h
 Usage of ./kubent:
   -c, --cluster             enable Cluster collector (default true)
   -d, --debug               enable debug logging
+  -f, --filename strings    manifests to check
       --helm2               enable Helm v2 collector (default true)
       --helm3               enable Helm v3 collector (default true)
   -k, --kubeconfig string   path to the kubeconfig file (default "/Users/stepan/.kube/config")
@@ -118,9 +120,7 @@ Feedback and contributions are always welcome!
 ### Todo:
 
 Some future features ideas:
-- Input from files
 - Advice on correct replacement API version ?
 - Output - pdf/html?
 - Tests
 - Lint
-
