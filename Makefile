@@ -45,8 +45,11 @@ GOBUILD ?= $(GOCMD) build
 GOGENERATE ?= $(GOCMD) generate
 UPXCMD ?= upx
 
-debug:
-	echo $(GIT_REF)
+REQ_BINS = upx go opa
+
+_ := $(foreach exec,$(REQ_BINS), \
+       $(if $(shell which $(exec)),some string,$(error "No $(exec) binary in $$PATH")))
+
 
 all:        build pack release-artifacts                            ## Clean, build and pack
 .PHONY: all
@@ -69,6 +72,7 @@ generate: generated/*                                               ## Go genera
 
 generated/*: rules/*
 	$(GOGENERATE)
+	go fmt "./generated/..."
 
 pack: $(PACKED_BINS)                                                ## Pack binaries with upx
 .PHONY: pack
@@ -85,10 +89,14 @@ $(RELEASE_DIR)/%-$(RELEASE_SUFFIX): $(PACKED_DIR)/%-$(BIN_ARCH)
 	mkdir -p $(RELEASE_DIR)
 	$(TAR) -cvz --transform 's,$(PACKED_DIR)/$(*)-$(BIN_ARCH),$(*),gi' -f "$@" "$<"
 
-test: generate                                                      ## Run Go tests 
+test: generate test-fmt                                             ## Run Go tests
 	go test ./...
 .PHONY: test
 
+test-fmt: generate						   ## Run go and opt fmt checks
+	test -z "$$(opa fmt -l rules/*)"
+	test -z "$$(go fmt ./...)"
+.PHONY: test-fmt
 
 clean:                                                              ## Clean build artifacts
 	rm -rf generated/*	
