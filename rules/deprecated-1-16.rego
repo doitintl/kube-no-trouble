@@ -3,11 +3,12 @@ package deprecated116
 main[return] {
   resource := input[_]
   old_api := deprecated_resource(resource)
-  return := {"Name": resource.metadata.name, 
-             "Namespace": resource.metadata.namespace,
-	     "Kind": resource.kind,
-	     "ApiVersion": old_api,
-	     "RuleSet": "1.16 Deprecated APIs"}
+  return := {"Name": resource.metadata.name,
+             # Namespace does not have to be defined in case of local manifests
+             "Namespace": get_default(resource.metadata, "namespace", "<undefined>"),
+	         "Kind": resource.kind,
+	         "ApiVersion": old_api,
+	         "RuleSet": "1.16 Deprecated APIs"}
 }
 
 deprecated_resource(r) = old_api {
@@ -31,3 +32,6 @@ deprecated_api(kind, api_version) = old_api {
   deprecated_apis[kind][_] == api_version
   old_api := api_version
 }
+
+get_default(val, key, _) = val[key]
+get_default(val, key, fallback) = fallback { not val[key] }
