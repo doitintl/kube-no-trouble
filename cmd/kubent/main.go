@@ -67,6 +67,15 @@ func main() {
 		}
 	}
 
+	if len(config.Filenames) > 0 {
+		c, err := collector.NewFileCollector(&collector.FileOpts{Filenames: config.Filenames})
+		if err != nil {
+			log.Error().Err(err).Msg("Failed to initialize File collector")
+		} else {
+			collectors = append(collectors, c)
+		}
+	}
+
 	var inputs []interface{}
 	for _, c := range collectors {
 		rs, err := c.Get()
