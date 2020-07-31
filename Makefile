@@ -90,7 +90,7 @@ $(RELEASE_DIR)/%-$(RELEASE_SUFFIX): $(PACKED_DIR)/%-$(BIN_ARCH)
 	$(TAR) -cvz --transform 's,$(PACKED_DIR)/$(*)-$(BIN_ARCH),$(*),gi' -f "$@" "$<"
 
 test: generate test-fmt                                             ## Run Go tests
-	go test ./...
+	go test -v ./...
 .PHONY: test
 
 test-fmt: generate						   ## Run go and opt fmt checks
