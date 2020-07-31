@@ -2,6 +2,7 @@ package collector
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 
@@ -19,6 +20,11 @@ type FileOpts struct {
 }
 
 func NewFileCollector(opts *FileOpts) (*FileCollector, error) {
+
+	if len(opts.Filenames) == 0 {
+		return nil, errors.New("file list can't be empty")
+	}
+
 	collector := &FileCollector{
 		commonCollector: &commonCollector{name: "File"},
 		filenames:       opts.Filenames,
