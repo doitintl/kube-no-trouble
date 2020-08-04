@@ -35,42 +35,35 @@ func getCollectors(collectors []collector.Collector) []interface{} {
 	return inputs
 }
 
+func storeCollector(collector collector.Collector, err error, collectors []collector.Collector) []collector.Collector {
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to initialize :" + collector.Name())
+	} else {
+		collectors = append(collectors, collector)
+	}
+	return collectors
+}
+
 func initCollectors(config *config.Config) []collector.Collector {
 	collectors := []collector.Collector{}
 	if config.Cluster {
-		c, err := collector.NewClusterCollector(&collector.ClusterOpts{Kubeconfig: config.Kubeconfig})
-		if err != nil {
-			log.Error().Err(err).Msg("Failed to initialize Cluster collector")
-		} else {
-			collectors = append(collectors, c)
-		}
+		collector, err := collector.NewClusterCollector(&collector.ClusterOpts{Kubeconfig: config.Kubeconfig})
+		collectors = storeCollector(collector, err, collectors)
 	}
 
 	if config.Helm2 {
-		c, err := collector.NewHelmV2Collector(&collector.HelmV2Opts{Kubeconfig: config.Kubeconfig})
-		if err != nil {
-			log.Error().Err(err).Msg("Failed to initialize Helm v2 collector")
-		} else {
-			collectors = append(collectors, c)
-		}
+		collector, err := collector.NewHelmV2Collector(&collector.HelmV2Opts{Kubeconfig: config.Kubeconfig})
+		collectors = storeCollector(collector, err, collectors)
 	}
 
 	if config.Helm3 {
-		c, err := collector.NewHelmV3Collector(&collector.HelmV3Opts{Kubeconfig: config.Kubeconfig})
-		if err != nil {
-			log.Error().Err(err).Msg("Failed to initialize Helm v3 collector")
-		} else {
-			collectors = append(collectors, c)
-		}
+		collector, err := collector.NewHelmV3Collector(&collector.HelmV3Opts{Kubeconfig: config.Kubeconfig})
+		collectors = storeCollector(collector, err, collectors)
 	}
 
 	if len(config.Filenames) > 0 {
-		c, err := collector.NewFileCollector(&collector.FileOpts{Filenames: config.Filenames})
-		if err != nil {
-			log.Error().Err(err).Msg("Failed to initialize File collector")
-		} else {
-			collectors = append(collectors, c)
-		}
+		collector, err := collector.NewFileCollector(&collector.FileOpts{Filenames: config.Filenames})
+		collectors = storeCollector(collector, err, collectors)
 	}
 	return collectors
 }
