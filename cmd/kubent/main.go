@@ -18,27 +18,24 @@ import (
 
 var (
 	version string = "dev"
-	git_sha string = "dev"
+	gitSha  string = "dev"
 )
 
-func main() {
-
-	config, err := config.NewFromFlags()
-	if err != nil {
-		log.Fatal().Err(err).Msg("failed to parse config flags")
+func getCollectors(collectors []collector.Collector) []interface{} {
+	var inputs []interface{}
+	for _, c := range collectors {
+		rs, err := c.Get()
+		if err != nil {
+			log.Error().Err(err).Str("name", c.Name()).Msg("Failed to retrieve data from collector")
+		} else {
+			inputs = append(inputs, rs...)
+			log.Info().Str("name", c.Name()).Msgf("Retrieved %d resources from collector", len(rs))
+		}
 	}
+	return inputs
+}
 
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-	zerolog.SetGlobalLevel(zerolog.InfoLevel)
-	if config.Debug {
-		zerolog.SetGlobalLevel(zerolog.DebugLevel)
-	}
-
-	log.Info().Msg(">>> Kube No Trouble `kubent` <<<")
-	log.Info().Msgf("version %s (git sha %s)", version, git_sha)
-
-	log.Info().Msg("Initializing collectors and retrieving data")
-
+func initCollectors(config *config.Config) []collector.Collector {
 	collectors := []collector.Collector{}
 	if config.Cluster {
 		c, err := collector.NewClusterCollector(&collector.ClusterOpts{Kubeconfig: config.Kubeconfig})
@@ -75,24 +72,35 @@ func main() {
 			collectors = append(collectors, c)
 		}
 	}
+	return collectors
+}
 
-	var inputs []interface{}
-	for _, c := range collectors {
-		rs, err := c.Get()
-		if err != nil {
-			log.Error().Err(err).Str("name", c.Name()).Msg("Failed to retrieve data from collector")
-		} else {
-			inputs = append(inputs, rs...)
-			log.Info().Str("name", c.Name()).Msgf("Retrieved %d resources from collector", len(rs))
-		}
+func main() {
+
+	config, err := config.NewFromFlags()
+	if err != nil {
+		log.Fatal().Err(err).Msg("failed to parse config flags")
 	}
+
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	if config.Debug {
+		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+	}
+
+	log.Info().Msg(">>> Kube No Trouble `kubent` <<<")
+	log.Info().Msgf("version %s (git sha %s)", version, gitSha)
+	log.Info().Msg("Initializing collectors and retrieving data")
+
+	initCollectors := initCollectors(config)
+	collectors := getCollectors(initCollectors)
 
 	judge, err := judge.NewRegoJudge(&judge.RegoOpts{})
 	if err != nil {
 		log.Fatal().Err(err).Str("name", "Rego").Msg("Failed to initialize decision engine")
 	}
 
-	results, err := judge.Eval(inputs)
+	results, err := judge.Eval(collectors)
 	if err != nil {
 		log.Fatal().Err(err).Str("name", "Rego").Msg("Failed to evaluate input")
 	}
