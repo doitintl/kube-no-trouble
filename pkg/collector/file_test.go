@@ -1,6 +1,8 @@
 package collector
 
 import (
+	"io"
+	"os"
 	"strings"
 	"testing"
 )
@@ -91,5 +93,51 @@ func TestFileCollectorGetNonExistent(t *testing.T) {
 		t.Errorf("Expected error with non-existent file type")
 	} else if !strings.Contains(err.Error(), expected) {
 		t.Errorf("Expected error message with %s, got %s", expected, err.Error())
+	}
+}
+
+func TestFileCollectorGetStdin(t *testing.T) {
+	input := []string{"-"}
+	inputFilename := "../../fixtures/deployment-v1beta1.yaml"
+	expected := 1
+
+	c, err := NewFileCollector(
+		&FileOpts{Filenames: input},
+	)
+	if err != nil {
+		t.Errorf("Expected to succeed for %s, failed: %s", input, err)
+	}
+
+	fakeStdinReader, fakeStdinWriter, err := os.Pipe()
+	if err != nil {
+		t.Errorf("Failed to create pipe for Stdin redirect: %s", err)
+	}
+
+	// override os.stdin
+	origStdin := os.Stdin
+	os.Stdin = fakeStdinReader
+	defer func() {
+		os.Stdin = origStdin
+		fakeStdinReader.Close()
+	}()
+
+	f, err := os.Open(inputFilename)
+	if err != nil {
+		t.Errorf("Failed to open fixture file %s: %s", inputFilename, err)
+	}
+	defer func() { f.Close() }()
+
+	// read file to fake stdin
+	_, err = io.Copy(fakeStdinWriter, f)
+	if err != nil {
+		t.Errorf("Failed to read fixture file: %s", err)
+	}
+	fakeStdinWriter.Close()
+
+	manifests, err := c.Get()
+	if err != nil {
+		t.Errorf("Expected to succeed for %s, failed: %s", input, err)
+	} else if len(manifests) != expected {
+		t.Errorf("Expected to get %d, got %d", expected, len(manifests))
 	}
 }
