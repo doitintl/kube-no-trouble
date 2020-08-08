@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
 
 	"github.com/ghodss/yaml"
 	"helm.sh/helm/v3/pkg/releaseutil"
@@ -39,7 +40,13 @@ func (c *FileCollector) Get() ([]interface{}, error) {
 	var results []interface{}
 
 	for _, f := range c.filenames {
-		input, err := ioutil.ReadFile(f)
+		var input []byte
+		var err error
+		if f == "-" {
+			input, err = ioutil.ReadAll(os.Stdin)
+		} else {
+			input, err = ioutil.ReadFile(f)
+		}
 		if err != nil {
 			return nil, fmt.Errorf("failed to read file %s: %v", f, err)
 		}
