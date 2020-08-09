@@ -9,5 +9,5 @@ type Result struct {
 }
 
 type Judge interface {
-	Eval([]interface{}) ([]Result, error)
+	Eval([]map[string]interface{}) ([]Result, error)
 }

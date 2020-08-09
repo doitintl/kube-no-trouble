@@ -44,7 +44,7 @@ func NewHelmV3Collector(opts *HelmV3Opts) (*HelmV3Collector, error) {
 	return collector, nil
 }
 
-func (c *HelmV3Collector) Get() ([]interface{}, error) {
+func (c *HelmV3Collector) Get() ([]map[string]interface{}, error) {
 
 	releases, err := c.secretsStore.ListDeployed()
 	if err != nil {
@@ -58,17 +58,17 @@ func (c *HelmV3Collector) Get() ([]interface{}, error) {
 
 	releases = append(releases, releasesConfig...)
 
-	var input interface{}
-	var results []interface{}
+	var manifest map[string]interface{}
+	var results []map[string]interface{}
 
 	for _, r := range releases {
 		manifests := releaseutil.SplitManifests(r.Manifest)
 		for _, m := range manifests {
-			err := yaml.Unmarshal([]byte(m), &input)
+			err := yaml.Unmarshal([]byte(m), &manifest)
 			if err != nil {
 				return nil, err
 			}
-			results = append(results, input)
+			results = append(results, manifest)
 		}
 	}
 

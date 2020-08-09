@@ -1,7 +1,7 @@
 package collector
 
 type Collector interface {
-	Get() ([]interface{}, error)
+	Get() ([]map[string]interface{}, error)
 	Name() string
 }
 

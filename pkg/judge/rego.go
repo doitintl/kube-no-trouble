@@ -57,7 +57,7 @@ func NewRegoJudge(opts *RegoOpts) (*RegoJudge, error) {
 	return judge, nil
 }
 
-func (j *RegoJudge) Eval(input []interface{}) ([]Result, error) {
+func (j *RegoJudge) Eval(input []map[string]interface{}) ([]Result, error) {
 	ctx := context.Background()
 
 	rs, err := j.preparedQuery.Eval(ctx, rego.EvalInput(input))

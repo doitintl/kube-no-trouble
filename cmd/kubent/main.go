@@ -21,8 +21,8 @@ var (
 	gitSha  string = "dev"
 )
 
-func getCollectors(collectors []collector.Collector) []interface{} {
-	var inputs []interface{}
+func getCollectors(collectors []collector.Collector) []map[string]interface{} {
+	var inputs []map[string]interface{}
 	for _, c := range collectors {
 		rs, err := c.Get()
 		if err != nil {

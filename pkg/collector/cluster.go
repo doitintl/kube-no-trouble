@@ -34,7 +34,7 @@ func NewClusterCollector(opts *ClusterOpts) (*ClusterCollector, error) {
 	return collector, nil
 }
 
-func (c *ClusterCollector) Get() ([]interface{}, error) {
+func (c *ClusterCollector) Get() ([]map[string]interface{}, error) {
 	gvrs := []schema.GroupVersionResource{
 		schema.GroupVersionResource{Group: "apps", Version: "v1", Resource: "daemonsets"},
 		schema.GroupVersionResource{Group: "apps", Version: "v1", Resource: "deployments"},
@@ -45,7 +45,7 @@ func (c *ClusterCollector) Get() ([]interface{}, error) {
 		schema.GroupVersionResource{Group: "extensions", Version: "v1beta1", Resource: "ingresses"},
 	}
 
-	var results []interface{}
+	var results []map[string]interface{}
 	for _, g := range gvrs {
 		ri := c.clientset.Resource(g)
 		rs, err := ri.List(metav1.ListOptions{})
@@ -53,16 +53,16 @@ func (c *ClusterCollector) Get() ([]interface{}, error) {
 			return nil, err
 		}
 
-		var resource interface{}
+		var manifest map[string]interface{}
 
 		for _, r := range rs.Items {
 			if jsonManifest, ok := r.GetAnnotations()["kubectl.kubernetes.io/last-applied-configuration"]; ok {
 
-				err := json.Unmarshal([]byte(jsonManifest), &resource)
+				err := json.Unmarshal([]byte(jsonManifest), &manifest)
 				if err != nil {
 					return nil, err
 				}
-				results = append(results, resource)
+				results = append(results, manifest)
 			}
 		}
 	}

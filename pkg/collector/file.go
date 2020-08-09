@@ -34,10 +34,10 @@ func NewFileCollector(opts *FileOpts) (*FileCollector, error) {
 	return collector, nil
 }
 
-func (c *FileCollector) Get() ([]interface{}, error) {
+func (c *FileCollector) Get() ([]map[string]interface{}, error) {
 
 	var manifest map[string]interface{}
-	var results []interface{}
+	var results []map[string]interface{}
 
 	for _, f := range c.filenames {
 		var input []byte
