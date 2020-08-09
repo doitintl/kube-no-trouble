@@ -2,6 +2,7 @@ package collector
 
 import (
 	"encoding/json"
+	"fmt"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -60,6 +61,7 @@ func (c *ClusterCollector) Get() ([]map[string]interface{}, error) {
 
 				err := json.Unmarshal([]byte(jsonManifest), &manifest)
 				if err != nil {
+					err := fmt.Errorf("failed to parse 'last-applied-configuration' annotation of resource %s/%s: %v", r.GetNamespace(), r.GetName(), err)
 					return nil, err
 				}
 				results = append(results, manifest)
