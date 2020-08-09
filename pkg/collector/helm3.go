@@ -1,6 +1,7 @@
 package collector
 
 import (
+	"fmt"
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/tools/clientcmd"
 
@@ -66,6 +67,7 @@ func (c *HelmV3Collector) Get() ([]map[string]interface{}, error) {
 		for _, m := range manifests {
 			err := yaml.Unmarshal([]byte(m), &manifest)
 			if err != nil {
+				err := fmt.Errorf("failed to parse release %s/%s: %v", r.Namespace, r.Name, err)
 				return nil, err
 			}
 			results = append(results, manifest)
