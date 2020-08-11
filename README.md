@@ -19,6 +19,10 @@ particular following tools are supported:
 
 [1]: https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/
 
+**Additional resources:**
+- Blog post on K8s deprecated APIs and introduction of kubent: [Kubernetes: How to automatically detect and deal with deprecated APIs][2]
+
+[2]: https://blog.doit-intl.com/kubernetes-how-to-automatically-detect-and-deal-with-deprecated-apis-f9a8fc23444c
 
 ## Install
 
