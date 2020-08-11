@@ -19,8 +19,8 @@ spec:
         image: nginx:1.14.2
         ports:
         - containerPort: 80
-apiVersion: extensions/v1beta1
 ---
+apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: test-ingress
