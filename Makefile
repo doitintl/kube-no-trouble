@@ -8,7 +8,7 @@ MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
 ifeq (, $(shell command -v gtar))
-  TAR ?= tar
+	TAR ?= tar
 endif
 TAR ?= gtar
 
@@ -27,6 +27,7 @@ CGO_ENABLED ?= 0
 GOOS ?= $(shell go env GOOS)
 GOARCH ?= $(shell go env GOARCH)
 
+GENERATE_DIR ?= generated
 BIN_DIR ?= bin
 CMD_DIR ?= cmd
 RELEASE_DIR ?= release-artifacts
@@ -51,14 +52,17 @@ _ := $(foreach exec,$(REQ_BINS), \
        $(if $(shell which $(exec)),some string,$(error "No $(exec) binary in $$PATH")))
 
 
-all:        build pack release-artifacts                            ## Clean, build and pack
+## Clean, build and pack
+all: build pack release-artifacts
 .PHONY: all
 
-help:                                                               ## Prints list of tasks
-	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' Makefile
+## Prints list of tasks
+help:
+	@awk 'BEGIN {FS=":"} /^## .*/,/^[a-zA-Z0-9_-]+:/ { if ($$0 ~ /^## /) { desc=substr($$0, 4) } else { printf "\033[36m%-30s\033[0m %s\n", $$1, desc } }' Makefile | sort
 .PHONY: help
 
-build: $(BINS)                                                      ## Build binary
+## Build binary
+build: $(BINS)
 .PHONY: build
 
 $(BIN_DIR)/%-$(BIN_ARCH): generated/* $(SRC)
@@ -67,38 +71,45 @@ $(BIN_DIR)/%-$(BIN_ARCH): generated/* $(SRC)
 	-o "$@" \
 	"./$(CMD_DIR)/$(*)"
 
-generate: generated/*                                               ## Go generate
+## Go generate
+generate: generated/*
+	mkdir -p $(GENERATE_DIR)
 .PHONY: generate
 
 generated/*: rules/*
 	$(GOGENERATE)
 	go fmt "./generated/..."
 
-pack: $(PACKED_BINS)                                                ## Pack binaries with upx
+## Pack binaries with upx
+pack: $(PACKED_BINS)
 .PHONY: pack
 
 $(PACKED_DIR)/%-$(BIN_ARCH): $(BIN_DIR)/%-$(BIN_ARCH)
 	mkdir -p $(PACKED_DIR)
 	$(UPXCMD) --brute -f -o "$@" "$<" \
-	  && touch "$@"
+	&& touch "$@"
 
-release-artifacts: $(RELEASE_ARTIFACTS)                             ## Create release artifacts
+## Create release artifacts
+release-artifacts: $(RELEASE_ARTIFACTS)
 .PHONY: release-artifacts
 
 $(RELEASE_DIR)/%-$(RELEASE_SUFFIX): $(PACKED_DIR)/%-$(BIN_ARCH)
 	mkdir -p $(RELEASE_DIR)
 	$(TAR) -cvz --transform 's,$(PACKED_DIR)/$(*)-$(BIN_ARCH),$(*),gi' -f "$@" "$<"
 
-test: generate test-fmt                                             ## Run Go tests
+## Run Go tests
+test: generate test-fmt
 	go test -v ./...
 .PHONY: test
 
-test-fmt: generate						   ## Run go and opt fmt checks
+## Run go and opt fmt checks
+test-fmt: generate
 	test -z "$$(opa fmt -l rules/*)"
 	test -z "$$(go fmt ./...)"
 .PHONY: test-fmt
 
-clean:                                                              ## Clean build artifacts
-	rm -rf generated/*	
-	rm -rf bin/*
+## Clean build artifacts
+clean:
+	rm -rf $(GENERATE_DIR)
+	rm -rf $(BIN_DIR)
 .PHONY: clean
