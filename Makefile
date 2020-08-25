@@ -58,7 +58,7 @@ all: build pack release-artifacts
 
 ## Prints list of tasks
 help:
-  @awk 'BEGIN {FS=":"} /^## .*/,/^[a-zA-Z0-9_-]+:/ { if ($0 ~ /^## /) { desc=substr($0, 4) } else { printf "\033[36m%-30s\033[0m %s\n", $1, desc } }' Makefile
+	@awk 'BEGIN {FS=":"} /^## .*/,/^[a-zA-Z0-9_-]+:/ { if ($$0 ~ /^## /) { desc=substr($$0, 4) } else { printf "\033[36m%-30s\033[0m %s\n", $$1, desc } }' Makefile | sort
 .PHONY: help
 
 ## Build binary
