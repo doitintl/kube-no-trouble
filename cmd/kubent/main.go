@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"fmt"
 
 	"github.com/doitintl/kube-no-trouble/pkg/collector"
 	"github.com/doitintl/kube-no-trouble/pkg/config"
@@ -37,7 +38,7 @@ func getCollectors(collectors []collector.Collector) []map[string]interface{} {
 
 func storeCollector(collector collector.Collector, err error, collectors []collector.Collector) []collector.Collector {
 	if err != nil {
-		log.Error().Err(err).Msg("Failed to initialize :" + collector.Name())
+		log.Error().Err(err).Msg(fmt.Sprintf("Failed to initialize collector: %+v", collector))
 	} else {
 		collectors = append(collectors, collector)
 	}
