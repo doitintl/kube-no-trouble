@@ -59,12 +59,13 @@ func (c *HelmV2Collector) Get() ([]map[string]interface{}, error) {
 
 	releases = append(releases, releasesConfig...)
 
-	var manifest map[string]interface{}
 	var results []map[string]interface{}
 
 	for _, r := range releases {
 		manifests := releaseutil.SplitManifests(r.Manifest)
 		for _, m := range manifests {
+			var manifest map[string]interface{}
+
 			err := yaml.Unmarshal([]byte(m), &manifest)
 			if err != nil {
 				err := fmt.Errorf("failed to parse release %s/%s: %v", r.Namespace, r.Name, err)

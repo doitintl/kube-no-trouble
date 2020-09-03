@@ -54,10 +54,9 @@ func (c *ClusterCollector) Get() ([]map[string]interface{}, error) {
 			return nil, err
 		}
 
-		var manifest map[string]interface{}
-
 		for _, r := range rs.Items {
 			if jsonManifest, ok := r.GetAnnotations()["kubectl.kubernetes.io/last-applied-configuration"]; ok {
+				var manifest map[string]interface{}
 
 				err := json.Unmarshal([]byte(jsonManifest), &manifest)
 				if err != nil {
