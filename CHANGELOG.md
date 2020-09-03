@@ -1,5 +1,11 @@
 ## kubent Release Notes
 
+### 0.3.1 (2020-09-04)
+
+**Fixes**:
+- Fix missing resources (#34)
+- Fix panic when collector fails to initialize (#32)
+
 ### 0.3.0 (2020-08-11)
 
 **Features**:
