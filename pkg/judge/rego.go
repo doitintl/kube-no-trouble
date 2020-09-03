@@ -60,6 +60,7 @@ func NewRegoJudge(opts *RegoOpts) (*RegoJudge, error) {
 func (j *RegoJudge) Eval(input []map[string]interface{}) ([]Result, error) {
 	ctx := context.Background()
 
+	log.Debug().Msgf("evaluating +%v", input)
 	rs, err := j.preparedQuery.Eval(ctx, rego.EvalInput(input))
 	if err != nil {
 		return nil, err
