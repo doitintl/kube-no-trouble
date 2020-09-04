@@ -12,24 +12,29 @@ import (
 
 type ClusterCollector struct {
 	*commonCollector
-	clientset dynamic.Interface
+	clientSet dynamic.Interface
 }
 
 type ClusterOpts struct {
 	Kubeconfig string
+	ClientSet  dynamic.Interface
 }
 
 func NewClusterCollector(opts *ClusterOpts) (*ClusterCollector, error) {
 	collector := &ClusterCollector{commonCollector: &commonCollector{name: "Cluster"}}
 
-	config, err := clientcmd.BuildConfigFromFlags("", opts.Kubeconfig)
-	if err != nil {
-		return nil, err
-	}
+	if opts.ClientSet == nil {
+		config, err := clientcmd.BuildConfigFromFlags("", opts.Kubeconfig)
+		if err != nil {
+			return nil, err
+		}
 
-	collector.clientset, err = dynamic.NewForConfig(config)
-	if err != nil {
-		return nil, err
+		collector.clientSet, err = dynamic.NewForConfig(config)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		collector.clientSet = opts.ClientSet
 	}
 
 	return collector, nil
@@ -48,7 +53,7 @@ func (c *ClusterCollector) Get() ([]map[string]interface{}, error) {
 
 	var results []map[string]interface{}
 	for _, g := range gvrs {
-		ri := c.clientset.Resource(g)
+		ri := c.clientSet.Resource(g)
 		rs, err := ri.List(metav1.ListOptions{})
 		if err != nil {
 			return nil, err
