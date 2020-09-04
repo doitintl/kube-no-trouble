@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/doitintl/kube-no-trouble/pkg/collector"
@@ -29,7 +30,7 @@ func TestGetCollectors(t *testing.T) {
 	fileCollector, err := collector.NewFileCollector(&collector.FileOpts{Filenames: []string{"../../fixtures/deployment-v1beta1.yaml"}})
 
 	if err != nil {
-		t.Errorf("Did not parse fixture %s, with error: %s", fileCollector.Name(), err)
+		t.Errorf("Failed to create File collector with error: %s", err)
 	}
 
 	initCollectors := []collector.Collector{}
@@ -39,5 +40,48 @@ func TestGetCollectors(t *testing.T) {
 
 	if collectors != nil && len(collectors) != 1 {
 		t.Errorf("Did not get file collector correctly with error: %s", err)
+	}
+}
+
+func TestStoreCollector(t *testing.T) {
+	collectors := []collector.Collector{}
+	fileCollector, err := collector.NewFileCollector(&collector.FileOpts{Filenames: []string{"../../fixtures/deployment-v1beta1.yaml"}})
+
+	if err != nil {
+		t.Errorf("Failed to create File collector with error: %s", err)
+	}
+
+	collectors = storeCollector(fileCollector, err, collectors)
+
+	if len(collectors) != 1 {
+		t.Errorf("Failed to append collector")
+	}
+}
+
+func TestStoreCollectorMultiple(t *testing.T) {
+	collectors := []collector.Collector{}
+	fileCollector, err := collector.NewFileCollector(&collector.FileOpts{Filenames: []string{"../../fixtures/deployment-v1beta1.yaml"}})
+
+	if err != nil {
+		t.Errorf("Failed to create File collector with error: %s", err)
+	}
+
+	collectors = storeCollector(fileCollector, err, collectors)
+
+	collectors = storeCollector(fileCollector, err, collectors)
+
+	if len(collectors) != 2 {
+		t.Errorf("Failed to append collectors")
+	}
+}
+
+func TestStoreCollectorError(t *testing.T) {
+	collectors := []collector.Collector{}
+	err := errors.New("Just testing...")
+
+	collectors = storeCollector(nil, err, collectors)
+
+	if len(collectors) != 0 {
+		t.Errorf("Failed to ignore collector with error")
 	}
 }
