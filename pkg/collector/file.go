@@ -36,7 +36,6 @@ func NewFileCollector(opts *FileOpts) (*FileCollector, error) {
 
 func (c *FileCollector) Get() ([]map[string]interface{}, error) {
 
-	var manifest map[string]interface{}
 	var results []map[string]interface{}
 
 	for _, f := range c.filenames {
@@ -52,6 +51,7 @@ func (c *FileCollector) Get() ([]map[string]interface{}, error) {
 		}
 
 		// try to parse JSON
+		var manifest map[string]interface{}
 		err = json.Unmarshal(input, &manifest)
 		if err == nil {
 			results = append(results, manifest)
@@ -61,6 +61,7 @@ func (c *FileCollector) Get() ([]map[string]interface{}, error) {
 		if err != nil {
 			manifests := releaseutil.SplitManifests(string(input))
 			for _, m := range manifests {
+				var manifest map[string]interface{}
 				err := yaml.Unmarshal([]byte(m), &manifest)
 				if err != nil {
 					return nil, fmt.Errorf("failed to parse file %s: %v", f, err)
