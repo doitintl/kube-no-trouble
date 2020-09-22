@@ -1,5 +1,14 @@
 ## kubent Release Notes
 
+### 0.3.2 (2020-09-22)
+
+**Fixes**:
+- Fixes missing resources with File Collector (#40)
+
+**Internal/Misc**:
+- Fixes git sha in binary (#41)
+- Increased test coverage (storeCollector) and introduced K8s fake client tests (ClusterCollector) (#37)
+
 ### 0.3.1 (2020-09-04)
 
 **Fixes**:
