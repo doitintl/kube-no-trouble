@@ -67,7 +67,7 @@ build: $(BINS)
 
 $(BIN_DIR)/%-$(BIN_ARCH): generated/* $(SRC)
 	mkdir -p $(BIN_DIR)
-	$(GOBUILD) -ldflags="-s -w -X main.version=$(GIT_REF) -X main.git_sha=$(GIT_SHA)" \
+	$(GOBUILD) -ldflags="-s -w -X main.version=$(GIT_REF) -X main.gitSha=$(GIT_SHA)" \
 	-o "$@" \
 	"./$(CMD_DIR)/$(*)"
 
