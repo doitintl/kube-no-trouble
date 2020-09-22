@@ -26,12 +26,12 @@ func TestFileCollectorGet(t *testing.T) {
 	testCases := []struct {
 		name     string
 		input    []string // file list
-		expected int      // number of manifests
+		expected []string // kinds of objects
 	}{
-		{"yaml", []string{"../../fixtures/deployment-v1beta1.yaml"}, 1},
-		{"yamlMulti", []string{"../../fixtures/deployment-v1beta1-and-ingress-v1beta1.yaml"}, 2},
-		{"json", []string{"../../fixtures/deployment-v1beta1.json"}, 1},
-		{"mixed", []string{"../../fixtures/deployment-v1beta1.json", "../../fixtures/deployment-v1beta1.yaml"}, 2},
+		{"yaml", []string{"../../fixtures/deployment-v1beta1.yaml"}, []string{"Deployment"}},
+		{"yamlMulti", []string{"../../fixtures/deployment-v1beta1-and-ingress-v1beta1.yaml"}, []string{"Deployment", "Ingress"}},
+		{"json", []string{"../../fixtures/deployment-v1beta1.json"}, []string{"Deployment"}},
+		{"mixed", []string{"../../fixtures/deployment-v1beta1.json", "../../fixtures/deployment-v1beta1.yaml"}, []string{"Deployment", "Deployment"}},
 	}
 
 	for _, tc := range testCases {
@@ -47,8 +47,14 @@ func TestFileCollectorGet(t *testing.T) {
 			manifests, err := c.Get()
 			if err != nil {
 				t.Errorf("Expected to succeed for %s, failed: %s", tc.input, err)
-			} else if len(manifests) != tc.expected {
-				t.Errorf("Expected to get %d, got %d", tc.expected, len(manifests))
+			} else if len(manifests) != len(tc.expected) {
+				t.Errorf("Expected to get %d, got %d", len(tc.expected), len(manifests))
+			}
+
+			for i, _ := range manifests {
+				if manifests[i]["kind"] != tc.expected[i] {
+					t.Errorf("Expected to get %s, instead got: %s", tc.expected[i], manifests[i]["kind"])
+				}
 			}
 		})
 	}
