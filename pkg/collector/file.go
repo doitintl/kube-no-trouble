@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"os"
-
 	"github.com/ghodss/yaml"
 	"helm.sh/helm/v3/pkg/releaseutil"
+	"io/ioutil"
+	"os"
+	"sort"
 )
 
 type FileCollector struct {
@@ -60,9 +60,17 @@ func (c *FileCollector) Get() ([]map[string]interface{}, error) {
 		// let's try YAML too
 		if err != nil {
 			manifests := releaseutil.SplitManifests(string(input))
-			for _, m := range manifests {
+
+			// keep output stable
+			var keys []string
+			for key := range manifests {
+				keys = append(keys, key)
+			}
+			sort.Sort(releaseutil.BySplitManifestsOrder(keys))
+
+			for _, k := range keys {
 				var manifest map[string]interface{}
-				err := yaml.Unmarshal([]byte(m), &manifest)
+				err := yaml.Unmarshal([]byte(manifests[k]), &manifest)
 				if err != nil {
 					return nil, fmt.Errorf("failed to parse file %s: %v", f, err)
 				}
