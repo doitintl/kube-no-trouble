@@ -85,6 +85,35 @@ Usage of ./kubent:
   -o, --output string       output format - [text|json] (default "text")
 ```
 
+### Use in CI
+
+`kubent` will return `0` exit code if the program succeeds, even if it finds
+deprecated resources, and non-zero exit code if there is an error during
+runtime. Because all info output goes to stderr, it's easy to check in shell if
+any issues were found:
+
+```shell
+test -z "$(kubent)"                 # if stdout output is empty, means no issuse were found
+                                    # equivalent to [ -z "$(kubent)" ]
+```
+
+It's actually better so split this into two steps, in order to differentiate
+between runtime error and found issues:
+
+```shell
+if ! OUTPUT="$(kubent)"; then       # check for non-zero return code first
+  echo "kubent failed to run!"
+elif [ -n "${OUTPUT}" ]; then       # check for empty stdout 
+  echo "Deprecated resources found"
+fi
+```
+
+Alternatively, use the json output and smth. like `jq` to check if the result is
+empty:
+
+```
+kubent -o json | jq -e 'length == 0'
+```
 
 ## Development
 
