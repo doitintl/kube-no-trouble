@@ -66,7 +66,7 @@ func (j *RegoJudge) Eval(input []map[string]interface{}) ([]Result, error) {
 		return nil, err
 	}
 
-	var results []Result
+	results := []Result{}
 	for _, r := range rs {
 		for _, e := range r.Expressions {
 			for _, i := range e.Value.([]interface{}) {
