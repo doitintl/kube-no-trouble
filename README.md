@@ -149,11 +149,3 @@ clean                          Clean build artifacts
 Please open any issues and/or PRs against github.com/doitintl/kube-no-trouble repository.
 
 Feedback and contributions are always welcome!
-
-### Todo:
-
-Some future features ideas:
-- Advice on correct replacement API version ?
-- Output - pdf/html?
-- Tests
-- Lint
