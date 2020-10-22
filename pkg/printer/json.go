@@ -30,7 +30,7 @@ func (c *JSONPrinter) Print(results []judge.Result) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%s\n", buffer.String())
+	fmt.Printf("%s", buffer.String())
 
 	return nil
 }
