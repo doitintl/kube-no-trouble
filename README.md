@@ -78,6 +78,7 @@ $./kubent -h
 Usage of ./kubent:
   -c, --cluster             enable Cluster collector (default true)
   -d, --debug               enable debug logging
+  -e, --exit-error          exit with non-zero code when issues are found
   -f, --filename strings    manifests to check
       --helm2               enable Helm v2 collector (default true)
       --helm3               enable Helm v3 collector (default true)
@@ -87,10 +88,10 @@ Usage of ./kubent:
 
 ### Use in CI
 
-`kubent` will return `0` exit code if the program succeeds, even if it finds
-deprecated resources, and non-zero exit code if there is an error during
-runtime. Because all info output goes to stderr, it's easy to check in shell if
-any issues were found:
+`kubent` will by default return `0` exit code if the program succeeds, even if
+it finds deprecated resources, and non-zero exit code if there is an error
+during runtime. Because all info output goes to stderr, it's easy to check in
+shell if any issues were found:
 
 ```shell
 test -z "$(kubent)"                 # if stdout output is empty, means no issuse were found
@@ -107,6 +108,9 @@ elif [ -n "${OUTPUT}" ]; then       # check for empty stdout
   echo "Deprecated resources found"
 fi
 ```
+
+You can also use `--exit-error` (`-e`) flag, which will make kubent to exit
+with non-zero return code (`200`) in case any issues are found.
 
 Alternatively, use the json output and smth. like `jq` to check if the result is
 empty:

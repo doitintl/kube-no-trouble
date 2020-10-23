@@ -22,6 +22,12 @@ var (
 	gitSha  string = "dev"
 )
 
+const (
+	EXIT_CODE_SUCCESS      = 0
+	EXIT_CODE_FAIL_GENERIC = 1
+	EXIT_CODE_FOUND_ISSUES = 200
+)
+
 func getCollectors(collectors []collector.Collector) []map[string]interface{} {
 	var inputs []map[string]interface{}
 	for _, c := range collectors {
@@ -70,6 +76,7 @@ func initCollectors(config *config.Config) []collector.Collector {
 }
 
 func main() {
+	exitCode := EXIT_CODE_FAIL_GENERIC
 
 	config, err := config.NewFromFlags()
 	if err != nil {
@@ -114,4 +121,11 @@ func main() {
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to print results")
 	}
+
+	if config.ExitError && len(results) > 0 {
+		exitCode = EXIT_CODE_FOUND_ISSUES
+	} else {
+		exitCode = EXIT_CODE_SUCCESS
+	}
+	os.Exit(exitCode)
 }

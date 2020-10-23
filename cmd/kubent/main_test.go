@@ -2,6 +2,9 @@ package main
 
 import (
 	"errors"
+	"os"
+	"os/exec"
+	"strconv"
 	"testing"
 
 	"github.com/doitintl/kube-no-trouble/pkg/collector"
@@ -83,5 +86,57 @@ func TestStoreCollectorError(t *testing.T) {
 
 	if len(collectors) != 0 {
 		t.Errorf("Failed to ignore collector with error")
+	}
+}
+
+func TestMainExitCodes(t *testing.T) {
+	testCases := []struct {
+		name     string
+		args     []string // file list
+		expected int      // number of manifests
+	}{
+		{"success", []string{"-c=false", "--helm2=false", "--helm3=false"}, 0},
+		{"errorBadFlag", []string{"-c=not-boolean"}, 2},
+		{"successFound", []string{"-c=false", "--helm2=false", "--helm3=false", "-f=../../fixtures/deployment-v1beta1.yaml"}, 0},
+		{"exitErrorFlagNone", []string{"-c=false", "--helm2=false", "--helm3=false", "-e"}, 0},
+		{"exitErrorFlagFound", []string{"-c=false", "--helm2=false", "--helm3=false", "-e", "-f=../../fixtures/deployment-v1beta1.yaml"}, 200},
+	}
+
+	if os.Getenv("TEST_EXIT_CODE") == "1" {
+		tc, err := strconv.Atoi(os.Getenv("TEST_CASE"))
+		if err != nil {
+			t.Errorf("failed to determin the test case num (TEST_CASE env var): %v", err)
+		}
+
+		os.Args = []string{os.Args[0]}
+		os.Args = append(os.Args, testCases[tc].args...)
+		main()
+		return
+	}
+
+	for i, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			var ee *exec.ExitError
+
+			cmd := exec.Command(os.Args[0], "-test.run=TestMainExitCodes")
+			cmd.Env = append(os.Environ(), "TEST_EXIT_CODE=1", "TEST_CASE="+strconv.Itoa(i))
+			err := cmd.Run()
+
+			if tc.expected == 0 && err != nil {
+				t.Fatalf("expected to succeed with exit code %d, failed with %v", tc.expected, err)
+			}
+
+			if tc.expected != 0 && err == nil {
+				t.Fatalf("expected to get exit code %d, succeeded with 0", tc.expected)
+			}
+
+			if tc.expected != 0 && err != nil {
+				if errors.As(err, &ee) && ee.ExitCode() != tc.expected {
+					t.Fatalf("expected to get exit code %d, failed with %v, exit code %d", tc.expected, err, ee.ExitCode())
+				} else if !errors.As(err, &ee) {
+					t.Fatalf("expected to get exit code %d, failed with %v", tc.expected, err)
+				}
+			}
+		})
 	}
 }
