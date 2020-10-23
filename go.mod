@@ -1,6 +1,6 @@
 module github.com/doitintl/kube-no-trouble
 
-go 1.13
+go 1.15
 
 require (
 	github.com/Azure/go-autorest v14.0.1+incompatible // indirect
