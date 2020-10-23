@@ -12,7 +12,7 @@ workloads first, before upgrading your Kubernetes cluster.
 This tool will be able to detect deprecated APIs depending on how you deploy
 your resources, as we need the original manifest to be stored somewhere. In
 particular following tools are supported:
-- **file**    - local manifests in YAML or JSON
+- **file**    - local manifesasdasdts in YAML or JSON
 - **kubectl** - uses the `kubectl.kubernetes.io/last-applied-configuration` annotation
 - **Helm v2** - uses Tiller manifests stored in K8s Secrets or ConfigMaps
 - **Helm v3** - uses Helm manifests stored as Secrets or ConfigMaps directly in individual namespaces
