@@ -1,0 +1,21 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: master
+    hooks:
+      - id: check-json
+      - id: check-added-large-files
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+  - repo: https://github.com/jumanjihouse/pre-commit-hooks
+    rev: master
+    hooks:
+      - id: forbid-binary
+      - id: git-dirty
+  - repo: https://github.com/Lucas-C/pre-commit-hooks-go
+    rev: master
+    hooks:
+      - id: checkmake
+  - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+    rev: master
+    hooks:
+      - id: pretty-format-golang

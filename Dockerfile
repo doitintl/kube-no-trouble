@@ -6,7 +6,7 @@ COPY go.mod .
 COPY go.sum .
 COPY scripts scripts
 
-RUN scripts/alpine-setup.sh 
+RUN scripts/alpine-setup.sh
 
 RUN go mod download
 
