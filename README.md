@@ -148,6 +148,36 @@ release-artifacts              Create release artifacts
 clean                          Clean build artifacts
 ```
 
+### Commit messages
+
+We enforce simple version of [Conventional Commits][cc] in the form:
+
+```
+<type>: <summary>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+Where type is one of:
+- **build** - Affects build and/or build system
+- **chore** - Other non-functional changes
+- **ci** - Affects CI (e.g. GitHub actions)
+- **dep** - Dependency update
+- **docs** - Documentation only change
+- **feat** - A new feature
+- **fix** - A bug fix
+- **ref** - Code refactoring without functinality change
+- **style** - Formatting changes
+- **test** - Adding/changing tests
+
+[cc]: https://www.conventionalcommits.org/
+
+Use imperative, present tense (Add, not ~Added~), capitalize first letter of
+summary, no dot at the and. The body and footer are optional. Relevant GitHub
+issues should be referenced in the footer in the form `Fixes #123, fixes #456`.
+
 ## Issues and Contributions
 
 Please open any issues and/or PRs against github.com/doitintl/kube-no-trouble repository.
