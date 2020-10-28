@@ -3,7 +3,7 @@ module github.com/doitintl/kube-no-trouble
 go 1.15
 
 require (
-	github.com/Azure/go-autorest v14.0.1+incompatible // indirect
+	github.com/Azure/go-autorest/autorest/adal v0.9.5 // indirect
 	github.com/DATA-DOG/go-sqlmock v1.4.1 // indirect
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/gofuzz v1.1.0 // indirect
