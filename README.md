@@ -39,7 +39,7 @@ for your platform and unpack manually.
 
 Configure Kubectl's current context to point to your cluster, `kubent` will
 look for the kube `.config` file in standard locations (you can point it to custom
-location using the `-k` switch). 
+location using the `-k` switch).
 
 **`kubent`** will collect resources from your cluster and report on found issuses.
 
@@ -104,7 +104,7 @@ between runtime error and found issues:
 ```shell
 if ! OUTPUT="$(kubent)"; then       # check for non-zero return code first
   echo "kubent failed to run!"
-elif [ -n "${OUTPUT}" ]; then       # check for empty stdout 
+elif [ -n "${OUTPUT}" ]; then       # check for empty stdout
   echo "Deprecated resources found"
 fi
 ```

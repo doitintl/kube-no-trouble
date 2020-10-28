@@ -99,7 +99,7 @@ $(RELEASE_DIR)/%-$(RELEASE_SUFFIX): $(PACKED_DIR)/%-$(BIN_ARCH)
 
 ## Run Go tests
 test: generate test-fmt
-	go test -v ./...
+	go test -coverprofile fmtcoverage.html ./...
 .PHONY: test
 
 ## Run go and opt fmt checks
