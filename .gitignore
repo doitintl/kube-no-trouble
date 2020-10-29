@@ -1,7 +1,6 @@
 #
 bin/
 release-artifacts/
-generated/
 debug.test
 
 # Dependency directories (remove the comment below to include it)

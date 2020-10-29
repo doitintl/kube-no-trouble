@@ -65,7 +65,7 @@ help:
 build: $(BINS)
 .PHONY: build
 
-$(BIN_DIR)/%-$(BIN_ARCH): generated/* $(SRC)
+$(BIN_DIR)/%-$(BIN_ARCH): generated/* $(SRC) go.mod go.sum
 	mkdir -p $(BIN_DIR)
 	$(GOBUILD) -ldflags="-s -w -X main.version=$(GIT_REF) -X main.gitSha=$(GIT_SHA)" \
 	-o "$@" \
