@@ -21,7 +21,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v1
       with:
-        fetch-depth: 1
+        fetch-depth: 0
     - name: Test
       run: |
         scripts/alpine-setup.sh
