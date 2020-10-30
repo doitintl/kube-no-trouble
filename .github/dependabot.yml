@@ -7,7 +7,7 @@ updates:
       interval: "daily"
       time: "10:00"
     commit-message:
-      prefix: "dep: "
+      prefix: "dep: Go "
     reviewers:
       - "stepanstipl"
       - "david-doit-intl"
@@ -18,7 +18,7 @@ updates:
       interval: "daily"
       time: "10:00"
     commit-message:
-      prefix: "dep: "
+      prefix: "dep: Docker "
     reviewers:
       - "stepanstipl"
       - "david-doit-intl"
