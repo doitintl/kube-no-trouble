@@ -16,7 +16,7 @@ require (
 	github.com/spf13/pflag v1.0.5
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208 // indirect
 	golang.org/x/sys v0.0.0-20200805065543-0cf7623e9dbd // indirect
-	helm.sh/helm v2.16.5+incompatible
+	helm.sh/helm v2.17.0+incompatible
 	helm.sh/helm/v3 v3.1.2
 	k8s.io/apimachinery v0.17.4
 	k8s.io/client-go v0.17.4
