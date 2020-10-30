@@ -18,8 +18,8 @@ require (
 	golang.org/x/sys v0.0.0-20200805065543-0cf7623e9dbd // indirect
 	helm.sh/helm v2.17.0+incompatible
 	helm.sh/helm/v3 v3.1.2
-	k8s.io/apimachinery v0.17.4
-	k8s.io/client-go v0.17.4
+	k8s.io/apimachinery v0.17.13
+	k8s.io/client-go v0.17.13
 	k8s.io/helm v2.16.5+incompatible // indirect
 	k8s.io/utils v0.0.0-20200324210504-a9aa75ae1b89 // indirect
 	sigs.k8s.io/yaml v1.2.0 // indirect
