@@ -20,3 +20,4 @@ wget -q -O "/usr/local/bin/opa" "https://github.com/open-policy-agent/opa/releas
 chmod +x "/usr/local/bin/opa"
 
 go get github.com/rakyll/statik
+go get github.com/paultyng/changelog-gen
