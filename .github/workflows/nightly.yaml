@@ -1,0 +1,46 @@
+name: nightly
+on:
+  schedule:
+    - cron: '2 2 * * *'
+jobs:
+  create-tag:
+    name: Create tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 0
+
+      - name: Set tag name
+        id: git_tag
+        run: echo "::set-output name=tag::$(git describe --tags)"
+
+      - name: check if tag exists
+        id: tag_exists
+        run: |
+          set -x
+          [ "$(git tag -l "${TAG}")" = "${TAG}" ] && exists=true || exists=false
+          echo "::set-output name=result::${exists}"
+        env:
+          TAG: ${{ steps.git_tag.outputs.tag }}
+
+      - name: Setup SSH Keys and known_hosts
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-add - <<< "${{ secrets.GH_SSH_KEY }}"
+        if: ${{ steps.tag_exists.outputs.result != 'true' }}
+
+      - name: Create tag
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          TAG: "nightly-${{ steps.git_tag.outputs.tag }}"
+        run: |
+          git tag "${TAG}"
+          git remote set-url origin git@github.com:doitintl/kube-no-trouble.git
+          git push origin "refs/tags/${TAG}"
+        if: ${{ steps.tag_exists.outputs.result != 'true' }}
