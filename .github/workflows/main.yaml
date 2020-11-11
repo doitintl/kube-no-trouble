@@ -40,7 +40,10 @@ jobs:
           scripts/alpine-setup.sh
           GOOS=darwin GOARCH=amd64 make all
           GOOS=linux GOARCH=amd64 make all
+          make changelog
         shell: sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive release artifacts
         uses: actions/upload-artifact@v1
         with:
@@ -69,6 +72,7 @@ jobs:
           release_name: Release ${{ steps.get_tag.outputs.git_tag }}
           draft: true
           prerelease: false
+          body_path: ./release-artifacts/changelog.md
       - name: Upload Release Asset - Mac
         id: upload-release-asset-mac
         uses: actions/upload-release-asset@v1

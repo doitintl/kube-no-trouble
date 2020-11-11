@@ -34,6 +34,7 @@ RELEASE_DIR ?= release-artifacts
 PACKED_DIR ?= $(BIN_DIR)/packed
 CMDS ?= $(shell ls $(CMD_DIR))
 BINS ?= $(addsuffix -$(GOOS)-$(GOARCH),$(addprefix $(BIN_DIR)/,$(CMDS)))
+CHANGELOG ?= changelog.md
 
 BIN_ARCH ?= $(GOOS)-$(GOARCH)
 RELEASE_SUFFIX ?= $(GIT_REF)-$(BIN_ARCH).tar.gz
@@ -118,3 +119,8 @@ clean:
 	rm -rf $(GENERATE_DIR)
 	rm -rf $(BIN_DIR)
 .PHONY: clean
+
+## Generate Changelog based on PRs
+changelog:
+	OUTPUT_FILE=$(RELEASE_DIR)/$(CHANGELOG) ./scripts/github-changelog.sh
+.PHONY: changelog

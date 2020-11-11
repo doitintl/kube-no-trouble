@@ -178,6 +178,31 @@ Use imperative, present tense (Add, not ~Added~), capitalize first letter of
 summary, no dot at the and. The body and footer are optional. Relevant GitHub
 issues should be referenced in the footer in the form `Fixes #123, fixes #456`.
 
+### Changelog
+
+Changelog is generated automatically based on merged PRs using
+[changelog-gen][chlg-gen]. Template can be found in `scripts/changelog.tmpl`.
+
+PRs are categorized based on their labels, into following sections:
+- Announcements - `announcement` label
+- Breaking Changes - `breaking-change` label
+- Features - `feature` label
+- Changes - `change` label
+- Fixes - `fix` label
+- Internal/Other - everything else
+
+PR can be excluded from changelog with `no-release-note` label. PR title is
+used by default, however, the copy can be customized by including following
+block in the PR body:
+
+~~~
+```release-note
+This is an example release note!
+```
+~~~
+
+[chlg-gen]: https://github.com/paultyng/changelog-gen
+
 ## Issues and Contributions
 
 Please open any issues and/or PRs against github.com/doitintl/kube-no-trouble repository.
