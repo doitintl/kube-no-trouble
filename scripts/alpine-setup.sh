@@ -10,6 +10,7 @@ OPA_VERSION="0.22.0"
 apk add --update --no-cache \
 	curl \
 	git \
+	jq \
 	make \
 	tar
 
