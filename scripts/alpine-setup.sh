@@ -8,6 +8,7 @@ UPX_VERSION="3.96"
 OPA_VERSION="0.22.0"
 
 apk add --update --no-cache \
+	curl \
 	git \
 	make \
 	tar
