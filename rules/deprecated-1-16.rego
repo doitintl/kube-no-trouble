@@ -9,7 +9,7 @@ main[return] {
 		"Namespace": get_default(resource.metadata, "namespace", "<undefined>"),
 		"Kind": resource.kind,
 		"ApiVersion": old_api,
-		"RuleSet": "Deprecated APIs removed in 1.16 ",
+		"RuleSet": "Deprecated APIs removed in 1.16",
 	}
 }
 
