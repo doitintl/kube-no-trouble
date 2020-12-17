@@ -20,7 +20,9 @@ jobs:
         id: tag_exists
         run: |
           set -x
-          [ "$(git tag -l "${TAG}")" = "${TAG}" ] && exists=true || exists=false
+          exists=false
+          [ "$(git tag -l "${TAG}")" = "${TAG}" ] && exists=true
+          [ "$(git tag -l "nightly-${TAG}")" = "nightly-${TAG}" ] && exists=true
           echo "::set-output name=result::${exists}"
         env:
           TAG: ${{ steps.git_tag.outputs.tag }}
