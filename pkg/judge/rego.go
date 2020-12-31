@@ -72,11 +72,13 @@ func (j *RegoJudge) Eval(input []map[string]interface{}) ([]Result, error) {
 			for _, i := range e.Value.([]interface{}) {
 				m := i.(map[string]interface{})
 				results = append(results, Result{
-					Name:       m["Name"].(string),
-					Namespace:  m["Namespace"].(string),
-					Kind:       m["Kind"].(string),
-					ApiVersion: m["ApiVersion"].(string),
-					RuleSet:    m["RuleSet"].(string),
+					Name:        m["Name"].(string),
+					Namespace:   m["Namespace"].(string),
+					Kind:        m["Kind"].(string),
+					ApiVersion:  m["ApiVersion"].(string),
+					ReplaceWith: m["ReplaceWith"].(string),
+					RuleSet:     m["RuleSet"].(string),
+					Since:       m["Since"].(string),
 				})
 			}
 		}

@@ -1,11 +1,13 @@
 package judge
 
 type Result struct {
-	Name       string
-	Namespace  string
-	Kind       string
-	ApiVersion string
-	RuleSet    string
+	Name        string
+	Namespace   string
+	Kind        string
+	ApiVersion  string
+	RuleSet     string
+	ReplaceWith string
+	Since       string
 }
 
 type Judge interface {
