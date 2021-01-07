@@ -1,6 +1,7 @@
 package config
 
 import (
+	"os"
 	"path/filepath"
 
 	flag "github.com/spf13/pflag"
@@ -28,10 +29,18 @@ func NewFromFlags() (*Config, error) {
 	flag.BoolVar(&config.Helm2, "helm2", true, "enable Helm v2 collector")
 	flag.BoolVar(&config.Helm3, "helm3", true, "enable Helm v3 collector")
 	flag.StringSliceVarP(&config.Filenames, "filename", "f", []string{}, "manifests to check, use - for stdin")
-	flag.StringVarP(&config.Kubeconfig, "kubeconfig", "k", filepath.Join(home, ".kube", "config"), "path to the kubeconfig file")
+	flag.StringVarP(&config.Kubeconfig, "kubeconfig", "k", envOrString("KUBECONFIG", filepath.Join(home, ".kube", "config")), "path to the kubeconfig file")
 	flag.StringVarP(&config.Output, "output", "o", "text", "output format - [text|json]")
 
 	flag.Parse()
 
 	return &config, nil
+}
+
+func envOrString(env string, def string) string {
+	val, ok := os.LookupEnv(env)
+	if ok {
+		return val
+	}
+	return def
 }
