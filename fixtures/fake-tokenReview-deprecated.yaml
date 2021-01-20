@@ -1,0 +1,6 @@
+apiVersion: authentication.k8s.io/v1beta1
+kind: TokenReview
+metadata:
+  name: test-deprecated-TokenReview
+spec:
+    token: exampletoken
