@@ -20,11 +20,33 @@ deprecated_resource(r) = api {
 }
 
 deprecated_api(kind, api_version) = api {
-	deprecated_apis = {"Ingress": {
-		"old": ["extensions/v1beta1"],
-		"new": "networking.k8s.io/v1beta1",
-		"since": "1.14",
-	}}
+	deprecated_apis = {
+		"Ingress": {
+			"old": ["extensions/v1beta1"],
+			"new": "networking.k8s.io/v1beta1",
+			"since": "1.14",
+		},
+		"TokenReview": {
+			"old": ["authentication.k8s.io/v1beta1"],
+			"new": "authentication.k8s.io/v1",
+			"since": "1.19",
+		},
+		"SubjectAccessReview": {
+			"old": ["authorization.k8s.io/v1beta1"],
+			"new": "authorization.k8s.io/v1",
+			"since": "1.19",
+		},
+		"Lease": {
+			"old": ["coordination.k8s.io/v1beta1"],
+			"new": "coordination.k8s.io/v1",
+			"since": "1.19",
+		},
+		"LeaseList": {
+			"old": ["coordination.k8s.io/v1beta1"],
+			"new": "coordination.k8s.io/v1",
+			"since": "1.19",
+		},
+	}
 
 	deprecated_apis[kind].old[_] == api_version
 
