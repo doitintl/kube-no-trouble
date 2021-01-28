@@ -2,6 +2,7 @@ package collector
 
 import (
 	"fmt"
+
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/tools/clientcmd"
 
@@ -71,6 +72,17 @@ func (c *HelmV2Collector) Get() ([]map[string]interface{}, error) {
 				err := fmt.Errorf("failed to parse release %s/%s: %v", r.Namespace, r.Name, err)
 				return nil, err
 			}
+
+			// Default to the release namespace if the manifest doesn't have the namespace set
+			if meta, ok := manifest["metadata"]; ok {
+				switch v := meta.(type) {
+				case map[string]interface{}:
+					if _, ok := v["namespace"]; !ok {
+						v["namespace"] = r.Namespace
+					}
+				}
+			}
+
 			results = append(results, manifest)
 		}
 	}
