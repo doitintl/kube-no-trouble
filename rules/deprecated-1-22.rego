@@ -23,7 +23,12 @@ deprecated_api(kind, api_version) = api {
 	deprecated_apis = {
 		"Ingress": {
 			"old": ["extensions/v1beta1"],
-			"new": "networking.k8s.io/v1beta1",
+			"new": "networking.k8s.io/v1",
+			"since": "1.14",
+		},
+		"Ingress": {
+			"old": ["networking.k8s.io/v1beta1"],
+			"new": "networking.k8s.io/v1",
 			"since": "1.14",
 		},
 		"TokenReview": {
