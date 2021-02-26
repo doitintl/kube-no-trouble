@@ -127,10 +127,6 @@ The simplest way to build `kubent` is:
 # Clone the repository
 git clone https://github.com/doitintl/kube-no-trouble.git
 cd kube-no-trouble/
-# We require statik for generating static embedded files
-go get github.com/rakyll/statik
-# Generate
-go generate
 # Build
 go build -o bin/kubent cmd/kubent/main.go
 ```

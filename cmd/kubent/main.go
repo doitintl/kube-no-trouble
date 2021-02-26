@@ -8,6 +8,7 @@ import (
 	"github.com/doitintl/kube-no-trouble/pkg/config"
 	"github.com/doitintl/kube-no-trouble/pkg/judge"
 	"github.com/doitintl/kube-no-trouble/pkg/printer"
+	"github.com/doitintl/kube-no-trouble/pkg/rules"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -96,7 +97,12 @@ func main() {
 	initCollectors := initCollectors(config)
 	collectors := getCollectors(initCollectors)
 
-	judge, err := judge.NewRegoJudge(&judge.RegoOpts{})
+	loadedRules, err := rules.FetchRegoRules()
+	if err != nil {
+		log.Fatal().Err(err).Str("name", "Rules").Msg("Failed to load rules")
+	}
+
+	judge, err := judge.NewRegoJudge(&judge.RegoOpts{}, loadedRules)
 	if err != nil {
 		log.Fatal().Err(err).Str("name", "Rego").Msg("Failed to initialize decision engine")
 	}

@@ -1,13 +1,14 @@
 package judge
 
 import (
+	"github.com/doitintl/kube-no-trouble/pkg/rules"
 	"github.com/ghodss/yaml"
 	"io/ioutil"
 	"testing"
 )
 
 func TestNewRegoJudge(t *testing.T) {
-	_, err := NewRegoJudge(&RegoOpts{})
+	_, err := NewRegoJudge(&RegoOpts{}, []rules.Rule{})
 	if err != nil {
 		t.Errorf("failed to create judge instance: %s", err)
 	}
@@ -16,7 +17,7 @@ func TestNewRegoJudge(t *testing.T) {
 func TestEvalEmpty(t *testing.T) {
 	inputs := []map[string]interface{}{}
 
-	judge, err := NewRegoJudge(&RegoOpts{})
+	judge, err := NewRegoJudge(&RegoOpts{}, []rules.Rule{})
 	if err != nil {
 		t.Errorf("failed to create judge instance: %s", err)
 	}
@@ -64,7 +65,12 @@ func TestEvalRules(t *testing.T) {
 				manifests = append(manifests, manifest)
 			}
 
-			judge, err := NewRegoJudge(&RegoOpts{})
+			loadedRules, err := rules.FetchRegoRules()
+			if err != nil {
+				t.Errorf("Failed to load rules")
+			}
+
+			judge, err := NewRegoJudge(&RegoOpts{}, loadedRules)
 			if err != nil {
 				t.Errorf("failed to create judge instance: %s", err)
 			}

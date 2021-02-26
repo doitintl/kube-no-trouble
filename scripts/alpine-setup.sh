@@ -21,5 +21,4 @@ wget -qO- "https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UP
 wget -q -O "/usr/local/bin/opa" "https://github.com/open-policy-agent/opa/releases/download/v${OPA_VERSION}/opa_linux_amd64"
 chmod +x "/usr/local/bin/opa"
 
-go get github.com/rakyll/statik
 go get github.com/paultyng/changelog-gen
