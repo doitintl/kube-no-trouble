@@ -16,6 +16,8 @@ RUN make all
 
 FROM scratch
 
+USER 1000
+
 COPY --from=builder /src/bin/kubent-linux-amd64 /app/kubent
 
 WORKDIR /app

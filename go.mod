@@ -10,7 +10,6 @@ require (
 	github.com/jmoiron/sqlx v1.2.0 // indirect
 	github.com/lib/pq v1.3.0 // indirect
 	github.com/open-policy-agent/opa v0.26.0
-	github.com/rakyll/statik v0.1.7
 	github.com/rs/zerolog v1.20.0
 	github.com/rubenv/sql-migrate v0.0.0-20200402132117-435005d389bc // indirect
 	github.com/spf13/pflag v1.0.5

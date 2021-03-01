@@ -27,7 +27,6 @@ CGO_ENABLED ?= 0
 GOOS ?= $(shell go env GOOS)
 GOARCH ?= $(shell go env GOARCH)
 
-GENERATE_DIR ?= generated
 BIN_DIR ?= bin
 CMD_DIR ?= cmd
 RELEASE_DIR ?= release-artifacts
@@ -44,7 +43,6 @@ SRC ?= $(shell find . -iname '*.go')
 
 GOCMD ?= go
 GOBUILD ?= $(GOCMD) build
-GOGENERATE ?= $(GOCMD) generate
 UPXCMD ?= upx
 
 REQ_BINS = upx go opa
@@ -66,20 +64,11 @@ help:
 build: $(BINS)
 .PHONY: build
 
-$(BIN_DIR)/%-$(BIN_ARCH): generated/* $(SRC) go.mod go.sum
+$(BIN_DIR)/%-$(BIN_ARCH): $(SRC) go.mod go.sum
 	mkdir -p $(BIN_DIR)
 	$(GOBUILD) -ldflags="-s -w -X main.version=$(GIT_REF) -X main.gitSha=$(GIT_SHA)" \
 	-o "$@" \
 	"./$(CMD_DIR)/$(*)"
-
-## Go generate
-generate: generated/*
-	mkdir -p $(GENERATE_DIR)
-.PHONY: generate
-
-generated/*: rules/*
-	$(GOGENERATE)
-	go fmt "./generated/..."
 
 ## Pack binaries with upx
 pack: $(PACKED_BINS)
@@ -99,12 +88,12 @@ $(RELEASE_DIR)/%-$(RELEASE_SUFFIX): $(PACKED_DIR)/%-$(BIN_ARCH)
 	$(TAR) -cvz --transform 's,$(PACKED_DIR)/$(*)-$(BIN_ARCH),$(*),gi' -f "$@" "$<"
 
 ## Run Go tests
-test: generate test-fmt test-git
+test: test-fmt test-git
 	go test -v -coverprofile fmtcoverage.html ./...
 .PHONY: test
 
 ## Run go and opt fmt checks
-test-fmt: generate
+test-fmt:
 	test -z "$$(opa fmt -l rules/*)"
 	test -z "$$(go fmt ./...)"
 .PHONY: test-fmt
@@ -116,7 +105,6 @@ test-git:
 
 ## Clean build artifacts
 clean:
-	rm -rf $(GENERATE_DIR)
 	rm -rf $(BIN_DIR)
 .PHONY: clean
 
