@@ -15,7 +15,7 @@ require (
 	github.com/spf13/pflag v1.0.5
 	helm.sh/helm v2.17.0+incompatible
 	helm.sh/helm/v3 v3.1.3
-	k8s.io/apimachinery v0.17.13
+	k8s.io/apimachinery v0.20.4
 	k8s.io/client-go v0.17.13
 	k8s.io/helm v2.16.5+incompatible // indirect
 	k8s.io/utils v0.0.0-20200324210504-a9aa75ae1b89 // indirect
