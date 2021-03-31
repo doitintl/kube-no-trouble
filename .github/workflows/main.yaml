@@ -16,7 +16,7 @@ jobs:
   test:
     name: test
     runs-on: ubuntu-latest
-    container: golang:1.16.1-alpine3.12
+    container: golang:1.16.2-alpine3.12
     steps:
     - name: Checkout code
       uses: actions/checkout@v1
@@ -29,7 +29,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    container: golang:1.16.1-alpine3.12
+    container: golang:1.16.2-alpine3.12
     steps:
       - name: Checkout
         uses: actions/checkout@v1
