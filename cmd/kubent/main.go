@@ -89,6 +89,9 @@ func main() {
 	if config.Debug {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	}
+	if config.Quiet {
+		zerolog.SetGlobalLevel(zerolog.ErrorLevel)
+	}
 
 	log.Info().Msg(">>> Kube No Trouble `kubent` <<<")
 	log.Info().Msgf("version %s (git sha %s)", version, gitSha)
@@ -114,8 +117,8 @@ func main() {
 
 	var prnt printer.Printer
 	switch config.Output {
-	case "json":
-		prnt, err = printer.NewJSONPrinter(&printer.JSONOpts{})
+	case "json", "jsonl":
+		prnt, err = printer.NewJSONPrinter(&printer.JSONOpts{OnePerLine: config.Output == "jsonl"})
 	default:
 		prnt, err = printer.NewTextPrinter(&printer.TextOpts{})
 	}

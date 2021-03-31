@@ -1,10 +1,11 @@
 package config
 
 import (
-	"github.com/spf13/pflag"
-	"k8s.io/client-go/util/homedir"
 	"os"
 	"testing"
+
+	"github.com/spf13/pflag"
+	"k8s.io/client-go/util/homedir"
 )
 
 func TestNewFromFlags(t *testing.T) {

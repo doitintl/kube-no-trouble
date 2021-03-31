@@ -1,10 +1,11 @@
 package judge
 
 import (
-	"github.com/doitintl/kube-no-trouble/pkg/rules"
-	"github.com/ghodss/yaml"
 	"io/ioutil"
 	"testing"
+
+	"github.com/doitintl/kube-no-trouble/pkg/rules"
+	"github.com/ghodss/yaml"
 )
 
 func TestNewRegoJudge(t *testing.T) {
@@ -84,7 +85,7 @@ func TestEvalRules(t *testing.T) {
 				t.Errorf("expected %d findings, instead got: %d", len(tc.expected), len(results))
 			}
 
-			for i, _ := range results {
+			for i := range results {
 				if results[i].Kind != tc.expected[i] {
 					t.Errorf("expected to get %s finding, instead got: %s", tc.expected[i], results[i].Kind)
 				}
