@@ -12,3 +12,5 @@ debug.test
 # Editor files
 .vscode
 .swp
+.idea
+.DS_Store
