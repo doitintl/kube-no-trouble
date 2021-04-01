@@ -99,7 +99,7 @@ test: test-fmt test-git
 
 ## Run go and opt fmt checks
 test-fmt:
-	test -z "$$(opa fmt -l rules/*)"
+	test -z "$$(opa fmt -l pkg/rules/rego/*)"
 	test -z "$$(go fmt ./...)"
 .PHONY: test-fmt
 
