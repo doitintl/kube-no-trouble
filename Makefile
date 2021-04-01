@@ -16,6 +16,11 @@ ifneq (3.82,$(firstword $(sort $(MAKE_VERSION) 3.82)))
   $(error This Make does not support .ONESHELL, use GNU Make 3.82 and newer)
 endif
 
+ifeq (windows,$(GOOS))
+  BIN_RELEASE_SUFFIX ?= .exe
+endif
+BIN_RELEASE_SUFFIX ?=
+
 .DEFAULT_GOAL :=help
 
 GITHUB_REF ?= dev
@@ -85,7 +90,7 @@ release-artifacts: $(RELEASE_ARTIFACTS)
 
 $(RELEASE_DIR)/%-$(RELEASE_SUFFIX): $(PACKED_DIR)/%-$(BIN_ARCH)
 	mkdir -p $(RELEASE_DIR)
-	$(TAR) -cvz --transform 's,$(PACKED_DIR)/$(*)-$(BIN_ARCH),$(*),gi' -f "$@" "$<"
+	$(TAR) -cvz --transform 's,$(PACKED_DIR)/$(*)-$(BIN_ARCH),$(*)$(BIN_RELEASE_SUFFIX),gi' -f "$@" "$<"
 
 ## Run Go tests
 test: test-fmt test-git
