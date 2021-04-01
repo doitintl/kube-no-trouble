@@ -1,10 +1,12 @@
 package judge
 
 import (
-	"github.com/doitintl/kube-no-trouble/pkg/rules"
-	"github.com/ghodss/yaml"
 	"io/ioutil"
 	"testing"
+
+	"github.com/doitintl/kube-no-trouble/pkg/rules"
+	"github.com/ghodss/yaml"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
 func TestNewRegoJudge(t *testing.T) {
@@ -65,7 +67,7 @@ func TestEvalRules(t *testing.T) {
 				manifests = append(manifests, manifest)
 			}
 
-			loadedRules, err := rules.FetchRegoRules()
+			loadedRules, err := rules.FetchRegoRules([]schema.GroupVersionKind{})
 			if err != nil {
 				t.Errorf("Failed to load rules")
 			}

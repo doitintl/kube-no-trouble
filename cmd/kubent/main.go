@@ -12,6 +12,7 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 
 	_ "k8s.io/client-go/plugin/pkg/client/auth/azure"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
@@ -97,7 +98,15 @@ func main() {
 	initCollectors := initCollectors(config)
 	collectors := getCollectors(initCollectors)
 
-	loadedRules, err := rules.FetchRegoRules()
+	// this could probably use some error checking in future, but
+	// schema.ParseKindArg does not return any error
+	var additionalKinds []schema.GroupVersionKind
+	for _, ar := range config.AdditionalKinds {
+		gvr, _ := schema.ParseKindArg(ar)
+		additionalKinds = append(additionalKinds, *gvr)
+	}
+
+	loadedRules, err := rules.FetchRegoRules(additionalKinds)
 	if err != nil {
 		log.Fatal().Err(err).Str("name", "Rules").Msg("Failed to load rules")
 	}
