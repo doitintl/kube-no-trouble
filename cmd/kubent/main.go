@@ -80,13 +80,14 @@ func initCollectors(config *config.Config) []collector.Collector {
 func main() {
 	exitCode := EXIT_CODE_FAIL_GENERIC
 
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	zerolog.SetGlobalLevel(zerolog.InfoLevel)
+
 	config, err := config.NewFromFlags()
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to parse config flags")
 	}
 
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	if config.Debug {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	}
