@@ -8,13 +8,14 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer/yaml"
+	discoveryFake "k8s.io/client-go/discovery/fake"
 	"k8s.io/client-go/dynamic/fake"
 	"k8s.io/client-go/kubernetes/scheme"
 )
 
 func TestNewClusterCollectorBadPath(t *testing.T) {
 	testOpts := ClusterOpts{Kubeconfig: "bad path"}
-	result, funcErr := NewClusterCollector(&testOpts)
+	result, funcErr := NewClusterCollector(&testOpts, []string{})
 
 	if funcErr.Error() != "stat bad path: no such file or directory" {
 		out, err := json.Marshal(result)
@@ -28,7 +29,7 @@ func TestNewClusterCollectorBadPath(t *testing.T) {
 
 func TestNewClusterCollectorValidEmptyCollector(t *testing.T) {
 	testOpts := ClusterOpts{Kubeconfig: "../../fixtures/kube.config"}
-	collector, err := NewClusterCollector(&testOpts)
+	collector, err := NewClusterCollector(&testOpts, []string{})
 
 	if err != nil {
 		t.Errorf("Should have parsed config instead got: %s", err)
@@ -44,10 +45,10 @@ func TestNewClusterCollectorValidEmptyCollector(t *testing.T) {
 func TestNewClusterCollectorFakeClient(t *testing.T) {
 	scheme := runtime.NewScheme()
 	clientset := fake.NewSimpleDynamicClient(scheme)
-	testOpts := ClusterOpts{ClientSet: clientset}
+	discoveryClient := discoveryFake.FakeDiscovery{}
+	testOpts := ClusterOpts{ClientSet: clientset, DiscoveryClient: &discoveryClient}
 
-	collector, err := NewClusterCollector(&testOpts)
-
+	collector, err := NewClusterCollector(&testOpts, []string{})
 	if err != nil {
 		t.Errorf("failed to create cluster collector from fake client: %s", err)
 	}
@@ -93,9 +94,10 @@ func TestClusterCollectorGetFake(t *testing.T) {
 			_ = scheme.AddToScheme(rscheme)
 
 			clientset := fake.NewSimpleDynamicClient(rscheme, objs...)
-			testOpts := ClusterOpts{ClientSet: clientset}
+			discoveryClient := discoveryFake.FakeDiscovery{}
+			testOpts := ClusterOpts{ClientSet: clientset, DiscoveryClient: &discoveryClient}
 
-			collector, err := NewClusterCollector(&testOpts)
+			collector, err := NewClusterCollector(&testOpts, []string{})
 
 			if err != nil {
 				t.Errorf("failed to create collector from fake client: %s", err)
