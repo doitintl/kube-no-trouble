@@ -1,10 +1,11 @@
 package config
 
 import (
-	"github.com/spf13/pflag"
-	"k8s.io/client-go/util/homedir"
 	"os"
 	"testing"
+
+	"github.com/spf13/pflag"
+	"k8s.io/client-go/util/homedir"
 )
 
 func TestNewFromFlags(t *testing.T) {
@@ -87,5 +88,35 @@ func TestEnvOrStringDefault(t *testing.T) {
 	i := envOrString("FOO", "default")
 	if i != "default" {
 		t.Errorf("Expected to get default string, got %s instead", i)
+	}
+}
+
+func TestValidateAdditionalResources(t *testing.T) {
+	resources := []string{
+		"Test.v1.example.com",
+		"ManagedCertificates.v1.networking.gke.io",
+		"ManagedCertificates.networking.gke.io",
+	}
+
+	err := validateAdditionalResources(resources)
+
+	if err != nil {
+		t.Errorf("expected resources %s to pass validation: %s", resources, err)
+	}
+}
+
+func TestValidateAdditionalResourcesFail(t *testing.T) {
+	testCases := [][]string{
+		[]string{"abcdef"},
+		[]string{""},
+		[]string{"test.v1.com"},
+	}
+
+	for _, tc := range testCases {
+		err := validateAdditionalResources(tc)
+
+		if err == nil {
+			t.Errorf("expected resources %s to fail validation: %s", tc, err)
+		}
 	}
 }
