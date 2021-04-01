@@ -1,0 +1,42 @@
+{{/* this template will be rendered with []schema.GroupVersionKind data */}}
+package custom
+
+main[return] {
+	resource := input[_]
+	api := deprecated_resource(resource)
+	return := {
+		"Name": resource.metadata.name,
+		# Namespace does not have to be defined in case of local manifests
+		"Namespace": get_default(resource.metadata, "namespace", "<undefined>"),
+		"Kind": resource.kind,
+		"ApiVersion": api.old,
+		"ReplaceWith": "<na>",
+		"RuleSet": "Additional resources (custom)",
+		"Since": "<na>",
+	}
+}
+
+deprecated_resource(r) = api {
+	api := deprecated_api(r.kind, r.apiVersion)
+}
+
+deprecated_api(kind, api_version) = api {
+	deprecated_apis = {
+{{- range . }}
+		"{{ .Kind }}": {
+			"old": ["{{ .Group }}/{{ .Version }}"],
+		},
+{{- end }}
+	}
+
+	deprecated_apis[kind].old[_] == api_version
+	api := {
+		"old": api_version,
+	}
+}
+
+get_default(val, key, _) = val[key]
+
+get_default(val, key, fallback) = fallback {
+	not val[key]
+}
