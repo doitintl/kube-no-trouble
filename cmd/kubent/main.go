@@ -12,6 +12,7 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 
 	_ "k8s.io/client-go/plugin/pkg/client/auth/azure"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
@@ -55,7 +56,7 @@ func storeCollector(collector collector.Collector, err error, collectors []colle
 func initCollectors(config *config.Config) []collector.Collector {
 	collectors := []collector.Collector{}
 	if config.Cluster {
-		collector, err := collector.NewClusterCollector(&collector.ClusterOpts{Kubeconfig: config.Kubeconfig})
+		collector, err := collector.NewClusterCollector(&collector.ClusterOpts{Kubeconfig: config.Kubeconfig}, config.AdditionalKinds)
 		collectors = storeCollector(collector, err, collectors)
 	}
 
@@ -79,13 +80,14 @@ func initCollectors(config *config.Config) []collector.Collector {
 func main() {
 	exitCode := EXIT_CODE_FAIL_GENERIC
 
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	zerolog.SetGlobalLevel(zerolog.InfoLevel)
+
 	config, err := config.NewFromFlags()
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to parse config flags")
 	}
 
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	if config.Debug {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	}
@@ -97,7 +99,15 @@ func main() {
 	initCollectors := initCollectors(config)
 	collectors := getCollectors(initCollectors)
 
-	loadedRules, err := rules.FetchRegoRules()
+	// this could probably use some error checking in future, but
+	// schema.ParseKindArg does not return any error
+	var additionalKinds []schema.GroupVersionKind
+	for _, ar := range config.AdditionalKinds {
+		gvr, _ := schema.ParseKindArg(ar)
+		additionalKinds = append(additionalKinds, *gvr)
+	}
+
+	loadedRules, err := rules.FetchRegoRules(additionalKinds)
 	if err != nil {
 		log.Fatal().Err(err).Str("name", "Rules").Msg("Failed to load rules")
 	}
