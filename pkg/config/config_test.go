@@ -8,6 +8,39 @@ import (
 	"k8s.io/client-go/util/homedir"
 )
 
+func TestValidLogLevelFromFlags(t *testing.T) {
+	oldArgs := os.Args[1]
+	defer func() { os.Args[1] = oldArgs }()
+
+	var validLevels = []string{"trace", "debug", "info", "warn", "error", "fatal", "panic", "", "disabled"}
+	for i, level := range validLevels {
+		// reset for testing
+		pflag.CommandLine = pflag.NewFlagSet(os.Args[0], pflag.ExitOnError)
+
+		os.Args[1] = "--log-level=" + level
+		config, err := NewFromFlags()
+
+		if err != nil {
+			t.Errorf("Flags parsing failed %s", err)
+		}
+
+		expected := ZeroLogLevel(i - 1)
+		actual := config.LogLevel
+
+		if actual != expected {
+			t.Errorf("Config not parsed correctly: %s \nactual %d, expected %d", level, actual, expected)
+		}
+	}
+}
+
+func TestInvalidLogLevelFromFlags(t *testing.T) {
+	var testLevel ZeroLogLevel
+
+	if err := testLevel.Set("bad"); err == nil {
+		t.Errorf("Should not parse invalid flag")
+	}
+}
+
 func TestNewFromFlags(t *testing.T) {
 	// reset for testing
 	pflag.CommandLine = pflag.NewFlagSet(os.Args[0], pflag.ExitOnError)
@@ -50,7 +83,6 @@ func TestNewFromFlagsKubeconfigHome(t *testing.T) {
 	pflag.CommandLine = pflag.NewFlagSet(os.Args[0], pflag.ExitOnError)
 
 	expected := homedir.HomeDir() + "/.kube/config"
-
 	err := os.Unsetenv("KUBECONFIG")
 	if err != nil {
 		t.Errorf("failed to unset KUBECONFIG env variable: %s", err)
@@ -75,7 +107,7 @@ func TestEnvOrStringVariable(t *testing.T) {
 
 	i := envOrString("FOO", "default")
 	if i != "1" {
-		t.Errorf("Expected to get env variable, got %s insteadt", i)
+		t.Errorf("Expected to get env variable, got %s instead", i)
 	}
 }
 

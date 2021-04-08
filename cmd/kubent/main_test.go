@@ -9,16 +9,17 @@ import (
 
 	"github.com/doitintl/kube-no-trouble/pkg/collector"
 	"github.com/doitintl/kube-no-trouble/pkg/config"
+	"github.com/rs/zerolog"
 )
 
 func TestInitCollectors(t *testing.T) {
 	testConfig := config.Config{
 		Filenames:  []string{"../../fixtures/deployment-v1beta1.yaml"},
 		Cluster:    false,
-		Debug:      false,
 		Helm2:      false,
 		Helm3:      false,
 		Kubeconfig: "test",
+		LogLevel:   config.ZeroLogLevel(zerolog.ErrorLevel),
 		Output:     "test",
 	}
 

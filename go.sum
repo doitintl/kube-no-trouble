@@ -532,6 +532,8 @@ github.com/rogpeppe/go-internal v1.4.0/go.mod h1:xXDCJY+GAPziupqXw64V24skbSoqbTE
 github.com/rs/xid v1.2.1/go.mod h1:+uKXf+4Djp6Md1KODXJxgGQPKngRmWyn10oCKFzNHOQ=
 github.com/rs/zerolog v1.21.0 h1:Q3vdXlfLNT+OftyBHsU0Y445MD+8m8axjKgf2si0QcM=
 github.com/rs/zerolog v1.21.0/go.mod h1:ZPhntP/xmq1nnND05hhpAh2QMhSsA4UN3MGZ6O2J3hM=
+github.com/rs/zerolog v1.21.1-0.20210413053206-582f0cf0e39b h1:lZjlZ6/ExLhIqPOmlh0dVJnBbiKokcjffr022PlkSSo=
+github.com/rs/zerolog v1.21.1-0.20210413053206-582f0cf0e39b/go.mod h1:ZPhntP/xmq1nnND05hhpAh2QMhSsA4UN3MGZ6O2J3hM=
 github.com/rubenv/sql-migrate v0.0.0-20200402132117-435005d389bc h1:+2DdDcxVYlarHjYcZTt8dZ4Ec8cXZirzL5ko0mkKPjU=
 github.com/rubenv/sql-migrate v0.0.0-20200402132117-435005d389bc/go.mod h1:DCgfY80j8GYL7MLEfvcpSFvjD0L5yZq/aZUJmhZklyg=
 github.com/russross/blackfriday v1.5.2/go.mod h1:JO/DiYxRf+HjHt06OyowR9PTA263kcR/rfWxYHBV53g=

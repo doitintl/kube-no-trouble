@@ -78,12 +78,12 @@ $./kubent -h
 Usage of ./kubent:
   -a, --additional-kind strings   additional kinds of resources to report in Kind.version.group.com format
   -c, --cluster                   enable Cluster collector (default true)
-  -d, --debug                     enable debug logging
   -e, --exit-error                exit with non-zero code when issues are found
   -f, --filename strings          manifests to check, use - for stdin
       --helm2                     enable Helm v2 collector (default true)
       --helm3                     enable Helm v3 collector (default true)
   -k, --kubeconfig string         path to the kubeconfig file (default "/Users/stepan/.kube/config")
+  -l, --loglevel string           set log level (trace, debug, info, warn, error, fatal, panic, disabled)
   -o, --output string             output format - [text|json] (default "text")
 ```
 
