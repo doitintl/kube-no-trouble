@@ -7,36 +7,55 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/rs/zerolog/log"
+	"github.com/rs/zerolog"
 	flag "github.com/spf13/pflag"
 	"k8s.io/client-go/util/homedir"
 )
 
+type ZeroLogLevel int8
+
+func (l ZeroLogLevel) String() string {
+	return zerolog.Level(l).String()
+}
+
+func (l *ZeroLogLevel) Set(s string) error {
+	level, err := zerolog.ParseLevel(s)
+	if err != nil {
+		return err
+	}
+	*l = ZeroLogLevel(level)
+	return nil
+}
+
+func (l ZeroLogLevel) Type() string {
+	return "string"
+}
+
 type Config struct {
 	AdditionalKinds []string
 	Cluster         bool
-	Debug           bool
 	ExitError       bool
 	Filenames       []string
 	Helm2           bool
 	Helm3           bool
 	Kubeconfig      string
+	LogLevel        ZeroLogLevel
 	Output          string
 }
 
 func NewFromFlags() (*Config, error) {
-	config := Config{}
+	config := Config{LogLevel: ZeroLogLevel(zerolog.InfoLevel)}
 
 	home := homedir.HomeDir()
 	flag.StringSliceVarP(&config.AdditionalKinds, "additional-kind", "a", []string{}, "additional kinds of resources to report in Kind.version.group.com format")
 	flag.BoolVarP(&config.Cluster, "cluster", "c", true, "enable Cluster collector")
-	flag.BoolVarP(&config.Debug, "debug", "d", false, "enable debug logging")
 	flag.BoolVarP(&config.ExitError, "exit-error", "e", false, "exit with non-zero code when issues are found")
 	flag.BoolVar(&config.Helm2, "helm2", true, "enable Helm v2 collector")
 	flag.BoolVar(&config.Helm3, "helm3", true, "enable Helm v3 collector")
 	flag.StringSliceVarP(&config.Filenames, "filename", "f", []string{}, "manifests to check, use - for stdin")
 	flag.StringVarP(&config.Kubeconfig, "kubeconfig", "k", envOrString("KUBECONFIG", filepath.Join(home, ".kube", "config")), "path to the kubeconfig file")
 	flag.StringVarP(&config.Output, "output", "o", "text", "output format - [text|json]")
+	flag.VarP(&config.LogLevel, "log-level", "l", "set log level (trace, debug, info, warn, error, fatal, panic, disabled)")
 
 	flag.Parse()
 
@@ -60,7 +79,6 @@ func envOrString(env string, def string) string {
 func validateAdditionalResources(resources []string) error {
 	for _, r := range resources {
 		parts := strings.Split(r, ".")
-		log.Debug().Msgf("parts: %+v", parts)
 		if len(parts) < 4 {
 			return fmt.Errorf("failed to parse additional Kind, full form Kind.version.group.com is expected, instead got: %s", r)
 		}

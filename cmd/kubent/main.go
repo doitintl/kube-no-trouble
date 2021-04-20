@@ -81,16 +81,13 @@ func main() {
 	exitCode := EXIT_CODE_FAIL_GENERIC
 
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 
 	config, err := config.NewFromFlags()
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to parse config flags")
 	}
 
-	if config.Debug {
-		zerolog.SetGlobalLevel(zerolog.DebugLevel)
-	}
+	zerolog.SetGlobalLevel(zerolog.Level(config.LogLevel))
 
 	log.Info().Msg(">>> Kube No Trouble `kubent` <<<")
 	log.Info().Msgf("version %s (git sha %s)", version, gitSha)
