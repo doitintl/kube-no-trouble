@@ -20,7 +20,7 @@ func TestInitCollectors(t *testing.T) {
 		Helm3:      false,
 		Kubeconfig: "test",
 		LogLevel:   config.ZeroLogLevel(zerolog.ErrorLevel),
-		Output:     "test",
+		Output:     "text",
 	}
 
 	collectors := initCollectors(&testConfig)

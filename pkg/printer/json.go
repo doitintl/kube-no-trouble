@@ -8,29 +8,31 @@ import (
 	"github.com/doitintl/kube-no-trouble/pkg/judge"
 )
 
-type JSONPrinter struct {
+type jsonPrinter struct {
 }
 
-type JSONOpts struct {
+func newJSONPrinter() Printer {
+	return &jsonPrinter{}
 }
 
-func NewJSONPrinter(opts *JSONOpts) (*JSONPrinter, error) {
-	printer := &JSONPrinter{}
-
-	return printer, nil
-}
-
-func (c *JSONPrinter) Print(results []judge.Result) error {
-
+func (c *jsonPrinter) populateOutput(results []judge.Result) (string, error) {
 	buffer := new(bytes.Buffer)
 	encoder := json.NewEncoder(buffer)
 	encoder.SetIndent("", "\t")
 
 	err := encoder.Encode(results)
 	if err != nil {
+		return "", err
+	}
+	return buffer.String(), nil
+}
+
+func (c *jsonPrinter) Print(results []judge.Result) error {
+	output, err := c.populateOutput(results)
+	if err != nil {
 		return err
 	}
-	fmt.Printf("%s", buffer.String())
+	fmt.Printf("%s", output)
 
 	return nil
 }
