@@ -119,18 +119,12 @@ func main() {
 		log.Fatal().Err(err).Str("name", "Rego").Msg("Failed to evaluate input")
 	}
 
-	var prnt printer.Printer
-	switch config.Output {
-	case "json":
-		prnt, err = printer.NewJSONPrinter(&printer.JSONOpts{})
-	default:
-		prnt, err = printer.NewTextPrinter(&printer.TextOpts{})
-	}
+	printer, err := printer.NewPrinter(config.Output)
 	if err != nil {
-		log.Fatal().Err(err).Str("name", config.Output).Msg("Failed to initialize output printer")
+		log.Fatal().Err(err).Msg("Failed to create printer")
 	}
 
-	err = prnt.Print(results)
+	err = printer.Print(results)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to print results")
 	}

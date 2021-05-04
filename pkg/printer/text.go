@@ -10,19 +10,14 @@ import (
 	"github.com/doitintl/kube-no-trouble/pkg/judge"
 )
 
-type TextPrinter struct {
+type textPrinter struct {
 }
 
-type TextOpts struct {
+func newTextPrinter() Printer {
+	return &textPrinter{}
 }
 
-func NewTextPrinter(opts *TextOpts) (*TextPrinter, error) {
-	printer := &TextPrinter{}
-
-	return printer, nil
-}
-
-func (c *TextPrinter) Print(results []judge.Result) error {
+func (c *textPrinter) Print(results []judge.Result) error {
 
 	sort.Slice(results, func(i, j int) bool {
 		return results[i].Name < results[j].Name

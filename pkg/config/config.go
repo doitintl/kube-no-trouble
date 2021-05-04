@@ -7,29 +7,11 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/doitintl/kube-no-trouble/pkg/printer"
 	"github.com/rs/zerolog"
 	flag "github.com/spf13/pflag"
 	"k8s.io/client-go/util/homedir"
 )
-
-type ZeroLogLevel int8
-
-func (l ZeroLogLevel) String() string {
-	return zerolog.Level(l).String()
-}
-
-func (l *ZeroLogLevel) Set(s string) error {
-	level, err := zerolog.ParseLevel(s)
-	if err != nil {
-		return err
-	}
-	*l = ZeroLogLevel(level)
-	return nil
-}
-
-func (l ZeroLogLevel) Type() string {
-	return "string"
-}
 
 type Config struct {
 	AdditionalKinds []string
@@ -44,7 +26,9 @@ type Config struct {
 }
 
 func NewFromFlags() (*Config, error) {
-	config := Config{LogLevel: ZeroLogLevel(zerolog.InfoLevel)}
+	config := Config{
+		LogLevel: ZeroLogLevel(zerolog.InfoLevel),
+	}
 
 	home := homedir.HomeDir()
 	flag.StringSliceVarP(&config.AdditionalKinds, "additional-kind", "a", []string{}, "additional kinds of resources to report in Kind.version.group.com format")
@@ -58,6 +42,10 @@ func NewFromFlags() (*Config, error) {
 	flag.VarP(&config.LogLevel, "log-level", "l", "set log level (trace, debug, info, warn, error, fatal, panic, disabled)")
 
 	flag.Parse()
+
+	if _, err := printer.ParsePrinter(config.Output); err != nil {
+		return nil, fmt.Errorf("failed to validate argument output: %w", err)
+	}
 
 	if err := validateAdditionalResources(config.AdditionalKinds); err != nil {
 		return nil, fmt.Errorf("failed to validate arguments: %w", err)
