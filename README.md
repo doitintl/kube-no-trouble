@@ -83,13 +83,20 @@ Usage of ./kubent:
       --helm2                     enable Helm v2 collector (default true)
       --helm3                     enable Helm v3 collector (default true)
   -k, --kubeconfig string         path to the kubeconfig file (default "/Users/stepan/.kube/config")
-  -l, --loglevel string           set log level (trace, debug, info, warn, error, fatal, panic, disabled)
+  -l, --log-level string          set log level (trace, debug, info, warn, error, fatal, panic, disabled) (default "info")
   -o, --output string             output format - [text|json] (default "text")
+  -t, --target-version string     target K8s version in major.minor format (autodetected by default)
 ```
 
 - *`-a, --additional-kind`*
   Tells `kubent` to flag additional custom resources when found in the specified version. The flag can be used multiple
   times. The expected format is full *Kind.version.group.com* form - e.g. `-a ManagedCertificate.v1.networking.gke.io`.
+
+- *`-t, --target-version`*
+  `Kubent` will try to detect K8S cluster version and display only relevant findings. This flag allows to override this
+  version for scenarios like use in CI with the file collector only, when detection from an actual cluster is not possible.
+  Expected format is `major.minor[.patch]`, e.g. `1.16` or `1.16.3`.
+
 
 ### Use in CI
 
