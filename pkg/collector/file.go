@@ -4,11 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/ghodss/yaml"
-	"helm.sh/helm/v3/pkg/releaseutil"
 	"io/ioutil"
 	"os"
 	"sort"
+
+	"github.com/ghodss/yaml"
+	"helm.sh/helm/v3/pkg/releaseutil"
 )
 
 type FileCollector struct {
@@ -27,7 +28,7 @@ func NewFileCollector(opts *FileOpts) (*FileCollector, error) {
 	}
 
 	collector := &FileCollector{
-		commonCollector: &commonCollector{name: "File"},
+		commonCollector: newCommonCollector("File"),
 		filenames:       opts.Filenames,
 	}
 

@@ -5,8 +5,18 @@ type Collector interface {
 	Name() string
 }
 
+type VersionCollector interface {
+	GetServerVersion() (string, error)
+}
+
 type commonCollector struct {
 	name string
+}
+
+func newCommonCollector(name string) *commonCollector {
+	return &commonCollector{
+		name: name,
+	}
 }
 
 func (c *commonCollector) Name() string {

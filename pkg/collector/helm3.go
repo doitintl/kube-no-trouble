@@ -2,30 +2,39 @@ package collector
 
 import (
 	"fmt"
-
-	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/tools/clientcmd"
 
+	"github.com/ghodss/yaml"
 	"helm.sh/helm/v3/pkg/releaseutil"
 	"helm.sh/helm/v3/pkg/storage"
 	"helm.sh/helm/v3/pkg/storage/driver"
-
-	"github.com/ghodss/yaml"
+	"k8s.io/client-go/discovery"
+	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 )
 
 type HelmV3Collector struct {
 	*commonCollector
+	*kubeCollector
 	client       *corev1.CoreV1Client
 	secretsStore *storage.Storage
 	configStore  *storage.Storage
 }
 
 type HelmV3Opts struct {
-	Kubeconfig string
+	Kubeconfig      string
+	DiscoveryClient discovery.DiscoveryInterface
 }
 
 func NewHelmV3Collector(opts *HelmV3Opts) (*HelmV3Collector, error) {
-	collector := &HelmV3Collector{commonCollector: &commonCollector{name: "Helm v3"}}
+	kubeCollector, err := newKubeCollector(opts.Kubeconfig, opts.DiscoveryClient)
+	if err != nil {
+		return nil, err
+	}
+
+	collector := &HelmV3Collector{
+		commonCollector: newCommonCollector("Helm v2"),
+		kubeCollector:   kubeCollector,
+	}
 
 	config, err := clientcmd.BuildConfigFromFlags("", opts.Kubeconfig)
 	if err != nil {
@@ -47,7 +56,6 @@ func NewHelmV3Collector(opts *HelmV3Opts) (*HelmV3Collector, error) {
 }
 
 func (c *HelmV3Collector) Get() ([]map[string]interface{}, error) {
-
 	releases, err := c.secretsStore.ListDeployed()
 	if err != nil {
 		return nil, err
