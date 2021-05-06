@@ -13,7 +13,6 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-
 	_ "k8s.io/client-go/plugin/pkg/client/auth/azure"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/oidc"
@@ -77,6 +76,16 @@ func initCollectors(config *config.Config) []collector.Collector {
 	return collectors
 }
 
+func getServerVersion(collectors []collector.Collector) (string, error) {
+	for _, c := range collectors {
+		versionCol, ok := c.(collector.VersionCollector)
+		if ok {
+			return versionCol.GetServerVersion()
+		}
+	}
+	return "", nil
+}
+
 func main() {
 	exitCode := EXIT_CODE_FAIL_GENERIC
 
@@ -91,9 +100,18 @@ func main() {
 
 	log.Info().Msg(">>> Kube No Trouble `kubent` <<<")
 	log.Info().Msgf("version %s (git sha %s)", version, gitSha)
-	log.Info().Msg("Initializing collectors and retrieving data")
 
+	log.Info().Msg("Initializing collectors and retrieving data")
 	initCollectors := initCollectors(config)
+
+	if config.TargetVersion == "" {
+		config.TargetVersion, err = getServerVersion(initCollectors)
+		if err != nil {
+			log.Fatal().Err(err).Msg("Failed to detect K8s version")
+		}
+	}
+	log.Info().Msgf("Target K8s version is %s", config.TargetVersion)
+
 	collectors := getCollectors(initCollectors)
 
 	// this could probably use some error checking in future, but

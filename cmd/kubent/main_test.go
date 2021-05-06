@@ -9,6 +9,7 @@ import (
 
 	"github.com/doitintl/kube-no-trouble/pkg/collector"
 	"github.com/doitintl/kube-no-trouble/pkg/config"
+
 	"github.com/rs/zerolog"
 )
 
@@ -139,5 +140,54 @@ func TestMainExitCodes(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestGetServerVersionNone(t *testing.T) {
+	collectors := []collector.Collector{}
+
+	version, err := getServerVersion(collectors)
+	if err != nil {
+		t.Errorf("Failed to get version with error: %s", err)
+	}
+
+	if version != "" {
+		t.Errorf("Expected no version to be detected, instead got: %s", version)
+	}
+}
+
+func TestGetServerVersionNotSupported(t *testing.T) {
+	collectors := []collector.Collector{}
+
+	fileCollector, err := collector.NewFileCollector(&collector.FileOpts{Filenames: []string{"../../fixtures/deployment-v1beta1.yaml"}})
+	if err != nil {
+		t.Errorf("Failed to create File collector with error: %s", err)
+	}
+
+	collectors = storeCollector(fileCollector, err, collectors)
+
+	version, err := getServerVersion(collectors)
+	if err != nil {
+		t.Errorf("Failed to get version with error: %s", err)
+	}
+
+	if version != "" {
+		t.Errorf("Expected no version to be detected, instead got: %s", version)
+	}
+}
+
+func TestGetServerVersion(t *testing.T) {
+	collectors := []collector.Collector{}
+
+	fc := collector.NewFakeCollector()
+	collectors = storeCollector(fc, nil, collectors)
+
+	version, err := getServerVersion(collectors)
+	if err != nil {
+		t.Errorf("Failed to get version with error: %s", err)
+	}
+
+	if version != collector.FAKE_VERSION {
+		t.Errorf("Expected no version to be detected, instead got: %s", version)
 	}
 }
