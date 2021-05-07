@@ -81,7 +81,7 @@ pack: $(PACKED_BINS)
 
 $(PACKED_DIR)/%-$(BIN_ARCH): $(BIN_DIR)/%-$(BIN_ARCH)
 	mkdir -p $(PACKED_DIR)
-	$(UPXCMD) --brute -f -o "$@" "$<" \
+	$(UPXCMD) --lzma --best -f -o "$@" "$<" \
 	&& touch "$@"
 
 ## Create release artifacts
