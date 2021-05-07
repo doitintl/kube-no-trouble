@@ -50,7 +50,7 @@ func TestNewClusterCollectorFakeClient(t *testing.T) {
 
 	collector, err := NewClusterCollector(&testOpts, []string{})
 	if err != nil {
-		t.Errorf("failed to create cluster collector from fake client: %s", err)
+		t.Fatalf("failed to create cluster collector from fake client: %s", err)
 	}
 
 	result, err := collector.Get()

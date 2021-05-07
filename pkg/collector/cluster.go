@@ -3,6 +3,7 @@ package collector
 import (
 	"encoding/json"
 	"fmt"
+	"k8s.io/client-go/tools/clientcmd"
 
 	"github.com/rs/zerolog/log"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -11,13 +12,12 @@ import (
 	"k8s.io/client-go/discovery/cached/memory"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/restmapper"
-	"k8s.io/client-go/tools/clientcmd"
 )
 
 type ClusterCollector struct {
 	*commonCollector
+	*kubeCollector
 	clientSet           dynamic.Interface
-	discoveryClient     discovery.DiscoveryInterface
 	additionalResources []schema.GroupVersionResource
 }
 
@@ -28,7 +28,15 @@ type ClusterOpts struct {
 }
 
 func NewClusterCollector(opts *ClusterOpts, additionalKinds []string) (*ClusterCollector, error) {
-	collector := &ClusterCollector{commonCollector: &commonCollector{name: "Cluster"}}
+	kubeCollector, err := newKubeCollector(opts.Kubeconfig, opts.DiscoveryClient)
+	if err != nil {
+		return nil, err
+	}
+
+	collector := &ClusterCollector{
+		kubeCollector:   kubeCollector,
+		commonCollector: newCommonCollector("Cluster"),
+	}
 
 	if opts.ClientSet == nil {
 		config, err := clientcmd.BuildConfigFromFlags("", opts.Kubeconfig)
@@ -43,20 +51,6 @@ func NewClusterCollector(opts *ClusterOpts, additionalKinds []string) (*ClusterC
 
 	} else {
 		collector.clientSet = opts.ClientSet
-	}
-
-	if opts.DiscoveryClient == nil {
-		config, err := clientcmd.BuildConfigFromFlags("", opts.Kubeconfig)
-		if err != nil {
-			return nil, err
-		}
-
-		collector.discoveryClient, err = discovery.NewDiscoveryClientForConfig(config)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		collector.discoveryClient = opts.DiscoveryClient
 	}
 
 	mapper := restmapper.NewDeferredDiscoveryRESTMapper(memory.NewMemCacheClient(collector.discoveryClient))

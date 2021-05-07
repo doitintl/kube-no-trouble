@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"unicode"
 
@@ -23,6 +24,7 @@ type Config struct {
 	Kubeconfig      string
 	LogLevel        ZeroLogLevel
 	Output          string
+	TargetVersion   string
 }
 
 func NewFromFlags() (*Config, error) {
@@ -40,6 +42,7 @@ func NewFromFlags() (*Config, error) {
 	flag.StringVarP(&config.Kubeconfig, "kubeconfig", "k", envOrString("KUBECONFIG", filepath.Join(home, ".kube", "config")), "path to the kubeconfig file")
 	flag.StringVarP(&config.Output, "output", "o", "text", "output format - [text|json]")
 	flag.VarP(&config.LogLevel, "log-level", "l", "set log level (trace, debug, info, warn, error, fatal, panic, disabled)")
+	flag.StringVarP(&config.TargetVersion, "target-version", "t", "", "target K8s version in major.minor format (autodetected by default)")
 
 	flag.Parse()
 
@@ -48,6 +51,10 @@ func NewFromFlags() (*Config, error) {
 	}
 
 	if err := validateAdditionalResources(config.AdditionalKinds); err != nil {
+		return nil, fmt.Errorf("failed to validate arguments: %w", err)
+	}
+
+	if err := validateTargetVersion(config.TargetVersion); err != nil {
 		return nil, fmt.Errorf("failed to validate arguments: %w", err)
 	}
 
@@ -73,6 +80,22 @@ func validateAdditionalResources(resources []string) error {
 
 		if !unicode.IsUpper(rune(parts[0][0])) {
 			return fmt.Errorf("failed to parse additional Kind, Kind is expected to be capitalized by convention, instead got: %s", parts[0])
+		}
+	}
+	return nil
+}
+
+func validateTargetVersion(version string) error {
+	if version != "" {
+		parts := strings.Split(version, ".")
+		if len(parts) < 2 || len(parts) > 3 {
+			return fmt.Errorf("failed to parse target version, expected format is major.minor, got: %s", version)
+		}
+
+		for _, p := range parts {
+			if _, err := strconv.ParseUint(p, 10, 8); err != nil {
+				return fmt.Errorf("failed to parse target version, all parts are expected to be a number, got: %s", p)
+			}
 		}
 	}
 	return nil

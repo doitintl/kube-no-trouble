@@ -152,3 +152,28 @@ func TestValidateAdditionalResourcesFail(t *testing.T) {
 		}
 	}
 }
+
+func TestValidateTargetVersion(t *testing.T) {
+	validVersions := []string{
+		"", "1.16", "1.16.3", "1.2.3",
+	}
+	invalidVersions := []string{
+		"1", "v12.3.4", "v1.2", "1.blah", "nope",
+	}
+
+	for _, v := range validVersions {
+		err := validateTargetVersion(v)
+
+		if err != nil {
+			t.Errorf("Expected %s to fail validation, it failed instead with: %s", v, err)
+		}
+	}
+
+	for _, v := range invalidVersions {
+		err := validateTargetVersion(v)
+
+		if err == nil {
+			t.Errorf("Expected %s to fail validation, it succeeded instead", v)
+		}
+	}
+}
