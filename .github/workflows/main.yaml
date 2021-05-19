@@ -33,6 +33,10 @@ jobs:
     strategy:
       matrix:
         os: [linux, darwin, windows]
+        arch: [arm64, amd64]
+        exclude:
+          - os: windows
+            arch: arm64
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -41,7 +45,7 @@ jobs:
       - name: Build
         run: |
           scripts/alpine-setup.sh
-          GOOS=${{ matrix.os }} GOARCH=amd64 make all
+          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} make all
           make changelog
         shell: sh
         env:
@@ -49,7 +53,7 @@ jobs:
       - name: Archive release artifacts
         uses: actions/upload-artifact@v1
         with:
-          name: release-artifacts-${{ matrix.os }}
+          name: release-artifacts-${{ matrix.os }}-${{ matrix.arch }}
           path: release-artifacts
   create-release:
     name: Create Release
@@ -87,18 +91,22 @@ jobs:
     strategy:
       matrix:
         os: [linux, darwin, windows]
+        arch: [arm64, amd64]
+        exclude:
+          - os: windows
+            arch: arm64
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
     steps:
       - uses: actions/download-artifact@v1
         with:
-          name: release-artifacts-${{ matrix.os }}
+          name: release-artifacts-${{ matrix.os }}-${{ matrix.arch }}
           path: release-artifacts
-      - name: Upload Release Asset - ${{ matrix.os }}
+      - name: Upload Release Asset - ${{ matrix.os }}-${{ matrix.arch }}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./release-artifacts/kubent-${{ needs.create-release.outputs.tag_name }}-${{ matrix.os }}-amd64.tar.gz
-          asset_name: kubent-${{ needs.create-release.outputs.tag_name }}-${{ matrix.os }}-amd64.tar.gz
+          asset_path: ./release-artifacts/kubent-${{ needs.create-release.outputs.tag_name }}-${{ matrix.os }}-${{ matrix.arch }}.tar.gz
+          asset_name: kubent-${{ needs.create-release.outputs.tag_name }}-${{ matrix.os }}-${{ matrix.arch }}.tar.gz
           asset_content_type: application/tar+gzip
