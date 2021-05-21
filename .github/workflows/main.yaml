@@ -67,7 +67,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v1
         with:
-          name: release-artifacts-linux
+          name: release-artifacts-linux-amd64
           path: release-artifacts
       - name: Get the tag
         id: get_tag
