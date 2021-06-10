@@ -6,7 +6,7 @@ import (
 	"github.com/doitintl/kube-no-trouble/pkg/collector"
 )
 
-func TestRego116(t *testing.T) {
+func TestRego122(t *testing.T) {
 	testCases := []struct {
 		name          string
 		manifests     []string
@@ -16,8 +16,8 @@ func TestRego116(t *testing.T) {
 		{"ClusterRoleBinding", []string{"../fixtures/clusterrolebinding-v1beta1.yaml"}, []string{"ClusterRoleBinding"}},
 		{"CSIDriver", []string{"../fixtures/csidriver-v1beta1.yaml"}, []string{"CSIDriver"}},
 		{"CSINode", []string{"../fixtures/csinode-v1beta1.yaml"}, []string{"CSINode"}},
-		{"Role", []string{"../fixtures/role-v1beta1.yaml"}, []string{"ClusterRole"}},
-		{"RoleBinding", []string{"../fixtures/rolebinding-v1beta1.yaml"}, []string{"ClusterRoleBinding"}},
+		{"Role", []string{"../fixtures/role-v1beta1.yaml"}, []string{"Role"}},
+		{"RoleBinding", []string{"../fixtures/rolebinding-v1beta1.yaml"}, []string{"RoleBinding"}},
 		{"StorageClass", []string{"../fixtures/storageclass-v1beta1.yaml"}, []string{"StorageClass"}},
 		{"VolumeAttachment", []string{"../fixtures/volumeattachment-v1beta1.yaml"}, []string{"VolumeAttachment"}},
 		{"PriorityClass", []string{"../fixtures/priorityclass-v1beta1.yaml"}, []string{"PriorityClass"}},
