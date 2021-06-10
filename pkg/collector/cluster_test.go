@@ -28,7 +28,14 @@ func TestNewClusterCollectorBadPath(t *testing.T) {
 }
 
 func TestNewClusterCollectorValidEmptyCollector(t *testing.T) {
-	testOpts := ClusterOpts{Kubeconfig: "../../fixtures/kube.config"}
+	scheme := runtime.NewScheme()
+	clientset := fake.NewSimpleDynamicClient(scheme)
+	discoveryClient := discoveryFake.FakeDiscovery{}
+	testOpts := ClusterOpts{
+		Kubeconfig:      "../../fixtures/kube.config",
+		ClientSet:       clientset,
+		DiscoveryClient: &discoveryClient,
+	}
 	collector, err := NewClusterCollector(&testOpts, []string{})
 
 	if err != nil {
