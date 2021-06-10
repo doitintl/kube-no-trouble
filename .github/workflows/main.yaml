@@ -15,6 +15,8 @@ jobs:
     - uses: pre-commit/action@v2.0.0
   test:
     name: test
+    needs:
+      [pre-commit]
     runs-on: ubuntu-latest
     container: golang:1.16.4-alpine3.12
     steps:
@@ -28,6 +30,8 @@ jobs:
         make test
   build:
     name: build
+    needs:
+      [pre-commit]
     runs-on: ubuntu-latest
     container: golang:1.16.4-alpine3.12
     strategy:
@@ -55,10 +59,46 @@ jobs:
         with:
           name: release-artifacts-${{ matrix.os }}-${{ matrix.arch }}
           path: release-artifacts
+  integration-test:
+    name: integration test
+    needs:
+      [build]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        k8s_version: [
+          "kindest/node:v1.20.7",
+          "kindest/node:v1.19.11",
+          "kindest/node:v1.18.19",
+          "kindest/node:v1.17.17",
+          "kindest/node:v1.16.15",
+          "kindest/node:v1.15.12",
+          "kindest/node:v1.14.10"
+        ]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+    - uses: actions/download-artifact@v1
+      with:
+        name: release-artifacts-linux-amd64
+        path: release-artifacts
+    - name: Create k8s Kind Cluster
+      uses: helm/kind-action@v1.1.0
+      with:
+        node_image: ${{ matrix.k8s_version }}
+        cluster_name: kubent-test-cluster
+    - name: run integration test
+      run: |
+        tar xvzf release-artifacts/kubent-${{ github.event.number }}merge-linux-amd64.tar.gz
+        kubectl version --short
+        kubectl cluster-info --context kind-kubent-test-cluster
+        ./kubent
   create-release:
     name: Create Release
     needs:
-      [test, pre-commit, build]
+      [test, integration-test]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
     outputs:
