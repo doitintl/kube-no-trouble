@@ -44,12 +44,7 @@ deprecated_api(kind, api_version) = api {
 		"Lease": {
 			"old": ["coordination.k8s.io/v1beta1"],
 			"new": "coordination.k8s.io/v1",
-			"since": "1.19",
-		},
-		"LeaseList": {
-			"old": ["coordination.k8s.io/v1beta1"],
-			"new": "coordination.k8s.io/v1",
-			"since": "1.19",
+			"since": "1.14",
 		},
 		"PriorityClass": {
 			"old": ["scheduling.k8s.io/v1beta1"],
