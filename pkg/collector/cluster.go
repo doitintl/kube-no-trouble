@@ -95,6 +95,7 @@ func (c *ClusterCollector) Get() ([]map[string]interface{}, error) {
 		schema.GroupVersionResource{Group: "authentication.k8s.io", Version: "v1", Resource: "tokenreviews"},
 		schema.GroupVersionResource{Group: "certificates.k8s.io", Version: "v1", Resource: "certificatesigningrequests"},
 		schema.GroupVersionResource{Group: "apiregistration.k8s.io", Version: "v1", Resource: "apiservices"},
+		schema.GroupVersionResource{Group: "apiextensions.k8s.io", Version: "v1", Resource: "customresourcedefinitions"},
 	}
 	gvrs = append(gvrs, c.additionalResources...)
 

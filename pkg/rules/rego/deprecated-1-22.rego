@@ -111,6 +111,11 @@ deprecated_api(kind, api_version) = api {
 			"new": "apiregistration.k8s.io/v1",
 			"since": "1.10",
 		},
+		"CustomResourceDefinition": {
+			"old": ["apiextensions.k8s.io/v1beta1"],
+			"new": "apiextensions.k8s.io/v1",
+			"since": "1.16",
+		},
 	}
 
 	deprecated_apis[kind].old[_] == api_version
