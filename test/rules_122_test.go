@@ -21,6 +21,8 @@ func TestRego122(t *testing.T) {
 		{"StorageClass", []string{"../fixtures/storageclass-v1beta1.yaml"}, []string{"StorageClass"}},
 		{"VolumeAttachment", []string{"../fixtures/volumeattachment-v1beta1.yaml"}, []string{"VolumeAttachment"}},
 		{"PriorityClass", []string{"../fixtures/priorityclass-v1beta1.yaml"}, []string{"PriorityClass"}},
+		{"Ingress", []string{"../fixtures/ingress-v1beta1.yaml"}, []string{"Ingress"}},
+		{"IngressClass", []string{"../fixtures/ingressclass-v1beta1.yaml"}, []string{"IngressClass"}},
 	}
 
 	for _, tc := range testCases {
