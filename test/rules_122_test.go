@@ -23,6 +23,7 @@ func TestRego122(t *testing.T) {
 		{"PriorityClass", []string{"../fixtures/priorityclass-v1beta1.yaml"}, []string{"PriorityClass"}},
 		{"Ingress", []string{"../fixtures/ingress-v1beta1.yaml"}, []string{"Ingress"}},
 		{"IngressClass", []string{"../fixtures/ingressclass-v1beta1.yaml"}, []string{"IngressClass"}},
+		{"Lease", []string{"../fixtures/lease-v1beta1.yaml"}, []string{"Lease"}},
 	}
 
 	for _, tc := range testCases {
