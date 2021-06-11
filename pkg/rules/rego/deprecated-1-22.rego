@@ -91,6 +91,11 @@ deprecated_api(kind, api_version) = api {
 			"new": "rbac.authorization.k8s.io/v1",
 			"since": "1.8",
 		},
+		"CertificateSigningRequest": {
+			"old": ["certificates.k8s.io/v1beta1"],
+			"new": "certificates.k8s.io/v1",
+			"since": "1.19",
+		},
 	}
 
 	deprecated_apis[kind].old[_] == api_version
