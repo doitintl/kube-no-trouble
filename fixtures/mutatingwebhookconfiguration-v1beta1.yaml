@@ -1,0 +1,17 @@
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: test
+  namespace: my-namespace
+webhooks:
+  - name: test.example.com
+    clientConfig:
+      service:
+        name: webhook
+        namespace: test
+        path: "/"
+    rules:
+      - operations: [ "CREATE" ]
+        apiGroups: [""]
+        apiVersions: ["v1"]
+        resources: ["pods"]
