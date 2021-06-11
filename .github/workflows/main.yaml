@@ -91,7 +91,7 @@ jobs:
         cluster_name: kubent-test-cluster
     - name: run integration test
       run: |
-        tar xvzf release-artifacts/kubent-${{ github.event.number }}merge-linux-amd64.tar.gz
+        tar xvzf release-artifacts/kubent-*-linux-amd64.tar.gz
         kubectl version --short
         kubectl cluster-info --context kind-kubent-test-cluster
         ./kubent
