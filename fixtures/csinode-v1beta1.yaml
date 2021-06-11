@@ -1,0 +1,9 @@
+apiVersion: storage.k8s.io/v1beta1
+kind: CSINode
+metadata:
+  name: my-node
+spec:
+  drivers:
+  - name: my-csi-driver.example.com
+    nodeID: storageNodeID1
+    topologyKeys: ['mycsidriver.example.com/regions', "mycsidriver.example.com/zones"]

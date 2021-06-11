@@ -46,6 +46,26 @@ deprecated_api(kind, api_version) = api {
 			"new": "coordination.k8s.io/v1",
 			"since": "1.19",
 		},
+		"CSIDriver": {
+			"old": ["storage.k8s.io/v1beta1"],
+			"new": "storage.k8s.io/v1",
+			"since": "1.19",
+		},
+		"CSINode": {
+			"old": ["storage.k8s.io/v1beta1"],
+			"new": "storage.k8s.io/v1",
+			"since": "1.17",
+		},
+		"StorageClass": {
+			"old": ["storage.k8s.io/v1beta1"],
+			"new": "storage.k8s.io/v1",
+			"since": "1.6",
+		},
+		"VolumeAttachment": {
+			"old": ["storage.k8s.io/v1beta1"],
+			"new": "storage.k8s.io/v1",
+			"since": "1.13",
+		},
 	}
 
 	deprecated_apis[kind].old[_] == api_version
