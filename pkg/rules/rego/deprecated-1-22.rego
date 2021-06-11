@@ -71,6 +71,26 @@ deprecated_api(kind, api_version) = api {
 			"new": "storage.k8s.io/v1",
 			"since": "1.13",
 		},
+		"ClusterRole": {
+			"old": ["rbac.authorization.k8s.io/v1beta1"],
+			"new": "rbac.authorization.k8s.io/v1",
+			"since": "1.8",
+		},
+		"ClusterRoleBinding": {
+			"old": ["rbac.authorization.k8s.io/v1beta1"],
+			"new": "rbac.authorization.k8s.io/v1",
+			"since": "1.8",
+		},
+		"Role": {
+			"old": ["rbac.authorization.k8s.io/v1beta1"],
+			"new": "rbac.authorization.k8s.io/v1",
+			"since": "1.8",
+		},
+		"RoleBinding": {
+			"old": ["rbac.authorization.k8s.io/v1beta1"],
+			"new": "rbac.authorization.k8s.io/v1",
+			"since": "1.8",
+		},
 	}
 
 	deprecated_apis[kind].old[_] == api_version
