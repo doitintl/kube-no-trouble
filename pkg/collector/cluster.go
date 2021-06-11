@@ -2,7 +2,6 @@ package collector
 
 import (
 	"encoding/json"
-	"fmt"
 	"k8s.io/client-go/tools/clientcmd"
 
 	"github.com/rs/zerolog/log"
@@ -122,8 +121,8 @@ func (c *ClusterCollector) Get() ([]map[string]interface{}, error) {
 
 				err := json.Unmarshal([]byte(jsonManifest), &manifest)
 				if err != nil {
-					err := fmt.Errorf("failed to parse 'last-applied-configuration' annotation of resource %s/%s: %v", r.GetNamespace(), r.GetName(), err)
-					return nil, err
+					log.Warn().Msgf("failed to parse 'last-applied-configuration' annotation of resource %s/%s: %v", r.GetNamespace(), r.GetName(), err)
+					continue
 				}
 				results = append(results, manifest)
 			}

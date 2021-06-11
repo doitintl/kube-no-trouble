@@ -1,10 +1,10 @@
 package collector
 
 import (
-	"fmt"
 	"k8s.io/client-go/tools/clientcmd"
 
 	"github.com/ghodss/yaml"
+	"github.com/rs/zerolog/log"
 	"helm.sh/helm/v3/pkg/releaseutil"
 	"helm.sh/helm/v3/pkg/storage"
 	"helm.sh/helm/v3/pkg/storage/driver"
@@ -77,8 +77,8 @@ func (c *HelmV3Collector) Get() ([]map[string]interface{}, error) {
 
 			err := yaml.Unmarshal([]byte(m), &manifest)
 			if err != nil {
-				err := fmt.Errorf("failed to parse release %s/%s: %v", r.Namespace, r.Name, err)
-				return nil, err
+				log.Warn().Msgf("failed to parse release %s/%s: %v", r.Namespace, r.Name, err)
+				continue
 			}
 
 			// Default to the release namespace if the manifest doesn't have the namespace set
