@@ -20,11 +20,18 @@ deprecated_resource(r) = api {
 }
 
 deprecated_api(kind, api_version) = api {
-	deprecated_apis = {"RuntimeClass": {
-		"old": ["node.k8s.io/v1beta1"],
-		"new": "node.k8s.io/v1",
-		"since": "1.20",
-	}}
+	deprecated_apis = {
+		"RuntimeClass": {
+			"old": ["node.k8s.io/v1beta1"],
+			"new": "node.k8s.io/v1",
+			"since": "1.20",
+		},
+		"PodDisruptionBudget": {
+			"old": ["policy/v1beta1"],
+			"new": "policy/v1",
+			"since": "1.21",
+		},
+	}
 
 	deprecated_apis[kind].old[_] == api_version
 
