@@ -1,4 +1,4 @@
-package deprecated120
+package deprecated122
 
 main[return] {
 	resource := input[_]
