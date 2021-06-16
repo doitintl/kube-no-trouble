@@ -1,0 +1,9 @@
+apiVersion: authorization.k8s.io/v1beta1
+kind: LocalSubjectAccessReview
+spec:
+  resourceAttributes:
+    group: apps
+    resource: deployments
+    verb: create
+  user: jane
+  groups: ["system:authenticated"]

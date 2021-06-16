@@ -1,0 +1,5 @@
+apiVersion: authentication.k8s.io/v1beta1
+kind: TokenReview
+spec:
+  token: "014fbff9a07c..."
+  audiences: ["https://myserver.example.com", "https://myserver.internal.example.com"]

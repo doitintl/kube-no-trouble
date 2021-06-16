@@ -41,6 +41,16 @@ deprecated_api(kind, api_version) = api {
 			"new": "authorization.k8s.io/v1",
 			"since": "1.19",
 		},
+		"SelfSubjectAccessReview": {
+			"old": ["authorization.k8s.io/v1beta1"],
+			"new": "authorization.k8s.io/v1",
+			"since": "1.19",
+		},
+		"LocalSubjectAccessReview": {
+			"old": ["authorization.k8s.io/v1beta1"],
+			"new": "authorization.k8s.io/v1",
+			"since": "1.19",
+		},
 		"Lease": {
 			"old": ["coordination.k8s.io/v1beta1"],
 			"new": "coordination.k8s.io/v1",
