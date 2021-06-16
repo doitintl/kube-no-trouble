@@ -30,6 +30,7 @@ func TestRego122(t *testing.T) {
 		{"LocalSubjectAccessReview", []string{"../fixtures/localsubjectaccessreview-v1beta1.yaml"}, []string{"LocalSubjectAccessReview"}},
 		{"TokenReview", []string{"../fixtures/tokenreview-v1beta1.yaml"}, []string{"TokenReview"}},
 		{"APIService", []string{"../fixtures/apiservice-v1beta1.yaml"}, []string{"APIService"}},
+		{"CustomResourceDefinition", []string{"../fixtures/customresourcedefinition-v1beta1.yaml"}, []string{"CustomResourceDefinition"}},
 	}
 
 	for _, tc := range testCases {
