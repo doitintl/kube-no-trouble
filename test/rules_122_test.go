@@ -31,6 +31,8 @@ func TestRego122(t *testing.T) {
 		{"TokenReview", []string{"../fixtures/tokenreview-v1beta1.yaml"}, []string{"TokenReview"}},
 		{"APIService", []string{"../fixtures/apiservice-v1beta1.yaml"}, []string{"APIService"}},
 		{"CustomResourceDefinition", []string{"../fixtures/customresourcedefinition-v1beta1.yaml"}, []string{"CustomResourceDefinition"}},
+		{"MutatingWebhookConfiguration", []string{"../fixtures/mutatingwebhookconfiguration-v1beta1.yaml"}, []string{"MutatingWebhookConfiguration"}},
+		{"ValidatingWebhookConfiguration", []string{"../fixtures/validatingwebhookconfiguration-v1beta1.yaml"}, []string{"ValidatingWebhookConfiguration"}},
 	}
 
 	for _, tc := range testCases {

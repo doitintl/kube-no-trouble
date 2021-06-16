@@ -116,6 +116,16 @@ deprecated_api(kind, api_version) = api {
 			"new": "apiextensions.k8s.io/v1",
 			"since": "1.16",
 		},
+		"MutatingWebhookConfiguration": {
+			"old": ["admissionregistration.k8s.io/v1beta1"],
+			"new": "admissionregistration.k8s.io/v1",
+			"since": "1.16",
+		},
+		"ValidatingWebhookConfiguration": {
+			"old": ["admissionregistration.k8s.io/v1beta1"],
+			"new": "admissionregistration.k8s.io/v1",
+			"since": "1.16",
+		},
 	}
 
 	deprecated_apis[kind].old[_] == api_version
