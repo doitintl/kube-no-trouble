@@ -31,6 +31,11 @@ deprecated_api(kind, api_version) = api {
 			"new": "policy/v1",
 			"since": "1.21",
 		},
+		"PodSecurityPolicy": {
+			"old": ["policy/v1beta1"],
+			"new": "<removed>",
+			"since": "1.21",
+		},
 	}
 
 	deprecated_apis[kind].old[_] == api_version
