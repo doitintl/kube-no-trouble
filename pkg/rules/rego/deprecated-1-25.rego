@@ -36,6 +36,11 @@ deprecated_api(kind, api_version) = api {
 			"new": "<removed>",
 			"since": "1.21",
 		},
+		"EndpointSlice": {
+			"old": ["discovery.k8s.io/v1beta1"],
+			"new": "discovery.k8s.io/v1",
+			"since": "1.21",
+		},
 	}
 
 	deprecated_apis[kind].old[_] == api_version
