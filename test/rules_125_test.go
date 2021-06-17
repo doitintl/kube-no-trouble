@@ -10,6 +10,7 @@ func TestRego125(t *testing.T) {
 		{"PodDisruptionBudget", []string{"../fixtures/poddisruptionbudget-v1beta1.yaml"}, []string{"PodDisruptionBudget"}},
 		{"PodSecurityPolicy", []string{"../fixtures/podsecuritypolicy-v1beta1.yaml"}, []string{"PodSecurityPolicy"}},
 		{"EndpointSlice", []string{"../fixtures/endpointslice-v1beta1.yaml"}, []string{"EndpointSlice"}},
+		{"CronJob", []string{"../fixtures/cronjob-v1beta1.yaml"}, []string{"CronJob"}},
 	}
 
 	testReourcesUsingFixtures(t, testCases)

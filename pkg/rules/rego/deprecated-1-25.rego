@@ -41,6 +41,11 @@ deprecated_api(kind, api_version) = api {
 			"new": "discovery.k8s.io/v1",
 			"since": "1.21",
 		},
+		"CronJobs": {
+			"old": ["batch/v1beta1"],
+			"new": "batch/v1",
+			"since": "1.21",
+		},
 	}
 
 	deprecated_apis[kind].old[_] == api_version

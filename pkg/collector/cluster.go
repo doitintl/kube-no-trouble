@@ -102,6 +102,7 @@ func (c *ClusterCollector) Get() ([]map[string]interface{}, error) {
 		schema.GroupVersionResource{Group: "policy", Version: "v1", Resource: "poddisruptionbudgets"},
 		schema.GroupVersionResource{Group: "policy", Version: "v1beta1", Resource: "podsecuritypolicies"},
 		schema.GroupVersionResource{Group: "discovery.k8s.io", Version: "v1", Resource: "endpointslices"},
+		schema.GroupVersionResource{Group: "batch", Version: "v1", Resource: "cronjobs"},
 	}
 	gvrs = append(gvrs, c.additionalResources...)
 
