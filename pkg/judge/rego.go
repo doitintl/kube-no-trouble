@@ -2,6 +2,7 @@ package judge
 
 import (
 	"context"
+	goversion "github.com/hashicorp/go-version"
 
 	"github.com/doitintl/kube-no-trouble/pkg/rules"
 	"github.com/open-policy-agent/opa/rego"
@@ -50,6 +51,12 @@ func (j *RegoJudge) Eval(input []map[string]interface{}) ([]Result, error) {
 		for _, e := range r.Expressions {
 			for _, i := range e.Value.([]interface{}) {
 				m := i.(map[string]interface{})
+
+				since, err := goversion.NewVersion(m["Since"].(string))
+				if err != nil {
+					return nil, err
+				}
+
 				results = append(results, Result{
 					Name:        m["Name"].(string),
 					Namespace:   m["Namespace"].(string),
@@ -57,7 +64,7 @@ func (j *RegoJudge) Eval(input []map[string]interface{}) ([]Result, error) {
 					ApiVersion:  m["ApiVersion"].(string),
 					ReplaceWith: m["ReplaceWith"].(string),
 					RuleSet:     m["RuleSet"].(string),
-					Since:       m["Since"].(string),
+					Since:       since,
 				})
 			}
 		}

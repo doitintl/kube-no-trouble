@@ -1,6 +1,7 @@
 package config
 
 import (
+	goversion "github.com/hashicorp/go-version"
 	"os"
 	"testing"
 
@@ -153,27 +154,53 @@ func TestValidateAdditionalResourcesFail(t *testing.T) {
 	}
 }
 
-func TestValidateTargetVersion(t *testing.T) {
+func TestTargetVersion(t *testing.T) {
 	validVersions := []string{
-		"", "1.16", "1.16.3", "1.2.3",
+		"1.16", "1.16.3", "1.2.3",
 	}
-	invalidVersions := []string{
-		"1", "v12.3.4", "v1.2", "1.blah", "nope",
-	}
+
+	oldArgs := os.Args[1]
+	defer func() { os.Args[1] = oldArgs }()
 
 	for _, v := range validVersions {
-		err := validateTargetVersion(v)
+		// reset for testing
+		pflag.CommandLine = pflag.NewFlagSet(os.Args[0], pflag.ExitOnError)
+
+		os.Args[1] = "--target-version=" + v
+		config, err := NewFromFlags()
 
 		if err != nil {
-			t.Errorf("Expected %s to fail validation, it failed instead with: %s", v, err)
+			t.Errorf("Flags parsing failed %s", err)
+		}
+
+		expected, _ := goversion.NewVersion(v)
+		if config.TargetVersion.Version == nil {
+			t.Fatalf("Target version not parsed correctly: expected: %s, got: %s", expected.String(), config.TargetVersion)
+		}
+
+		if !config.TargetVersion.Equal(expected) {
+			t.Fatalf("Target version not parsed correctly: expected: %s, got: %s", expected.String(), config.TargetVersion.String())
 		}
 	}
+}
+
+func TestTargetVersionInvalid(t *testing.T) {
+	invalidVersions := []string{
+		"1.blah", "nope",
+	}
+
+	oldArgs := os.Args[1]
+	defer func() { os.Args[1] = oldArgs }()
 
 	for _, v := range invalidVersions {
-		err := validateTargetVersion(v)
+		// reset for testing
+		pflag.CommandLine = pflag.NewFlagSet(os.Args[0], pflag.ContinueOnError)
 
-		if err == nil {
-			t.Errorf("Expected %s to fail validation, it succeeded instead", v)
+		os.Args[1] = "--target-version=" + v
+		config, _ := NewFromFlags()
+
+		if config.TargetVersion.Version != nil {
+			t.Errorf("expected --target-version flag parsing to fail for: %s", v)
 		}
 	}
 }

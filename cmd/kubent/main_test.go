@@ -10,6 +10,7 @@ import (
 	"github.com/doitintl/kube-no-trouble/pkg/collector"
 	"github.com/doitintl/kube-no-trouble/pkg/config"
 
+	goversion "github.com/hashicorp/go-version"
 	"github.com/rs/zerolog"
 )
 
@@ -146,13 +147,14 @@ func TestMainExitCodes(t *testing.T) {
 func TestGetServerVersionNone(t *testing.T) {
 	collectors := []collector.Collector{}
 
-	version, err := getServerVersion(collectors)
-	if err != nil {
+	version := config.NewVersion()
+
+	if err := getServerVersion(version, collectors); err != nil {
 		t.Errorf("Failed to get version with error: %s", err)
 	}
 
-	if version != "" {
-		t.Errorf("Expected no version to be detected, instead got: %s", version)
+	if version.Version != nil {
+		t.Errorf("Expected no version to be detected, instead got: %s", version.String())
 	}
 }
 
@@ -165,29 +167,32 @@ func TestGetServerVersionNotSupported(t *testing.T) {
 	}
 
 	collectors = storeCollector(fileCollector, err, collectors)
+	version := config.NewVersion()
 
-	version, err := getServerVersion(collectors)
+	err = getServerVersion(version, collectors)
 	if err != nil {
 		t.Errorf("Failed to get version with error: %s", err)
 	}
 
-	if version != "" {
-		t.Errorf("Expected no version to be detected, instead got: %s", version)
+	if version.Version != nil {
+		t.Errorf("Expected no version to be detected, instead got: %s", version.String())
 	}
 }
 
 func TestGetServerVersion(t *testing.T) {
 	collectors := []collector.Collector{}
+	version := config.NewVersion()
 
 	fc := collector.NewFakeCollector()
 	collectors = storeCollector(fc, nil, collectors)
 
-	version, err := getServerVersion(collectors)
+	err := getServerVersion(version, collectors)
 	if err != nil {
 		t.Errorf("Failed to get version with error: %s", err)
 	}
 
-	if version != collector.FAKE_VERSION {
-		t.Errorf("Expected no version to be detected, instead got: %s", version)
+	fakeVersion, err := goversion.NewVersion(collector.FAKE_VERSION)
+	if version.Compare(fakeVersion) != 0 {
+		t.Errorf("Expected %s version to be detected, instead got: %s", fakeVersion.String(), version.String())
 	}
 }

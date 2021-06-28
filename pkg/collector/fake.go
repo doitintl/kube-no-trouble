@@ -1,5 +1,9 @@
 package collector
 
+import (
+	goversion "github.com/hashicorp/go-version"
+)
+
 const FAKE_VERSION = "1.2.3"
 
 type fakeCollector struct {
@@ -16,6 +20,8 @@ func NewFakeCollector() *fakeCollector {
 	}
 }
 
-func (c *fakeCollector) GetServerVersion() (string, error) {
-	return FAKE_VERSION, nil
+func (c *fakeCollector) GetServerVersion() (*goversion.Version, error) {
+	version, err := goversion.NewVersion(FAKE_VERSION)
+
+	return version, err
 }

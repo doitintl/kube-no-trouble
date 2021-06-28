@@ -76,14 +76,21 @@ func initCollectors(config *config.Config) []collector.Collector {
 	return collectors
 }
 
-func getServerVersion(collectors []collector.Collector) (string, error) {
-	for _, c := range collectors {
-		versionCol, ok := c.(collector.VersionCollector)
-		if ok {
-			return versionCol.GetServerVersion()
+func getServerVersion(cv *config.Version, collectors []collector.Collector) error {
+	if cv.Version == nil {
+		for _, c := range collectors {
+			if versionCol, ok := c.(collector.VersionCollector); ok {
+				goversion, err := versionCol.GetServerVersion()
+				if err != nil {
+					return fmt.Errorf("failed to detect k8s version: %w", err)
+				}
+
+				cv.SetFromVersion(goversion)
+				return nil
+			}
 		}
 	}
-	return "", nil
+	return nil
 }
 
 func main() {
@@ -104,13 +111,10 @@ func main() {
 	log.Info().Msg("Initializing collectors and retrieving data")
 	initCollectors := initCollectors(config)
 
-	if config.TargetVersion == "" {
-		config.TargetVersion, err = getServerVersion(initCollectors)
-		if err != nil {
-			log.Fatal().Err(err).Msg("Failed to detect K8s version")
-		}
+	getServerVersion(&config.TargetVersion, initCollectors)
+	if config.TargetVersion.Version != nil {
+		log.Info().Msgf("Target K8s version is %s", config.TargetVersion.String())
 	}
-	log.Info().Msgf("Target K8s version is %s", config.TargetVersion)
 
 	collectors := getCollectors(initCollectors)
 

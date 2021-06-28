@@ -1,12 +1,16 @@
 package collector
 
+import (
+	goversion "github.com/hashicorp/go-version"
+)
+
 type Collector interface {
 	Get() ([]map[string]interface{}, error)
 	Name() string
 }
 
 type VersionCollector interface {
-	GetServerVersion() (string, error)
+	GetServerVersion() (*goversion.Version, error)
 }
 
 type commonCollector struct {

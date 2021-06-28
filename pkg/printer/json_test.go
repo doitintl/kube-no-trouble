@@ -2,10 +2,13 @@ package printer
 
 import (
 	"encoding/json"
+	goversion "github.com/hashicorp/go-version"
 	"testing"
 
 	"github.com/doitintl/kube-no-trouble/pkg/judge"
 )
+
+var testVersion1, _ = goversion.NewVersion("1.2.3")
 
 var findingsJsonTesting []judge.Result = []judge.Result{
 	{
@@ -15,7 +18,7 @@ var findingsJsonTesting []judge.Result = []judge.Result{
 		ApiVersion:  "v1",
 		RuleSet:     "testRuleset1",
 		ReplaceWith: "testReplaceWith1",
-		Since:       "testSince1",
+		Since:       testVersion1,
 	},
 	{
 		Name:        "testName2",
@@ -24,7 +27,7 @@ var findingsJsonTesting []judge.Result = []judge.Result{
 		ApiVersion:  "v1",
 		RuleSet:     "testRuleset2",
 		ReplaceWith: "testReplaceWith2",
-		Since:       "testSince2",
+		Since:       testVersion1,
 	},
 }
 
