@@ -141,6 +141,11 @@ func main() {
 		log.Fatal().Err(err).Str("name", "Rego").Msg("Failed to evaluate input")
 	}
 
+	results, err = printer.FilterNonRelevantResults(results, config.TargetVersion.Version)
+	if err != nil {
+		log.Fatal().Err(err).Str("name", "Rego").Msg("Failed to filter results")
+	}
+
 	printer, err := printer.NewPrinter(config.Output)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to create printer")
