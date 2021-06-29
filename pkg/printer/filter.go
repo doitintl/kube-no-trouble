@@ -2,6 +2,7 @@ package printer
 
 import (
 	"github.com/doitintl/kube-no-trouble/pkg/judge"
+
 	goversion "github.com/hashicorp/go-version"
 )
 
