@@ -62,7 +62,6 @@ func TestFileCollectorGet(t *testing.T) {
 
 func TestFileCollectorGetUnknown(t *testing.T) {
 	input := []string{"../../fixtures/meow.txt"}
-	expected := "failed to parse"
 
 	c, err := NewFileCollector(
 		&FileOpts{Filenames: input},
@@ -72,12 +71,10 @@ func TestFileCollectorGetUnknown(t *testing.T) {
 		t.Errorf("Expected to succeed for %s, failed: %s", input, err)
 	}
 
-	_, err = c.Get()
+	result, _ := c.Get()
 
-	if err == nil {
-		t.Errorf("Expected error with unknown file type")
-	} else if !strings.Contains(err.Error(), expected) {
-		t.Errorf("Expected error message with %s, got %s", expected, err.Error())
+	if len(result) != 0 {
+		t.Errorf("Expected empty result instead got %s", result)
 	}
 }
 

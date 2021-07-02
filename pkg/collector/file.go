@@ -9,6 +9,7 @@ import (
 	"sort"
 
 	"github.com/ghodss/yaml"
+	"github.com/rs/zerolog/log"
 	"helm.sh/helm/v3/pkg/releaseutil"
 )
 
@@ -73,7 +74,8 @@ func (c *FileCollector) Get() ([]map[string]interface{}, error) {
 				var manifest map[string]interface{}
 				err := yaml.Unmarshal([]byte(manifests[k]), &manifest)
 				if err != nil {
-					return nil, fmt.Errorf("failed to parse file %s: %v", f, err)
+					log.Warn().Msgf("failed to parse file %s: %v", f, err)
+					continue
 				}
 
 				results = append(results, manifest)
