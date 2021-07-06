@@ -7,30 +7,9 @@ import (
 	"github.com/doitintl/kube-no-trouble/pkg/judge"
 )
 
-var findingsJsonTesting []judge.Result = []judge.Result{
-	{
-		Name:        "testName1",
-		Kind:        "testKind1",
-		Namespace:   "testNamespace1",
-		ApiVersion:  "v1",
-		RuleSet:     "testRuleset1",
-		ReplaceWith: "testReplaceWith1",
-		Since:       "testSince1",
-	},
-	{
-		Name:        "testName2",
-		Kind:        "testKind2",
-		Namespace:   "testNamespace2",
-		ApiVersion:  "v1",
-		RuleSet:     "testRuleset2",
-		ReplaceWith: "testReplaceWith2",
-		Since:       "testSince2",
-	},
-}
-
 func TestJsonPopulateOutput(t *testing.T) {
 	printer := &jsonPrinter{}
-	output, err := printer.populateOutput(findingsJsonTesting)
+	output, err := printer.populateOutput(testInput)
 
 	if err != nil {
 		t.Fatal(err)

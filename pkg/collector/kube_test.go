@@ -3,6 +3,7 @@ package collector
 import (
 	"testing"
 
+	goversion "github.com/hashicorp/go-version"
 	"k8s.io/apimachinery/pkg/version"
 	discoveryFake "k8s.io/client-go/discovery/fake"
 	"k8s.io/client-go/kubernetes/fake"
@@ -18,7 +19,6 @@ func TestNewKubeCollector(t *testing.T) {
 	if col == nil {
 		t.Errorf("Should return collector, instrad got nil")
 	}
-
 }
 
 func TestNewKubeCollectorError(t *testing.T) {
@@ -30,14 +30,12 @@ func TestNewKubeCollectorError(t *testing.T) {
 }
 
 func TestGetServerVersion(t *testing.T) {
-	expectedMajor := "1"
-	expectedMinor := "2"
-	expectedVersion := expectedMajor + "." + expectedMinor
+	gitVersion := "v1.2.3"
+	expectedVersion, _ := goversion.NewVersion(gitVersion)
 
 	clientSet := fake.NewSimpleClientset()
 	clientSet.Discovery().(*discoveryFake.FakeDiscovery).FakedServerVersion = &version.Info{
-		Major: expectedMajor,
-		Minor: expectedMinor,
+		GitVersion: gitVersion,
 	}
 
 	collector, err := newKubeCollector("", clientSet.Discovery())
@@ -47,10 +45,10 @@ func TestGetServerVersion(t *testing.T) {
 
 	version, err := collector.GetServerVersion()
 	if err != nil {
-		t.Errorf("Failed to get version with error: %s", err)
+		t.Fatalf("Failed to get version with error: %s", err)
 	}
 
-	if version != expectedVersion {
-		t.Errorf("Expected no version to be detected, instead got: %s", version)
+	if !version.Equal(expectedVersion) {
+		t.Errorf("Expected version: %s, instead got: %s", expectedVersion.String(), version.String())
 	}
 }

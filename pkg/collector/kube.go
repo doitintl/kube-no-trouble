@@ -2,6 +2,8 @@ package collector
 
 import (
 	"fmt"
+
+	goversion "github.com/hashicorp/go-version"
 	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/tools/clientcmd"
 )
@@ -30,10 +32,11 @@ func newKubeCollector(kubeconfig string, discoveryClient discovery.DiscoveryInte
 	return col, nil
 }
 
-func (c *kubeCollector) GetServerVersion() (string, error) {
+func (c *kubeCollector) GetServerVersion() (*goversion.Version, error) {
 	version, err := c.discoveryClient.ServerVersion()
 	if err != nil {
-		return "", fmt.Errorf("failed to get server version %w", err)
+		return nil, fmt.Errorf("failed to get server version %w", err)
 	}
-	return version.Major + "." + version.Minor, nil
+
+	return goversion.NewVersion(version.String())
 }
