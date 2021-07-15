@@ -17,12 +17,12 @@ func TestNewClusterCollectorBadPath(t *testing.T) {
 	testOpts := ClusterOpts{Kubeconfig: "bad path"}
 	result, funcErr := NewClusterCollector(&testOpts, []string{})
 
-	if funcErr.Error() != "stat bad path: no such file or directory" {
+	if funcErr.Error() != "invalid configuration: no configuration has been provided" {
 		out, err := json.Marshal(result)
 		if err != nil {
-			t.Errorf("Should have crashed with path error instead got: %s", string(out))
+			t.Errorf("Should have errored with invalid configuration error instead got: %s", string(out))
 		} else {
-			t.Errorf("Should have crashed instead got un-parseable error: %s", funcErr)
+			t.Errorf("Should have errored instead got: %s", funcErr)
 		}
 	}
 }
@@ -39,7 +39,7 @@ func TestNewClusterCollectorValidEmptyCollector(t *testing.T) {
 	collector, err := NewClusterCollector(&testOpts, []string{})
 
 	if err != nil {
-		t.Errorf("Should have parsed config instead got: %s", err)
+		t.Fatalf("Should have parsed config instead got: %s", err)
 	}
 
 	result, err := collector.Get()

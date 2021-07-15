@@ -1,8 +1,6 @@
 package collector
 
 import (
-	"k8s.io/client-go/tools/clientcmd"
-
 	"github.com/ghodss/yaml"
 	"github.com/rs/zerolog/log"
 	"helm.sh/helm/v3/pkg/releaseutil"
@@ -36,12 +34,7 @@ func NewHelmV3Collector(opts *HelmV3Opts) (*HelmV3Collector, error) {
 		kubeCollector:   kubeCollector,
 	}
 
-	config, err := clientcmd.BuildConfigFromFlags("", opts.Kubeconfig)
-	if err != nil {
-		return nil, err
-	}
-
-	collector.client, err = corev1.NewForConfig(config)
+	collector.client, err = corev1.NewForConfig(kubeCollector.GetRestConfig())
 	if err != nil {
 		return nil, err
 	}
