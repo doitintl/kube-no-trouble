@@ -111,7 +111,7 @@ func (c *ClusterCollector) Get() ([]map[string]interface{}, error) {
 		log.Debug().Msgf("Retrieving: %s.%s.%s", g.Resource, g.Version, g.Group)
 		rs, err := ri.List(metav1.ListOptions{})
 		if err != nil {
-			log.Warn().Msgf("Failed to retrieve: %s: %s", g, err)
+			log.Debug().Msgf("Failed to retrieve: %s: %s", g, err)
 			continue
 		}
 
