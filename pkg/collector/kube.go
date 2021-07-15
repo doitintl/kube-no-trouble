@@ -5,23 +5,32 @@ import (
 
 	goversion "github.com/hashicorp/go-version"
 	"k8s.io/client-go/discovery"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
 type kubeCollector struct {
 	discoveryClient discovery.DiscoveryInterface
+	restConfig      *rest.Config
 }
 
 func newKubeCollector(kubeconfig string, discoveryClient discovery.DiscoveryInterface) (*kubeCollector, error) {
 	col := &kubeCollector{}
 
 	if discoveryClient == nil {
-		config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
+		pathOptions := clientcmd.NewDefaultPathOptions()
+		if kubeconfig != "" {
+			pathOptions.GlobalFile = kubeconfig
+		}
+
+		config, err := pathOptions.GetStartingConfig()
+		clientConfig := clientcmd.NewDefaultClientConfig(*config, &clientcmd.ConfigOverrides{})
+		col.restConfig, err = clientConfig.ClientConfig()
 		if err != nil {
 			return nil, err
 		}
 
-		col.discoveryClient, err = discovery.NewDiscoveryClientForConfig(config)
+		col.discoveryClient, err = discovery.NewDiscoveryClientForConfig(col.restConfig)
 		if err != nil {
 			return nil, err
 		}
@@ -39,4 +48,8 @@ func (c *kubeCollector) GetServerVersion() (*goversion.Version, error) {
 	}
 
 	return goversion.NewVersion(version.String())
+}
+
+func (c *kubeCollector) GetRestConfig() *rest.Config {
+	return c.restConfig
 }
