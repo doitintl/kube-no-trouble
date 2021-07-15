@@ -2,8 +2,6 @@ package config
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
 	"strings"
 	"unicode"
 
@@ -11,7 +9,6 @@ import (
 
 	"github.com/rs/zerolog"
 	flag "github.com/spf13/pflag"
-	"k8s.io/client-go/util/homedir"
 )
 
 type Config struct {
@@ -33,14 +30,13 @@ func NewFromFlags() (*Config, error) {
 		TargetVersion: *NewVersion(),
 	}
 
-	home := homedir.HomeDir()
 	flag.StringSliceVarP(&config.AdditionalKinds, "additional-kind", "a", []string{}, "additional kinds of resources to report in Kind.version.group.com format")
 	flag.BoolVarP(&config.Cluster, "cluster", "c", true, "enable Cluster collector")
 	flag.BoolVarP(&config.ExitError, "exit-error", "e", false, "exit with non-zero code when issues are found")
 	flag.BoolVar(&config.Helm2, "helm2", true, "enable Helm v2 collector")
 	flag.BoolVar(&config.Helm3, "helm3", true, "enable Helm v3 collector")
 	flag.StringSliceVarP(&config.Filenames, "filename", "f", []string{}, "manifests to check, use - for stdin")
-	flag.StringVarP(&config.Kubeconfig, "kubeconfig", "k", envOrString("KUBECONFIG", filepath.Join(home, ".kube", "config")), "path to the kubeconfig file")
+	flag.StringVarP(&config.Kubeconfig, "kubeconfig", "k", "", "path to the kubeconfig file")
 	flag.StringVarP(&config.Output, "output", "o", "text", "output format - [text|json]")
 	flag.VarP(&config.LogLevel, "log-level", "l", "set log level (trace, debug, info, warn, error, fatal, panic, disabled)")
 	flag.VarP(&config.TargetVersion, "target-version", "t", "target K8s version in SemVer format (autodetected by default)")
@@ -56,14 +52,6 @@ func NewFromFlags() (*Config, error) {
 	}
 
 	return &config, nil
-}
-
-func envOrString(env string, def string) string {
-	val, ok := os.LookupEnv(env)
-	if ok {
-		return val
-	}
-	return def
 }
 
 // validateAdditionalResources check that all resources are provided in full form
