@@ -2,8 +2,6 @@ package collector
 
 import (
 	"encoding/json"
-	"k8s.io/client-go/tools/clientcmd"
-
 	"github.com/rs/zerolog/log"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -38,12 +36,7 @@ func NewClusterCollector(opts *ClusterOpts, additionalKinds []string) (*ClusterC
 	}
 
 	if opts.ClientSet == nil {
-		config, err := clientcmd.BuildConfigFromFlags("", opts.Kubeconfig)
-		if err != nil {
-			return nil, err
-		}
-
-		collector.clientSet, err = dynamic.NewForConfig(config)
+		collector.clientSet, err = dynamic.NewForConfig(kubeCollector.GetRestConfig())
 		if err != nil {
 			return nil, err
 		}

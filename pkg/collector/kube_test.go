@@ -1,6 +1,7 @@
 package collector
 
 import (
+	"os"
 	"testing"
 
 	goversion "github.com/hashicorp/go-version"
@@ -14,7 +15,7 @@ func TestNewKubeCollector(t *testing.T) {
 	col, err := newKubeCollector("", clientSet.Discovery())
 
 	if err != nil {
-		t.Errorf("Failed to create kubeCollector form fake discovery client")
+		t.Errorf("Failed to create kubeCollector from fake discovery client")
 	}
 	if col == nil {
 		t.Errorf("Should return collector, instrad got nil")
@@ -26,6 +27,36 @@ func TestNewKubeCollectorError(t *testing.T) {
 
 	if err == nil {
 		t.Errorf("Expected to fail with non-existent kubeconfig")
+	}
+}
+
+func TestNewKubeCollectorWithKubeconfigPath(t *testing.T) {
+	_, err := newKubeCollector("../../fixtures/kube.config.basic", nil)
+	if err != nil {
+		t.Fatalf("Failed with: %s", err)
+	}
+}
+
+func TestNewKubeCollectorMultipleFiles(t *testing.T) {
+	kcEnvVar := "KUBECONFIG"
+	oldKubeConfig, oldSet := os.LookupEnv(kcEnvVar)
+
+	if err := os.Setenv(kcEnvVar, "../../fixtures/kube.config.empty:../../fixtures/kube.config.basic"); err != nil {
+		t.Fatalf("Failed so set %s env variable for test: %s", kcEnvVar, err)
+	}
+
+	if _, err := newKubeCollector("", nil); err != nil {
+		t.Fatalf("Failed with: %s", err)
+	}
+
+	var err error
+	if oldSet {
+		err = os.Setenv(kcEnvVar, oldKubeConfig)
+	} else {
+		err = os.Unsetenv(kcEnvVar)
+	}
+	if err != nil {
+		t.Fatalf("Failed so reset %s env variable after test: %s", kcEnvVar, err)
 	}
 }
 
