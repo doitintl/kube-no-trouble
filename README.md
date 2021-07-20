@@ -83,10 +83,10 @@ Usage of ./kubent:
   -f, --filename strings          manifests to check, use - for stdin
       --helm2                     enable Helm v2 collector (default true)
       --helm3                     enable Helm v3 collector (default true)
-  -k, --kubeconfig string         path to the kubeconfig file (default "/Users/stepan/.kube/config")
+  -k, --kubeconfig string         path to the kubeconfig file
   -l, --log-level string          set log level (trace, debug, info, warn, error, fatal, panic, disabled) (default "info")
   -o, --output string             output format - [text|json] (default "text")
-  -t, --target-version string     target K8s version in major.minor format (autodetected by default)
+  -t, --target-version string     target K8s version in SemVer format (autodetected by default)
 ```
 
 - *`-a, --additional-kind`*
@@ -95,6 +95,10 @@ Usage of ./kubent:
 
 - *`-x, --context`*
   Select context from kubeconfig file (`current-context` from the file is used by default).
+
+- *`k, --kubeconfig`*
+  Path to kubeconfig file to use. This takes precedence over `KUBECONFIG` environemnt variable, which is also supported
+  and can contain multiple paths, and default `~.kube/config`.
 
 - *`-t, --target-version`*
   `Kubent` will try to detect K8S cluster version and display only relevant findings. This flag allows to override this
