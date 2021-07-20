@@ -78,6 +78,7 @@ $./kubent -h
 Usage of ./kubent:
   -a, --additional-kind strings   additional kinds of resources to report in Kind.version.group.com format
   -c, --cluster                   enable Cluster collector (default true)
+  -x, --context string            kubeconfig context
   -e, --exit-error                exit with non-zero code when issues are found
   -f, --filename strings          manifests to check, use - for stdin
       --helm2                     enable Helm v2 collector (default true)
@@ -91,6 +92,9 @@ Usage of ./kubent:
 - *`-a, --additional-kind`*
   Tells `kubent` to flag additional custom resources when found in the specified version. The flag can be used multiple
   times. The expected format is full *Kind.version.group.com* form - e.g. `-a ManagedCertificate.v1.networking.gke.io`.
+
+- *`-x, --context`*
+  Select context from kubeconfig file (`current-context` from the file is used by default).
 
 - *`-t, --target-version`*
   `Kubent` will try to detect K8S cluster version and display only relevant findings. This flag allows to override this
