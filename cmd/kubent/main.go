@@ -55,17 +55,17 @@ func storeCollector(collector collector.Collector, err error, collectors []colle
 func initCollectors(config *config.Config) []collector.Collector {
 	collectors := []collector.Collector{}
 	if config.Cluster {
-		collector, err := collector.NewClusterCollector(&collector.ClusterOpts{Kubeconfig: config.Kubeconfig}, config.AdditionalKinds)
+		collector, err := collector.NewClusterCollector(&collector.ClusterOpts{Kubeconfig: config.Kubeconfig, KubeContext: config.Context}, config.AdditionalKinds)
 		collectors = storeCollector(collector, err, collectors)
 	}
 
 	if config.Helm2 {
-		collector, err := collector.NewHelmV2Collector(&collector.HelmV2Opts{Kubeconfig: config.Kubeconfig})
+		collector, err := collector.NewHelmV2Collector(&collector.HelmV2Opts{Kubeconfig: config.Kubeconfig, KubeContext: config.Context})
 		collectors = storeCollector(collector, err, collectors)
 	}
 
 	if config.Helm3 {
-		collector, err := collector.NewHelmV3Collector(&collector.HelmV3Opts{Kubeconfig: config.Kubeconfig})
+		collector, err := collector.NewHelmV3Collector(&collector.HelmV3Opts{Kubeconfig: config.Kubeconfig, KubeContext: config.Context})
 		collectors = storeCollector(collector, err, collectors)
 	}
 

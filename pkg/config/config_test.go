@@ -136,3 +136,28 @@ func TestTargetVersionInvalid(t *testing.T) {
 		}
 	}
 }
+
+func TestContext(t *testing.T) {
+	validContexts := []string{
+		"my-context",
+	}
+
+	oldArgs := os.Args[1]
+	defer func() { os.Args[1] = oldArgs }()
+
+	for _, context := range validContexts {
+		// reset for testing
+		pflag.CommandLine = pflag.NewFlagSet(os.Args[0], pflag.ExitOnError)
+
+		os.Args[1] = "--context=" + context
+		config, err := NewFromFlags()
+
+		if err != nil {
+			t.Errorf("Flags parsing failed %s", err)
+		}
+
+		if config.Context != context {
+			t.Fatalf("Context not parsed correctly: expected: %s, got: %s", context, config.Context)
+		}
+	}
+}

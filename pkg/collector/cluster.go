@@ -20,12 +20,13 @@ type ClusterCollector struct {
 
 type ClusterOpts struct {
 	Kubeconfig      string
+	KubeContext     string
 	ClientSet       dynamic.Interface
 	DiscoveryClient discovery.DiscoveryInterface
 }
 
 func NewClusterCollector(opts *ClusterOpts, additionalKinds []string) (*ClusterCollector, error) {
-	kubeCollector, err := newKubeCollector(opts.Kubeconfig, opts.DiscoveryClient)
+	kubeCollector, err := newKubeCollector(opts.Kubeconfig, opts.KubeContext, opts.DiscoveryClient)
 	if err != nil {
 		return nil, err
 	}

@@ -12,7 +12,7 @@ import (
 
 func TestNewKubeCollector(t *testing.T) {
 	clientSet := fake.NewSimpleClientset()
-	col, err := newKubeCollector("", clientSet.Discovery())
+	col, err := newKubeCollector("", "", clientSet.Discovery())
 
 	if err != nil {
 		t.Errorf("Failed to create kubeCollector from fake discovery client")
@@ -23,7 +23,7 @@ func TestNewKubeCollector(t *testing.T) {
 }
 
 func TestNewKubeCollectorError(t *testing.T) {
-	_, err := newKubeCollector("does-not-exist", nil)
+	_, err := newKubeCollector("does-not-exist", "", nil)
 
 	if err == nil {
 		t.Errorf("Expected to fail with non-existent kubeconfig")
@@ -31,7 +31,7 @@ func TestNewKubeCollectorError(t *testing.T) {
 }
 
 func TestNewKubeCollectorWithKubeconfigPath(t *testing.T) {
-	_, err := newKubeCollector("../../fixtures/kube.config.basic", nil)
+	_, err := newKubeCollector("../../fixtures/kube.config.basic", "", nil)
 	if err != nil {
 		t.Fatalf("Failed with: %s", err)
 	}
@@ -45,7 +45,7 @@ func TestNewKubeCollectorMultipleFiles(t *testing.T) {
 		t.Fatalf("Failed so set %s env variable for test: %s", kcEnvVar, err)
 	}
 
-	if _, err := newKubeCollector("", nil); err != nil {
+	if _, err := newKubeCollector("", "", nil); err != nil {
 		t.Fatalf("Failed with: %s", err)
 	}
 
@@ -69,7 +69,7 @@ func TestGetServerVersion(t *testing.T) {
 		GitVersion: gitVersion,
 	}
 
-	collector, err := newKubeCollector("", clientSet.Discovery())
+	collector, err := newKubeCollector("", "", clientSet.Discovery())
 	if err != nil {
 		t.Fatalf("failed to create kubeCollector from fake client: %s", err)
 	}
@@ -81,5 +81,29 @@ func TestGetServerVersion(t *testing.T) {
 
 	if !version.Equal(expectedVersion) {
 		t.Errorf("Expected version: %s, instead got: %s", expectedVersion.String(), version.String())
+	}
+}
+
+func TestContext(t *testing.T) {
+	expectedContext := "test-context"
+	expectedHost := "https://test-cluster"
+
+	collector, err := newKubeCollector("../../fixtures/kube.config.context", expectedContext, nil)
+	if err != nil {
+		t.Fatalf("Failed to create kubeCollector from fake client with context %s: %s", expectedContext, err)
+	}
+
+	host := collector.GetRestConfig().Host
+	if host != expectedHost {
+		t.Fatalf("Expected host from context %s to be: %s, got %s instead", expectedContext, expectedHost, host)
+	}
+}
+
+func TestContextMissing(t *testing.T) {
+	expectedContext := "non-existent"
+
+	_, err := newKubeCollector("../../fixtures/kube.config.context", expectedContext, nil)
+	if err == nil {
+		t.Fatalf("Expected to fail when uisng non-existent context: %s", expectedContext)
 	}
 }

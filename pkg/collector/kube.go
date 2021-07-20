@@ -14,7 +14,7 @@ type kubeCollector struct {
 	restConfig      *rest.Config
 }
 
-func newKubeCollector(kubeconfig string, discoveryClient discovery.DiscoveryInterface) (*kubeCollector, error) {
+func newKubeCollector(kubeconfig string, kubecontext string, discoveryClient discovery.DiscoveryInterface) (*kubeCollector, error) {
 	col := &kubeCollector{}
 
 	if discoveryClient == nil {
@@ -24,7 +24,13 @@ func newKubeCollector(kubeconfig string, discoveryClient discovery.DiscoveryInte
 		}
 
 		config, err := pathOptions.GetStartingConfig()
-		clientConfig := clientcmd.NewDefaultClientConfig(*config, &clientcmd.ConfigOverrides{})
+
+		configOverrides := clientcmd.ConfigOverrides{}
+		if kubecontext != "" {
+			configOverrides.CurrentContext = kubecontext
+		}
+
+		clientConfig := clientcmd.NewDefaultClientConfig(*config, &configOverrides)
 		col.restConfig, err = clientConfig.ClientConfig()
 		if err != nil {
 			return nil, err
