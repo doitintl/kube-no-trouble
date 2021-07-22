@@ -14,6 +14,7 @@ import (
 type Config struct {
 	AdditionalKinds []string
 	Cluster         bool
+	Context         string
 	ExitError       bool
 	Filenames       []string
 	Helm2           bool
@@ -32,6 +33,7 @@ func NewFromFlags() (*Config, error) {
 
 	flag.StringSliceVarP(&config.AdditionalKinds, "additional-kind", "a", []string{}, "additional kinds of resources to report in Kind.version.group.com format")
 	flag.BoolVarP(&config.Cluster, "cluster", "c", true, "enable Cluster collector")
+	flag.StringVarP(&config.Context, "context", "x", "", "kubeconfig context")
 	flag.BoolVarP(&config.ExitError, "exit-error", "e", false, "exit with non-zero code when issues are found")
 	flag.BoolVar(&config.Helm2, "helm2", true, "enable Helm v2 collector")
 	flag.BoolVar(&config.Helm3, "helm3", true, "enable Helm v3 collector")

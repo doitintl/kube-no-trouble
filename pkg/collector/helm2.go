@@ -20,12 +20,13 @@ type HelmV2Collector struct {
 
 type HelmV2Opts struct {
 	Kubeconfig      string
+	KubeContext     string
 	DiscoveryClient discovery.DiscoveryInterface
 }
 
 func NewHelmV2Collector(opts *HelmV2Opts) (*HelmV2Collector, error) {
 
-	kubeCollector, err := newKubeCollector(opts.Kubeconfig, opts.DiscoveryClient)
+	kubeCollector, err := newKubeCollector(opts.Kubeconfig, opts.KubeContext, opts.DiscoveryClient)
 	if err != nil {
 		return nil, err
 	}
