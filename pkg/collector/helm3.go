@@ -31,7 +31,7 @@ func NewHelmV3Collector(opts *HelmV3Opts) (*HelmV3Collector, error) {
 	}
 
 	collector := &HelmV3Collector{
-		commonCollector: newCommonCollector("Helm v2"),
+		commonCollector: newCommonCollector("Helm v3"),
 		kubeCollector:   kubeCollector,
 	}
 
