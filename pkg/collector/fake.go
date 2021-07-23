@@ -4,7 +4,10 @@ import (
 	goversion "github.com/hashicorp/go-version"
 )
 
-const FAKE_VERSION = "1.2.3"
+const (
+	FAKE_VERSION        = "1.2.3"
+	FAKE_COLLECTOR_NAME = "Fake"
+)
 
 type fakeCollector struct {
 	*commonCollector
@@ -16,7 +19,7 @@ func (c *fakeCollector) Get() ([]map[string]interface{}, error) {
 
 func NewFakeCollector() *fakeCollector {
 	return &fakeCollector{
-		commonCollector: newCommonCollector("Fake"),
+		commonCollector: newCommonCollector(FAKE_COLLECTOR_NAME),
 	}
 }
 

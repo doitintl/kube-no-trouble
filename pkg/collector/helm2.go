@@ -10,6 +10,8 @@ import (
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 )
 
+const HELM_V2_COLLECTOR_NAME = "Helm v2"
+
 type HelmV2Collector struct {
 	*commonCollector
 	*kubeCollector
@@ -33,7 +35,7 @@ func NewHelmV2Collector(opts *HelmV2Opts) (*HelmV2Collector, error) {
 	}
 
 	collector := &HelmV2Collector{
-		commonCollector: newCommonCollector("Helm v2"),
+		commonCollector: newCommonCollector(HELM_V2_COLLECTOR_NAME),
 		kubeCollector:   kubeCollector,
 	}
 

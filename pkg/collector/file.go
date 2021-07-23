@@ -13,6 +13,8 @@ import (
 	"helm.sh/helm/v3/pkg/releaseutil"
 )
 
+const FILE_COLLECTOR_NAME = "File"
+
 type FileCollector struct {
 	*commonCollector
 	filenames []string
@@ -29,7 +31,7 @@ func NewFileCollector(opts *FileOpts) (*FileCollector, error) {
 	}
 
 	collector := &FileCollector{
-		commonCollector: newCommonCollector("File"),
+		commonCollector: newCommonCollector(FILE_COLLECTOR_NAME),
 		filenames:       opts.Filenames,
 	}
 
