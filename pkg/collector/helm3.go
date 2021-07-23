@@ -13,7 +13,7 @@ import (
 type HelmV3Collector struct {
 	*commonCollector
 	*kubeCollector
-	client       *corev1.CoreV1Client
+	client       corev1.CoreV1Interface
 	secretsStore *storage.Storage
 	configStore  *storage.Storage
 }
@@ -22,6 +22,7 @@ type HelmV3Opts struct {
 	Kubeconfig      string
 	KubeContext     string
 	DiscoveryClient discovery.DiscoveryInterface
+	CoreClient      corev1.CoreV1Interface
 }
 
 func NewHelmV3Collector(opts *HelmV3Opts) (*HelmV3Collector, error) {
@@ -35,8 +36,9 @@ func NewHelmV3Collector(opts *HelmV3Opts) (*HelmV3Collector, error) {
 		kubeCollector:   kubeCollector,
 	}
 
-	collector.client, err = corev1.NewForConfig(kubeCollector.GetRestConfig())
-	if err != nil {
+	if opts.CoreClient != nil {
+		collector.client = opts.CoreClient
+	} else if collector.client, err = corev1.NewForConfig(kubeCollector.GetRestConfig()); err != nil {
 		return nil, err
 	}
 
