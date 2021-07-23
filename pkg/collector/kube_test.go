@@ -15,10 +15,10 @@ func TestNewKubeCollector(t *testing.T) {
 	col, err := newKubeCollector("", "", clientSet.Discovery())
 
 	if err != nil {
-		t.Errorf("Failed to create kubeCollector from fake discovery client")
+		t.Fatalf("Failed to create kubeCollector from fake discovery client")
 	}
 	if col == nil {
-		t.Errorf("Should return collector, instrad got nil")
+		t.Fatalf("Should return collector, got nil instead")
 	}
 }
 
