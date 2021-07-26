@@ -11,6 +11,8 @@ import (
 	"k8s.io/client-go/restmapper"
 )
 
+const CLUSTER_COLLECTOR_NAME = "Cluster"
+
 type ClusterCollector struct {
 	*commonCollector
 	*kubeCollector
@@ -33,7 +35,7 @@ func NewClusterCollector(opts *ClusterOpts, additionalKinds []string) (*ClusterC
 
 	collector := &ClusterCollector{
 		kubeCollector:   kubeCollector,
-		commonCollector: newCommonCollector("Cluster"),
+		commonCollector: newCommonCollector(CLUSTER_COLLECTOR_NAME),
 	}
 
 	if opts.ClientSet == nil {

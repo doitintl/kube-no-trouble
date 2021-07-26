@@ -10,10 +10,12 @@ import (
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 )
 
+const HELM_V3_COLLECTOR_NAME = "Helm v3"
+
 type HelmV3Collector struct {
 	*commonCollector
 	*kubeCollector
-	client       *corev1.CoreV1Client
+	client       corev1.CoreV1Interface
 	secretsStore *storage.Storage
 	configStore  *storage.Storage
 }
@@ -22,6 +24,7 @@ type HelmV3Opts struct {
 	Kubeconfig      string
 	KubeContext     string
 	DiscoveryClient discovery.DiscoveryInterface
+	CoreClient      corev1.CoreV1Interface
 }
 
 func NewHelmV3Collector(opts *HelmV3Opts) (*HelmV3Collector, error) {
@@ -31,12 +34,13 @@ func NewHelmV3Collector(opts *HelmV3Opts) (*HelmV3Collector, error) {
 	}
 
 	collector := &HelmV3Collector{
-		commonCollector: newCommonCollector("Helm v2"),
+		commonCollector: newCommonCollector(HELM_V3_COLLECTOR_NAME),
 		kubeCollector:   kubeCollector,
 	}
 
-	collector.client, err = corev1.NewForConfig(kubeCollector.GetRestConfig())
-	if err != nil {
+	if opts.CoreClient != nil {
+		collector.client = opts.CoreClient
+	} else if collector.client, err = corev1.NewForConfig(kubeCollector.GetRestConfig()); err != nil {
 		return nil, err
 	}
 

@@ -17,7 +17,9 @@ type kubeCollector struct {
 func newKubeCollector(kubeconfig string, kubecontext string, discoveryClient discovery.DiscoveryInterface) (*kubeCollector, error) {
 	col := &kubeCollector{}
 
-	if discoveryClient == nil {
+	if discoveryClient != nil {
+		col.discoveryClient = discoveryClient
+	} else {
 		pathOptions := clientcmd.NewDefaultPathOptions()
 		if kubeconfig != "" {
 			pathOptions.GlobalFile = kubeconfig
@@ -36,12 +38,9 @@ func newKubeCollector(kubeconfig string, kubecontext string, discoveryClient dis
 			return nil, err
 		}
 
-		col.discoveryClient, err = discovery.NewDiscoveryClientForConfig(col.restConfig)
-		if err != nil {
+		if col.discoveryClient, err = discovery.NewDiscoveryClientForConfig(col.restConfig); err != nil {
 			return nil, err
 		}
-	} else {
-		col.discoveryClient = discoveryClient
 	}
 
 	return col, nil
