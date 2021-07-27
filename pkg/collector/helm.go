@@ -33,7 +33,7 @@ func fixNamespace(manifest *map[string]interface{}, defaultNamespace string) {
 	if meta, ok := (*manifest)["metadata"]; ok {
 		switch v := meta.(type) {
 		case map[string]interface{}:
-			if _, ok := v["namespace"]; !ok {
+			if val, ok := v["namespace"]; !ok || val == nil {
 				v["namespace"] = defaultNamespace
 			}
 		}
