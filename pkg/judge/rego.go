@@ -40,7 +40,7 @@ func NewRegoJudge(opts *RegoOpts, rules []rules.Rule) (*RegoJudge, error) {
 func (j *RegoJudge) Eval(input []map[string]interface{}) ([]Result, error) {
 	ctx := context.Background()
 
-	log.Debug().Msgf("evaluating +%v", input)
+	log.Trace().Msgf("evaluating +%v", input)
 	rs, err := j.preparedQuery.Eval(ctx, rego.EvalInput(input))
 	if err != nil {
 		return nil, err
@@ -51,6 +51,7 @@ func (j *RegoJudge) Eval(input []map[string]interface{}) ([]Result, error) {
 		for _, e := range r.Expressions {
 			for _, i := range e.Value.([]interface{}) {
 				m := i.(map[string]interface{})
+				log.Trace().Msgf("parsing +%v", m)
 
 				since, err := goversion.NewVersion(m["Since"].(string))
 				if err != nil {
