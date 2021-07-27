@@ -1,11 +1,9 @@
 package collector
 
 import (
-	"github.com/ghodss/yaml"
 	"github.com/rs/zerolog/log"
 	"helm.sh/helm/pkg/storage"
 	"helm.sh/helm/pkg/storage/driver"
-	"helm.sh/helm/v3/pkg/releaseutil"
 	"k8s.io/client-go/discovery"
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 )
@@ -70,27 +68,10 @@ func (c *HelmV2Collector) Get() ([]map[string]interface{}, error) {
 	var results []map[string]interface{}
 
 	for _, r := range releases {
-		manifests := releaseutil.SplitManifests(r.Manifest)
-		for _, m := range manifests {
-			var manifest map[string]interface{}
-
-			err := yaml.Unmarshal([]byte(m), &manifest)
-			if err != nil {
-				log.Warn().Msgf("failed to parse release %s/%s: %v", r.Namespace, r.Name, err)
-				continue
-			}
-
-			// Default to the release namespace if the manifest doesn't have the namespace set
-			if meta, ok := manifest["metadata"]; ok {
-				switch v := meta.(type) {
-				case map[string]interface{}:
-					if _, ok := v["namespace"]; !ok {
-						v["namespace"] = r.Namespace
-					}
-				}
-			}
-
-			results = append(results, manifest)
+		if manifests, err := parseManifests(r.Manifest, r.Namespace); err != nil {
+			log.Warn().Msgf("failed to parse release %s/%s: %v", r.Namespace, r.Name, err)
+		} else {
+			results = append(results, manifests...)
 		}
 	}
 
