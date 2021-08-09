@@ -6,10 +6,12 @@ repos:
       - id: check-added-large-files
       - id: trailing-whitespace
       - id: end-of-file-fixer
+        exclude_types: [ svg ]
   - repo: https://github.com/jumanjihouse/pre-commit-hooks
     rev: master
     hooks:
       - id: forbid-binary
+        exclude_types: [ png ]
       - id: git-dirty
   - repo: https://github.com/Lucas-C/pre-commit-hooks-go
     rev: master
