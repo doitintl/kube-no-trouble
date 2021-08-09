@@ -1,6 +1,6 @@
-# Kube No Trouble - `kubent`
+![Kubent (Kube-No-Trouble) logo](./docs/imgs/kubent-logo.svg)
 
-__*Easily check your cluster for use of deprecated APIs*__
+__*Easily check your clusters for use of deprecated APIs*__
 
 Kubernetes 1.16 is slowly starting to roll out, not only across various managed
 Kubernetes offerings, and with that come a lot of API deprecations[1][1].
