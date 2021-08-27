@@ -20,7 +20,7 @@ func TestJsonPopulateOutput(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(j) != 2 {
+	if len(j) != len(testInput) {
 		t.Error("wrong number of results")
 	}
 }

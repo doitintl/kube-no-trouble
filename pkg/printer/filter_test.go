@@ -30,12 +30,21 @@ var testInput []judge.Result = []judge.Result{
 		ReplaceWith: "testReplaceWith2",
 		Since:       testVersion2,
 	},
+	{
+		Name:        "testName3",
+		Kind:        "testKind3",
+		Namespace:   "testNamespace3",
+		ApiVersion:  "v1",
+		RuleSet:     "testRuleset3",
+		ReplaceWith: "testReplaceWith3",
+		Since:       nil,
+	},
 }
 
 func TestFilterNonRelevantResults(t *testing.T) {
 	filterVersion, _ := goversion.NewVersion("2.0.0")
 
-	results, err := FilterNonRelevantResults(testInput, filterVersion)
+	results, err := FilterNonRelevantResults(testInput[0:2], filterVersion)
 	if err != nil {
 		t.Fatalf("failed to filter results: %s", err)
 	}
@@ -60,7 +69,20 @@ func TestFilterNonRelevantResultsEmpty(t *testing.T) {
 	}
 }
 
-func TestFilterNonRelevantResultsNilVersion(t *testing.T) {
+func TestFilterNonRelevantResultsWithNilVersion(t *testing.T) {
+	filterVersion, _ := goversion.NewVersion("2.0.0")
+
+	results, err := FilterNonRelevantResults(testInput[2:3], filterVersion)
+	if err != nil {
+		t.Fatalf("failed to filter results: %s", err)
+	}
+
+	if len(results) != 1 {
+		t.Errorf("expected 1 results after filter, got %d intead", len(results))
+	}
+}
+
+func TestFilterNonRelevantResultsNilTargetVersion(t *testing.T) {
 	var filterVersion *goversion.Version
 
 	results, err := FilterNonRelevantResults(testInput, filterVersion)

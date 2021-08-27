@@ -55,7 +55,7 @@ func (j *RegoJudge) Eval(input []map[string]interface{}) ([]Result, error) {
 
 				since, err := goversion.NewVersion(m["Since"].(string))
 				if err != nil {
-					return nil, err
+					log.Debug().Msgf("Failed to parse version: %s", err)
 				}
 
 				results = append(results, Result{
