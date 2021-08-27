@@ -11,7 +11,7 @@ func FilterNonRelevantResults(results []judge.Result, tv *goversion.Version) ([]
 		filtered := []judge.Result{}
 
 		for i := range results {
-			if results[i].Since.LessThanOrEqual(tv) {
+			if results[i].Since == nil || results[i].Since.LessThanOrEqual(tv) {
 				filtered = append(filtered, results[i])
 			}
 		}
