@@ -53,9 +53,12 @@ func (j *RegoJudge) Eval(input []map[string]interface{}) ([]Result, error) {
 				m := i.(map[string]interface{})
 				log.Trace().Msgf("parsing +%v", m)
 
+				sinceStr := ""
 				since, err := goversion.NewVersion(m["Since"].(string))
 				if err != nil {
 					log.Debug().Msgf("Failed to parse version: %s", err)
+				} else {
+					sinceStr = since.String()
 				}
 
 				results = append(results, Result{
@@ -66,6 +69,7 @@ func (j *RegoJudge) Eval(input []map[string]interface{}) ([]Result, error) {
 					ReplaceWith: m["ReplaceWith"].(string),
 					RuleSet:     m["RuleSet"].(string),
 					Since:       since,
+					SinceStr:    sinceStr,
 				})
 			}
 		}

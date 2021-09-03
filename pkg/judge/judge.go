@@ -11,7 +11,8 @@ type Result struct {
 	ApiVersion  string
 	RuleSet     string
 	ReplaceWith string
-	Since       *goversion.Version
+	Since       *goversion.Version `json:"-"`
+	SinceStr    string             `json:"Since"`
 }
 
 type Judge interface {

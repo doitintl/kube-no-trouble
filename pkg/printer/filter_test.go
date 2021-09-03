@@ -20,6 +20,7 @@ var testInput []judge.Result = []judge.Result{
 		RuleSet:     "testRuleset1",
 		ReplaceWith: "testReplaceWith1",
 		Since:       testVersion1,
+		SinceStr:    "1.1.1",
 	},
 	{
 		Name:        "testName2",
@@ -29,6 +30,7 @@ var testInput []judge.Result = []judge.Result{
 		RuleSet:     "testRuleset2",
 		ReplaceWith: "testReplaceWith2",
 		Since:       testVersion2,
+		SinceStr:    "1.1.2",
 	},
 	{
 		Name:        "testName3",

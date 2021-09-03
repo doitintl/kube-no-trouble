@@ -23,4 +23,13 @@ func TestJsonPopulateOutput(t *testing.T) {
 	if len(j) != len(testInput) {
 		t.Error("wrong number of results")
 	}
+	if "1.1.1" != j[0].SinceStr {
+		t.Errorf("Expected 1st Since '1.1.1' not '%s'", j[0].SinceStr)
+	}
+	if "1.1.2" != j[1].SinceStr {
+		t.Errorf("Expected 2nd Since '1.1.2' not '%s'", j[1].SinceStr)
+	}
+	if "" != j[2].SinceStr {
+		t.Errorf("Expected 3rd Since '' not '%s'", j[2].SinceStr)
+	}
 }
