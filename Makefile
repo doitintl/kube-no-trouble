@@ -31,33 +31,30 @@ GIT_SHA ?= $(GITHUB_SHA)
 CGO_ENABLED ?= 0
 GOOS ?= $(shell go env GOOS)
 GOARCH ?= $(shell go env GOARCH)
+BIN_ARCH ?= $(GOOS)-$(GOARCH)
 
 BIN_DIR ?= bin
 CMD_DIR ?= cmd
 RELEASE_DIR ?= release-artifacts
-PACKED_DIR ?= $(BIN_DIR)/packed
 CMDS ?= $(shell ls $(CMD_DIR))
-BINS ?= $(addsuffix -$(GOOS)-$(GOARCH),$(addprefix $(BIN_DIR)/,$(CMDS)))
+BINS ?= $(addsuffix -$(BIN_ARCH),$(addprefix $(BIN_DIR)/,$(CMDS)))
 CHANGELOG ?= changelog.md
 
-BIN_ARCH ?= $(GOOS)-$(GOARCH)
 RELEASE_SUFFIX ?= $(GIT_REF)-$(BIN_ARCH).tar.gz
-PACKED_BINS ?= $(addsuffix -$(BIN_ARCH),$(addprefix $(PACKED_DIR)/,$(CMDS)))
 RELEASE_ARTIFACTS ?= $(addsuffix -$(RELEASE_SUFFIX),$(addprefix $(RELEASE_DIR)/,$(CMDS)))
 SRC ?= $(shell find . -iname '*.go')
 
 GOCMD ?= go
 GOBUILD ?= $(GOCMD) build
-UPXCMD ?= upx
 
-REQ_BINS = upx go opa
+REQ_BINS = go opa
 
 _ := $(foreach exec,$(REQ_BINS), \
        $(if $(shell which $(exec)),some string,$(error "No $(exec) binary in $$PATH")))
 
 
 ## Clean, build and pack
-all: build pack release-artifacts
+all: build release-artifacts
 .PHONY: all
 
 ## Prints list of tasks
@@ -72,25 +69,16 @@ build: $(BINS)
 $(BIN_DIR)/%-$(BIN_ARCH): $(SRC) go.mod go.sum
 	mkdir -p $(BIN_DIR)
 	$(GOBUILD) -ldflags="-s -w -X main.version=$(GIT_REF) -X main.gitSha=$(GIT_SHA)" \
-	-o "$@" \
+	-o "$(addsuffix $(BIN_RELEASE_SUFFIX),$@)" \
 	"./$(CMD_DIR)/$(*)"
-
-## Pack binaries with upx
-pack: $(PACKED_BINS)
-.PHONY: pack
-
-$(PACKED_DIR)/%-$(BIN_ARCH): $(BIN_DIR)/%-$(BIN_ARCH)
-	mkdir -p $(PACKED_DIR)
-	$(UPXCMD) --lzma --best -f -o "$@" "$<" \
-	&& touch "$@"
 
 ## Create release artifacts
 release-artifacts: $(RELEASE_ARTIFACTS)
 .PHONY: release-artifacts
 
-$(RELEASE_DIR)/%-$(RELEASE_SUFFIX): $(PACKED_DIR)/%-$(BIN_ARCH)
+$(RELEASE_DIR)/%-$(RELEASE_SUFFIX): $(BIN_DIR)/kubent-$(BIN_ARCH)$(BIN_RELEASE_SUFFIX)
 	mkdir -p $(RELEASE_DIR)
-	$(TAR) -cvz --transform 's,$(PACKED_DIR)/$(*)-$(BIN_ARCH),$(*)$(BIN_RELEASE_SUFFIX),gi' -f "$@" "$<"
+	$(TAR) -cvz --transform 's,$(BIN_DIR)/$(*)-$(BIN_ARCH)$(BIN_RELEASE_SUFFIX),$(*)$(BIN_RELEASE_SUFFIX),gi' -f "$@" "$<"
 
 ## Run Go tests
 test: test-fmt test-git
