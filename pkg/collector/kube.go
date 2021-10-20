@@ -3,10 +3,11 @@ package collector
 import (
 	"fmt"
 
-	goversion "github.com/hashicorp/go-version"
 	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
+
+	"github.com/doitintl/kube-no-trouble/pkg/judge"
 )
 
 type kubeCollector struct {
@@ -46,13 +47,13 @@ func newKubeCollector(kubeconfig string, kubecontext string, discoveryClient dis
 	return col, nil
 }
 
-func (c *kubeCollector) GetServerVersion() (*goversion.Version, error) {
+func (c *kubeCollector) GetServerVersion() (*judge.Version, error) {
 	version, err := c.discoveryClient.ServerVersion()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get server version %w", err)
 	}
 
-	return goversion.NewVersion(version.String())
+	return judge.NewVersion(version.String())
 }
 
 func (c *kubeCollector) GetRestConfig() *rest.Config {

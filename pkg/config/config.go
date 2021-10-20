@@ -5,6 +5,7 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/doitintl/kube-no-trouble/pkg/judge"
 	"github.com/doitintl/kube-no-trouble/pkg/printer"
 
 	"github.com/rs/zerolog"
@@ -22,13 +23,13 @@ type Config struct {
 	Kubeconfig      string
 	LogLevel        ZeroLogLevel
 	Output          string
-	TargetVersion   Version
+	TargetVersion   *judge.Version
 }
 
 func NewFromFlags() (*Config, error) {
 	config := Config{
 		LogLevel:      ZeroLogLevel(zerolog.InfoLevel),
-		TargetVersion: *NewVersion(),
+		TargetVersion: &judge.Version{},
 	}
 
 	flag.StringSliceVarP(&config.AdditionalKinds, "additional-kind", "a", []string{}, "additional kinds of resources to report in Kind.version.group.com format")
@@ -41,7 +42,7 @@ func NewFromFlags() (*Config, error) {
 	flag.StringVarP(&config.Kubeconfig, "kubeconfig", "k", "", "path to the kubeconfig file")
 	flag.StringVarP(&config.Output, "output", "o", "text", "output format - [text|json]")
 	flag.VarP(&config.LogLevel, "log-level", "l", "set log level (trace, debug, info, warn, error, fatal, panic, disabled)")
-	flag.VarP(&config.TargetVersion, "target-version", "t", "target K8s version in SemVer format (autodetected by default)")
+	flag.VarP(config.TargetVersion, "target-version", "t", "target K8s version in SemVer format (autodetected by default)")
 
 	flag.Parse()
 
@@ -51,6 +52,13 @@ func NewFromFlags() (*Config, error) {
 
 	if err := validateAdditionalResources(config.AdditionalKinds); err != nil {
 		return nil, fmt.Errorf("failed to validate arguments: %w", err)
+	}
+
+	// This is a little ugly, but I think preferred to implementing
+	// unset semantics & logic compared to using nil
+	// and should be solvable by using new https://pkg.go.dev/flag#Func
+	if config.TargetVersion.Version == nil {
+		config.TargetVersion = nil
 	}
 
 	return &config, nil

@@ -1,9 +1,5 @@
 package judge
 
-import (
-	goversion "github.com/hashicorp/go-version"
-)
-
 type Result struct {
 	Name        string
 	Namespace   string
@@ -11,7 +7,7 @@ type Result struct {
 	ApiVersion  string
 	RuleSet     string
 	ReplaceWith string
-	Since       *goversion.Version
+	Since       *Version
 }
 
 type Judge interface {

@@ -2,8 +2,6 @@ package judge
 
 import (
 	"context"
-	goversion "github.com/hashicorp/go-version"
-
 	"github.com/doitintl/kube-no-trouble/pkg/rules"
 	"github.com/open-policy-agent/opa/rego"
 	"github.com/rs/zerolog/log"
@@ -53,7 +51,7 @@ func (j *RegoJudge) Eval(input []map[string]interface{}) ([]Result, error) {
 				m := i.(map[string]interface{})
 				log.Trace().Msgf("parsing +%v", m)
 
-				since, err := goversion.NewVersion(m["Since"].(string))
+				since, err := NewVersion(m["Since"].(string))
 				if err != nil {
 					log.Debug().Msgf("Failed to parse version: %s", err)
 				}
