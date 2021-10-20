@@ -76,21 +76,20 @@ func initCollectors(config *config.Config) []collector.Collector {
 	return collectors
 }
 
-func getServerVersion(cv *config.Version, collectors []collector.Collector) error {
-	if cv.Version == nil {
+func getServerVersion(cv *judge.Version, collectors []collector.Collector) (*judge.Version, error) {
+	if cv == nil {
 		for _, c := range collectors {
 			if versionCol, ok := c.(collector.VersionCollector); ok {
-				goversion, err := versionCol.GetServerVersion()
+				version, err := versionCol.GetServerVersion()
 				if err != nil {
-					return fmt.Errorf("failed to detect k8s version: %w", err)
+					return nil, fmt.Errorf("failed to detect k8s version: %w", err)
 				}
 
-				cv.SetFromVersion(goversion)
-				return nil
+				return version, nil
 			}
 		}
 	}
-	return nil
+	return cv, nil
 }
 
 func main() {
@@ -111,8 +110,8 @@ func main() {
 	log.Info().Msg("Initializing collectors and retrieving data")
 	initCollectors := initCollectors(config)
 
-	getServerVersion(&config.TargetVersion, initCollectors)
-	if config.TargetVersion.Version != nil {
+	config.TargetVersion, err = getServerVersion(config.TargetVersion, initCollectors)
+	if config.TargetVersion != nil {
 		log.Info().Msgf("Target K8s version is %s", config.TargetVersion.String())
 	}
 
@@ -141,7 +140,7 @@ func main() {
 		log.Fatal().Err(err).Str("name", "Rego").Msg("Failed to evaluate input")
 	}
 
-	results, err = printer.FilterNonRelevantResults(results, config.TargetVersion.Version)
+	results, err = printer.FilterNonRelevantResults(results, config.TargetVersion)
 	if err != nil {
 		log.Fatal().Err(err).Str("name", "Rego").Msg("Failed to filter results")
 	}

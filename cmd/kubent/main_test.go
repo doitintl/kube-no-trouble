@@ -9,8 +9,8 @@ import (
 
 	"github.com/doitintl/kube-no-trouble/pkg/collector"
 	"github.com/doitintl/kube-no-trouble/pkg/config"
+	"github.com/doitintl/kube-no-trouble/pkg/judge"
 
-	goversion "github.com/hashicorp/go-version"
 	"github.com/rs/zerolog"
 )
 
@@ -147,13 +147,12 @@ func TestMainExitCodes(t *testing.T) {
 func TestGetServerVersionNone(t *testing.T) {
 	collectors := []collector.Collector{}
 
-	version := config.NewVersion()
-
-	if err := getServerVersion(version, collectors); err != nil {
+	version, err := getServerVersion(nil, collectors)
+	if err != nil {
 		t.Errorf("Failed to get version with error: %s", err)
 	}
 
-	if version.Version != nil {
+	if version != nil {
 		t.Errorf("Expected no version to be detected, instead got: %s", version.String())
 	}
 }
@@ -167,32 +166,29 @@ func TestGetServerVersionNotSupported(t *testing.T) {
 	}
 
 	collectors = storeCollector(fileCollector, err, collectors)
-	version := config.NewVersion()
-
-	err = getServerVersion(version, collectors)
+	version, err := getServerVersion(nil, collectors)
 	if err != nil {
 		t.Errorf("Failed to get version with error: %s", err)
 	}
 
-	if version.Version != nil {
+	if version != nil {
 		t.Errorf("Expected no version to be detected, instead got: %s", version.String())
 	}
 }
 
 func TestGetServerVersion(t *testing.T) {
 	collectors := []collector.Collector{}
-	version := config.NewVersion()
 
 	fc := collector.NewFakeCollector()
 	collectors = storeCollector(fc, nil, collectors)
 
-	err := getServerVersion(version, collectors)
+	version, err := getServerVersion(nil, collectors)
 	if err != nil {
 		t.Errorf("Failed to get version with error: %s", err)
 	}
 
-	fakeVersion, err := goversion.NewVersion(collector.FAKE_VERSION)
-	if version.Compare(fakeVersion) != 0 {
+	fakeVersion, err := judge.NewVersion(collector.FAKE_VERSION)
+	if version.Compare(fakeVersion.Version) != 0 {
 		t.Errorf("Expected %s version to be detected, instead got: %s", fakeVersion.String(), version.String())
 	}
 }
