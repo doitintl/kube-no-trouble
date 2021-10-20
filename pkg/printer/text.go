@@ -43,7 +43,7 @@ func (c *textPrinter) Print(results []judge.Result) error {
 			fmt.Fprintf(w, "%s\n", strings.Repeat("-", 90))
 			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s (%s)\n", "KIND", "NAMESPACE", "NAME", "API_VERSION", "REPLACE_WITH", "SINCE")
 		}
-		fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s (%s+)\n", r.Kind, r.Namespace, r.Name, r.ApiVersion, r.ReplaceWith, r.Since)
+		fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s (%s)\n", r.Kind, r.Namespace, r.Name, r.ApiVersion, r.ReplaceWith, r.Since)
 	}
 	w.Flush()
 	return nil

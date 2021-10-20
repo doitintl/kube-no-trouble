@@ -9,6 +9,18 @@ type Version struct {
 	*goversion.Version
 }
 
+func (v *Version) MarshalText() ([]byte, error) {
+	return []byte(v.String()), nil
+}
+
+func (v *Version) UnmarshalText(text []byte) error {
+	if err := v.Set(string(text)); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (v *Version) String() string {
 	if v != nil && v.Version != nil {
 		return v.Version.String()
