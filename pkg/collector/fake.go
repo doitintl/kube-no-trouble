@@ -1,7 +1,7 @@
 package collector
 
 import (
-	goversion "github.com/hashicorp/go-version"
+	"github.com/doitintl/kube-no-trouble/pkg/judge"
 )
 
 const (
@@ -23,8 +23,8 @@ func NewFakeCollector() *fakeCollector {
 	}
 }
 
-func (c *fakeCollector) GetServerVersion() (*goversion.Version, error) {
-	version, err := goversion.NewVersion(FAKE_VERSION)
+func (c *fakeCollector) GetServerVersion() (*judge.Version, error) {
+	version, err := judge.NewVersion(FAKE_VERSION)
 
 	return version, err
 }

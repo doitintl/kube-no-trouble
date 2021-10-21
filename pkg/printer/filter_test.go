@@ -4,12 +4,10 @@ import (
 	"testing"
 
 	"github.com/doitintl/kube-no-trouble/pkg/judge"
-
-	goversion "github.com/hashicorp/go-version"
 )
 
-var testVersion1, _ = goversion.NewVersion("1.1.1")
-var testVersion2, _ = goversion.NewVersion("2.2.2")
+var testVersion1, _ = judge.NewVersion("1.1.1")
+var testVersion2, _ = judge.NewVersion("2.2.2")
 
 var testInput []judge.Result = []judge.Result{
 	{
@@ -42,7 +40,7 @@ var testInput []judge.Result = []judge.Result{
 }
 
 func TestFilterNonRelevantResults(t *testing.T) {
-	filterVersion, _ := goversion.NewVersion("2.0.0")
+	filterVersion, _ := judge.NewVersion("2.0.0")
 
 	results, err := FilterNonRelevantResults(testInput[0:2], filterVersion)
 	if err != nil {
@@ -55,7 +53,7 @@ func TestFilterNonRelevantResults(t *testing.T) {
 }
 
 func TestFilterNonRelevantResultsEmpty(t *testing.T) {
-	filterVersion, _ := goversion.NewVersion("2.0.0")
+	filterVersion, _ := judge.NewVersion("2.0.0")
 
 	var input []judge.Result = []judge.Result{}
 
@@ -70,7 +68,7 @@ func TestFilterNonRelevantResultsEmpty(t *testing.T) {
 }
 
 func TestFilterNonRelevantResultsWithNilVersion(t *testing.T) {
-	filterVersion, _ := goversion.NewVersion("2.0.0")
+	filterVersion, _ := judge.NewVersion("2.0.0")
 
 	results, err := FilterNonRelevantResults(testInput[2:3], filterVersion)
 	if err != nil {
@@ -83,7 +81,7 @@ func TestFilterNonRelevantResultsWithNilVersion(t *testing.T) {
 }
 
 func TestFilterNonRelevantResultsNilTargetVersion(t *testing.T) {
-	var filterVersion *goversion.Version
+	var filterVersion *judge.Version
 
 	results, err := FilterNonRelevantResults(testInput, filterVersion)
 	if err != nil {

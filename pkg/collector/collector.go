@@ -1,7 +1,7 @@
 package collector
 
 import (
-	goversion "github.com/hashicorp/go-version"
+	"github.com/doitintl/kube-no-trouble/pkg/judge"
 )
 
 type Collector interface {
@@ -10,7 +10,7 @@ type Collector interface {
 }
 
 type VersionCollector interface {
-	GetServerVersion() (*goversion.Version, error)
+	GetServerVersion() (*judge.Version, error)
 }
 
 type commonCollector struct {

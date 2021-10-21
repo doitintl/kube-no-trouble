@@ -131,7 +131,7 @@ func TestTargetVersionInvalid(t *testing.T) {
 		os.Args[1] = "--target-version=" + v
 		config, _ := NewFromFlags()
 
-		if config.TargetVersion.Version != nil {
+		if config.TargetVersion != nil {
 			t.Errorf("expected --target-version flag parsing to fail for: %s", v)
 		}
 	}
