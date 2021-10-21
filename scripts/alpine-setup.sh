@@ -12,7 +12,8 @@ apk add --update --no-cache \
 	git \
 	jq \
 	make \
-	tar
+	tar \
+	xz
 
 
 wget -qO- "https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz" \

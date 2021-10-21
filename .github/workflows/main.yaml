@@ -18,7 +18,7 @@ jobs:
     needs:
       [pre-commit]
     runs-on: ubuntu-latest
-    container: golang:1.16.5-alpine3.12
+    container: golang:1.17.1-alpine3.14
     steps:
     - name: Checkout code
       uses: actions/checkout@v1
@@ -33,7 +33,7 @@ jobs:
     needs:
       [pre-commit]
     runs-on: ubuntu-latest
-    container: golang:1.16.5-alpine3.12
+    container: golang:1.17.1-alpine3.14
     strategy:
       matrix:
         os: [linux, darwin, windows]
