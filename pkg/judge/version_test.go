@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestVersion_MarshalText(t *testing.T) {
+func TestVersionMarshalText(t *testing.T) {
 	v := "1.2.3"
 
 	version, err := NewVersion(v)
@@ -24,7 +24,7 @@ func TestVersion_MarshalText(t *testing.T) {
 	}
 }
 
-func TestVersion_String(t *testing.T) {
+func TestVersionString(t *testing.T) {
 	v := "1.2.3"
 
 	version, err := NewVersion(v)
@@ -42,7 +42,7 @@ func TestVersion_String(t *testing.T) {
 	}
 }
 
-func TestVersion_StringNil(t *testing.T) {
+func TestVersionStringNil(t *testing.T) {
 	var version Version
 	expected := ""
 
@@ -75,7 +75,7 @@ func TestNewVersionEmpty(t *testing.T) {
 	}
 }
 
-func TestVersion_Set(t *testing.T) {
+func TestVersionSet(t *testing.T) {
 	expected := "1.2.3"
 	v := Version{}
 
@@ -89,7 +89,7 @@ func TestVersion_Set(t *testing.T) {
 	}
 }
 
-func TestVersion_NewFromGoVersion(t *testing.T) {
+func TestVersionNewFromGoVersion(t *testing.T) {
 	expected := "1.2.3"
 	goVer, err := goversion.NewVersion(expected)
 	if err != nil {
@@ -106,7 +106,7 @@ func TestVersion_NewFromGoVersion(t *testing.T) {
 	}
 }
 
-func TestVersion_UnmarshalText(t *testing.T) {
+func TestVersionUnmarshalText(t *testing.T) {
 	expected := "1.2.3"
 	source, err := NewVersion(expected)
 	if err != nil {
