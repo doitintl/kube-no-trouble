@@ -17,9 +17,9 @@ ifneq (3.82,$(firstword $(sort $(MAKE_VERSION) 3.82)))
 endif
 
 ifeq (windows,$(GOOS))
-  BIN_RELEASE_SUFFIX ?= .exe
+  BIN_SUFFIX ?= .exe
 endif
-BIN_RELEASE_SUFFIX ?=
+BIN_SUFFIX ?=
 
 .DEFAULT_GOAL :=help
 
@@ -32,15 +32,15 @@ CGO_ENABLED ?= 0
 GOOS ?= $(shell go env GOOS)
 GOARCH ?= $(shell go env GOARCH)
 BIN_ARCH ?= $(GOOS)-$(GOARCH)
+RELEASE_SUFFIX ?= $(GIT_REF)-$(BIN_ARCH).tar.gz
 
 BIN_DIR ?= bin
 CMD_DIR ?= cmd
 RELEASE_DIR ?= release-artifacts
 CMDS ?= $(shell ls $(CMD_DIR))
-BINS ?= $(addsuffix -$(BIN_ARCH),$(addprefix $(BIN_DIR)/,$(CMDS)))
+BINS ?= $(addsuffix -$(BIN_ARCH)$(BIN_SUFFIX),$(addprefix $(BIN_DIR)/,$(CMDS)))
 CHANGELOG ?= changelog.md
 
-RELEASE_SUFFIX ?= $(GIT_REF)-$(BIN_ARCH).tar.gz
 RELEASE_ARTIFACTS ?= $(addsuffix -$(RELEASE_SUFFIX),$(addprefix $(RELEASE_DIR)/,$(CMDS)))
 SRC ?= $(shell find . -iname '*.go')
 
@@ -66,7 +66,7 @@ help:
 build: $(BINS)
 .PHONY: build
 
-$(BIN_DIR)/%-$(BIN_ARCH): $(SRC) go.mod go.sum
+$(BIN_DIR)/%-$(BIN_ARCH)$(BIN_SUFFIX): $(SRC) go.mod go.sum
 	mkdir -p $(BIN_DIR)
 	$(GOBUILD) -ldflags="-s -w -X main.version=$(GIT_REF) -X main.gitSha=$(GIT_SHA)" \
 	-o "$(addsuffix $(BIN_RELEASE_SUFFIX),$@)" \
@@ -76,9 +76,9 @@ $(BIN_DIR)/%-$(BIN_ARCH): $(SRC) go.mod go.sum
 release-artifacts: $(RELEASE_ARTIFACTS)
 .PHONY: release-artifacts
 
-$(RELEASE_DIR)/%-$(RELEASE_SUFFIX): $(BIN_DIR)/kubent-$(BIN_ARCH)$(BIN_RELEASE_SUFFIX)
+$(RELEASE_DIR)/%-$(RELEASE_SUFFIX): $(BIN_DIR)/%-$(BIN_ARCH)$(BIN_SUFFIX)
 	mkdir -p $(RELEASE_DIR)
-	$(TAR) -cvz --transform 's,$(BIN_DIR)/$(*)-$(BIN_ARCH)$(BIN_RELEASE_SUFFIX),$(*)$(BIN_RELEASE_SUFFIX),gi' -f "$@" "$<"
+	$(TAR) -cvz --transform 's,$(BIN_DIR)/$(*)-$(BIN_ARCH)$(BIN_SUFFIX),$(*)$(BIN_SUFFIX),gi' -f "$@" "$<"
 
 ## Run Go tests
 test: test-fmt test-git
@@ -98,7 +98,7 @@ test-git:
 
 ## Clean build artifacts
 clean:
-	rm -rf $(BIN_DIR)
+	rm -rf $(BIN_DIR) $(RELEASE_DIR)
 .PHONY: clean
 
 ## Generate Changelog based on PRs
