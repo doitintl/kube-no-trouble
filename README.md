@@ -159,7 +159,6 @@ all                            Cean, build and pack
 help                           Prints list of tasks
 build                          Build binary
 generate                       Go generate
-pack                           Pack binaries with upx
 release-artifacts              Create release artifacts
 clean                          Clean build artifacts
 ```
