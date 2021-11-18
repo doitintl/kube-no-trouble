@@ -1,9 +1,9 @@
 package collector
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -16,14 +16,13 @@ import (
 
 func TestNewClusterCollectorBadPath(t *testing.T) {
 	testOpts := ClusterOpts{Kubeconfig: "bad path"}
-	result, funcErr := NewClusterCollector(&testOpts, []string{})
+	_, err := NewClusterCollector(&testOpts, []string{})
 
-	if funcErr.Error() != "invalid configuration: no configuration has been provided" {
-		out, err := json.Marshal(result)
+	if !strings.Contains(err.Error(), "no configuration has been provided") {
 		if err != nil {
-			t.Errorf("Should have errored with invalid configuration error instead got: %s", string(out))
+			t.Errorf("Should have errored with invalid configuration error instead got: %s", err)
 		} else {
-			t.Errorf("Should have errored instead got: %s", funcErr)
+			t.Errorf("Should have failed but succeeded")
 		}
 	}
 }

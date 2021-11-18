@@ -1,6 +1,7 @@
 package collector
 
 import (
+	"k8s.io/client-go/rest"
 	"os"
 	"path/filepath"
 	"testing"
@@ -30,36 +31,6 @@ func TestNewKubeCollectorError(t *testing.T) {
 
 	if err == nil {
 		t.Errorf("Expected to fail with non-existent kubeconfig")
-	}
-}
-
-func TestNewKubeCollectorWithKubeconfigPath(t *testing.T) {
-	_, err := newKubeCollector("../../fixtures/kube.config.basic", "", nil)
-	if err != nil {
-		t.Fatalf("Failed with: %s", err)
-	}
-}
-
-func TestNewKubeCollectorMultipleFiles(t *testing.T) {
-	kcEnvVar := "KUBECONFIG"
-	oldKubeConfig, oldSet := os.LookupEnv(kcEnvVar)
-
-	if err := os.Setenv(kcEnvVar, "../../fixtures/kube.config.empty:../../fixtures/kube.config.basic"); err != nil {
-		t.Fatalf("Failed so set %s env variable for test: %s", kcEnvVar, err)
-	}
-
-	if _, err := newKubeCollector("", "", nil); err != nil {
-		t.Fatalf("Failed with: %s", err)
-	}
-
-	var err error
-	if oldSet {
-		err = os.Setenv(kcEnvVar, oldKubeConfig)
-	} else {
-		err = os.Unsetenv(kcEnvVar)
-	}
-	if err != nil {
-		t.Fatalf("Failed so reset %s env variable after test: %s", kcEnvVar, err)
 	}
 }
 
@@ -105,9 +76,73 @@ func TestContext(t *testing.T) {
 func TestContextMissing(t *testing.T) {
 	expectedContext := "non-existent"
 
-	_, err := newKubeCollector("../../fixtures/kube.config.context", expectedContext, nil)
+	_, err := newKubeCollector(filepath.Join(FIXTURES_DIR, "kube.config.context"), expectedContext, nil)
 	if err == nil {
 		t.Fatalf("Expected to fail when uisng non-existent context: %s", expectedContext)
+	}
+}
+
+func TestNewClientRestConfigError(t *testing.T) {
+	_, err := newClientRestConfig("does-not-exist", "", rest.InClusterConfig)
+
+	if err == nil {
+		t.Errorf("Expected to fail with non-existent kubeconfig")
+	}
+}
+
+func TestNewClientRestConfigWithKubeconfigPath(t *testing.T) {
+	_, err := newClientRestConfig(filepath.Join(FIXTURES_DIR, "kube.config.basic"), "", rest.InClusterConfig)
+	if err != nil {
+		t.Fatalf("Failed with: %s", err)
+	}
+}
+
+func TestNewClientRestConfigMultipleFiles(t *testing.T) {
+	env := setupEnv(t, map[string]string{
+		"KUBECONFIG": filepath.Join(FIXTURES_DIR, "kube.config.empty") + ":" + filepath.Join(FIXTURES_DIR, "kube.config.basic"),
+	})
+	defer env.reset()
+
+	if _, err := newClientRestConfig("", "", rest.InClusterConfig); err != nil {
+		t.Fatalf("Failed with: %s", err)
+	}
+}
+
+func TestNewClientRestConfigWithContext(t *testing.T) {
+	expectedContext := "test-context"
+	expectedHost := "https://test-cluster"
+
+	config, err := newClientRestConfig(filepath.Join(FIXTURES_DIR, "kube.config.context"), expectedContext, rest.InClusterConfig)
+	if err != nil {
+		t.Fatalf("Failed to create kubeCollector from fake client with context %s: %s", expectedContext, err)
+	}
+
+	if config.Host != expectedHost {
+		t.Fatalf("Expected host from context %s to be: %s, got %s instead", expectedContext, expectedHost, config.Host)
+	}
+}
+
+func TestNewClientRestConfigContextMissing(t *testing.T) {
+	expectedContext := "non-existent"
+
+	_, err := newClientRestConfig(filepath.Join(FIXTURES_DIR, "kube.config.context"), expectedContext, rest.InClusterConfig)
+	if err == nil {
+		t.Fatalf("Expected to fail when uisng non-existent context: %s", expectedContext)
+	}
+}
+
+func TestNewClientRestConfigInCluster(t *testing.T) {
+	expectedHost := "test-host"
+	inClusterFn := func() (*rest.Config, error) {
+		return &rest.Config{Host: expectedHost}, nil
+	}
+
+	cfg, err := newClientRestConfig("", "", inClusterFn)
+	if err != nil {
+		t.Fatalf("Failed to create in-cluster config: %s", err)
+	}
+	if cfg.Host != expectedHost {
+		t.Fatalf("Expected %s host, instead got: %s", expectedHost, cfg.Host)
 	}
 }
 

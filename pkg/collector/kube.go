@@ -21,30 +21,48 @@ func newKubeCollector(kubeconfig string, kubecontext string, discoveryClient dis
 	if discoveryClient != nil {
 		col.discoveryClient = discoveryClient
 	} else {
-		pathOptions := clientcmd.NewDefaultPathOptions()
-		if kubeconfig != "" {
-			pathOptions.GlobalFile = kubeconfig
+		var err error
+		if col.restConfig, err = newClientRestConfig(kubeconfig, kubecontext, rest.InClusterConfig); err != nil {
+			return nil, fmt.Errorf("failed to assemble client config: %w", err)
 		}
 
-		config, err := pathOptions.GetStartingConfig()
-
-		configOverrides := clientcmd.ConfigOverrides{}
-		if kubecontext != "" {
-			configOverrides.CurrentContext = kubecontext
-		}
-
-		clientConfig := clientcmd.NewDefaultClientConfig(*config, &configOverrides)
-		col.restConfig, err = clientConfig.ClientConfig()
-		if err != nil {
-			return nil, err
-		}
-
-		if col.discoveryClient, err = discovery.NewDiscoveryClientForConfig(col.restConfig); err != nil {
-			return nil, err
+		if discoveryClient, err = discovery.NewDiscoveryClientForConfig(col.restConfig); err != nil {
+			return nil, fmt.Errorf("failed to create client: %w", err)
 		}
 	}
 
 	return col, nil
+}
+
+func newClientRestConfig(kubeconfig string, kubecontext string, inClusterFn func() (*rest.Config, error)) (*rest.Config, error) {
+	if kubeconfig == "" {
+		if restConfig, err := inClusterFn(); err == nil {
+			return restConfig, nil
+		}
+	}
+
+	pathOptions := clientcmd.NewDefaultPathOptions()
+	if kubeconfig != "" {
+		pathOptions.GlobalFile = kubeconfig
+	}
+
+	config, err := pathOptions.GetStartingConfig()
+	if err != nil {
+		return nil, err
+	}
+
+	configOverrides := clientcmd.ConfigOverrides{}
+	if kubecontext != "" {
+		configOverrides.CurrentContext = kubecontext
+	}
+
+	clientConfig := clientcmd.NewDefaultClientConfig(*config, &configOverrides)
+	restConfig, err := clientConfig.ClientConfig()
+	if err != nil {
+		return nil, err
+	}
+
+	return restConfig, nil
 }
 
 func (c *kubeCollector) GetServerVersion() (*judge.Version, error) {
