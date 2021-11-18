@@ -26,7 +26,7 @@ func newKubeCollector(kubeconfig string, kubecontext string, discoveryClient dis
 			return nil, fmt.Errorf("failed to assemble client config: %w", err)
 		}
 
-		if discoveryClient, err = discovery.NewDiscoveryClientForConfig(col.restConfig); err != nil {
+		if col.discoveryClient, err = discovery.NewDiscoveryClientForConfig(col.restConfig); err != nil {
 			return nil, fmt.Errorf("failed to create client: %w", err)
 		}
 	}

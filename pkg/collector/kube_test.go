@@ -26,6 +26,23 @@ func TestNewKubeCollector(t *testing.T) {
 	}
 }
 
+func TestNewKubeCollectorWithKubeconfigPath(t *testing.T) {
+	col, err := newKubeCollector(filepath.Join(FIXTURES_DIR, "kube.config.basic"), "", nil)
+
+	if err != nil {
+		t.Fatalf("Failed to create kubeCollector from fake discovery client")
+	}
+	if col == nil {
+		t.Fatalf("Should return collector, got nil instead")
+	}
+	if col.discoveryClient == nil {
+		t.Fatalf("Collector should have discovery client, got nil instead")
+	}
+	if col.restConfig == nil {
+		t.Fatalf("Collector should have rest config, got nil instead")
+	}
+}
+
 func TestNewKubeCollectorError(t *testing.T) {
 	_, err := newKubeCollector("does-not-exist", "", nil)
 
