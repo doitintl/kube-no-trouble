@@ -3,6 +3,7 @@ package collector
 import (
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -28,10 +29,10 @@ func TestFileCollectorGet(t *testing.T) {
 		input    []string // file list
 		expected []string // kinds of objects
 	}{
-		{"yaml", []string{"../../fixtures/deployment-v1beta1.yaml"}, []string{"Deployment"}},
-		{"yamlMulti", []string{"../../fixtures/deployment-v1beta1-and-ingress-v1beta1.yaml"}, []string{"Deployment", "Ingress"}},
-		{"json", []string{"../../fixtures/deployment-v1beta1.json"}, []string{"Deployment"}},
-		{"mixed", []string{"../../fixtures/deployment-v1beta1.json", "../../fixtures/deployment-v1beta1.yaml"}, []string{"Deployment", "Deployment"}},
+		{"yaml", []string{filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, []string{"Deployment"}},
+		{"yamlMulti", []string{filepath.Join(FIXTURES_DIR, "deployment-v1beta1-and-ingress-v1beta1.yaml")}, []string{"Deployment", "Ingress"}},
+		{"json", []string{filepath.Join(FIXTURES_DIR, "deployment-v1beta1.json")}, []string{"Deployment"}},
+		{"mixed", []string{filepath.Join(FIXTURES_DIR, "deployment-v1beta1.json"), filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, []string{"Deployment", "Deployment"}},
 	}
 
 	for _, tc := range testCases {
@@ -61,7 +62,7 @@ func TestFileCollectorGet(t *testing.T) {
 }
 
 func TestFileCollectorGetUnknown(t *testing.T) {
-	input := []string{"../../fixtures/meow.txt"}
+	input := []string{filepath.Join(FIXTURES_DIR, "meow.txt")}
 
 	c, err := NewFileCollector(
 		&FileOpts{Filenames: input},
@@ -79,7 +80,7 @@ func TestFileCollectorGetUnknown(t *testing.T) {
 }
 
 func TestFileCollectorGetNonExistent(t *testing.T) {
-	input := []string{"../../fixtures/does-not-exist"}
+	input := []string{"does-not-exist"}
 	expected := "failed to read"
 
 	c, err := NewFileCollector(
@@ -101,7 +102,7 @@ func TestFileCollectorGetNonExistent(t *testing.T) {
 
 func TestFileCollectorGetStdin(t *testing.T) {
 	input := []string{"-"}
-	inputFilename := "../../fixtures/deployment-v1beta1.yaml"
+	inputFilename := filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")
 	expected := 1
 
 	c, err := NewFileCollector(

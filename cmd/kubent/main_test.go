@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"testing"
 
@@ -14,9 +15,11 @@ import (
 	"github.com/rs/zerolog"
 )
 
+const FIXTURES_DIR = "../../fixtures"
+
 func TestInitCollectors(t *testing.T) {
 	testConfig := config.Config{
-		Filenames:  []string{"../../fixtures/deployment-v1beta1.yaml"},
+		Filenames:  []string{filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")},
 		Cluster:    false,
 		Helm2:      false,
 		Helm3:      false,
@@ -33,7 +36,8 @@ func TestInitCollectors(t *testing.T) {
 }
 
 func TestGetCollectors(t *testing.T) {
-	fileCollector, err := collector.NewFileCollector(&collector.FileOpts{Filenames: []string{"../../fixtures/deployment-v1beta1.yaml"}})
+	fileCollector, err := collector.NewFileCollector(
+		&collector.FileOpts{Filenames: []string{filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}})
 
 	if err != nil {
 		t.Errorf("Failed to create File collector with error: %s", err)
@@ -51,7 +55,8 @@ func TestGetCollectors(t *testing.T) {
 
 func TestStoreCollector(t *testing.T) {
 	collectors := []collector.Collector{}
-	fileCollector, err := collector.NewFileCollector(&collector.FileOpts{Filenames: []string{"../../fixtures/deployment-v1beta1.yaml"}})
+	fileCollector, err := collector.NewFileCollector(
+		&collector.FileOpts{Filenames: []string{filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}})
 
 	if err != nil {
 		t.Errorf("Failed to create File collector with error: %s", err)
@@ -66,7 +71,8 @@ func TestStoreCollector(t *testing.T) {
 
 func TestStoreCollectorMultiple(t *testing.T) {
 	collectors := []collector.Collector{}
-	fileCollector, err := collector.NewFileCollector(&collector.FileOpts{Filenames: []string{"../../fixtures/deployment-v1beta1.yaml"}})
+	fileCollector, err := collector.NewFileCollector(
+		&collector.FileOpts{Filenames: []string{filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}})
 
 	if err != nil {
 		t.Errorf("Failed to create File collector with error: %s", err)
@@ -100,9 +106,9 @@ func TestMainExitCodes(t *testing.T) {
 	}{
 		{"success", []string{"-c=false", "--helm2=false", "--helm3=false"}, 0},
 		{"errorBadFlag", []string{"-c=not-boolean"}, 2},
-		{"successFound", []string{"-c=false", "--helm2=false", "--helm3=false", "-f=../../fixtures/deployment-v1beta1.yaml"}, 0},
+		{"successFound", []string{"-c=false", "--helm2=false", "--helm3=false", "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0},
 		{"exitErrorFlagNone", []string{"-c=false", "--helm2=false", "--helm3=false", "-e"}, 0},
-		{"exitErrorFlagFound", []string{"-c=false", "--helm2=false", "--helm3=false", "-e", "-f=../../fixtures/deployment-v1beta1.yaml"}, 200},
+		{"exitErrorFlagFound", []string{"-c=false", "--helm2=false", "--helm3=false", "-e", "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 200},
 	}
 
 	if os.Getenv("TEST_EXIT_CODE") == "1" {
@@ -160,7 +166,8 @@ func TestGetServerVersionNone(t *testing.T) {
 func TestGetServerVersionNotSupported(t *testing.T) {
 	collectors := []collector.Collector{}
 
-	fileCollector, err := collector.NewFileCollector(&collector.FileOpts{Filenames: []string{"../../fixtures/deployment-v1beta1.yaml"}})
+	fileCollector, err := collector.NewFileCollector(
+		&collector.FileOpts{Filenames: []string{filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}})
 	if err != nil {
 		t.Errorf("Failed to create File collector with error: %s", err)
 	}

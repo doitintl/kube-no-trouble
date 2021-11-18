@@ -2,6 +2,7 @@ package collector
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	goversion "github.com/hashicorp/go-version"
@@ -9,6 +10,8 @@ import (
 	discoveryFake "k8s.io/client-go/discovery/fake"
 	"k8s.io/client-go/kubernetes/fake"
 )
+
+const FIXTURES_DIR = "../../fixtures"
 
 func TestNewKubeCollector(t *testing.T) {
 	clientSet := fake.NewSimpleClientset()
@@ -88,7 +91,7 @@ func TestContext(t *testing.T) {
 	expectedContext := "test-context"
 	expectedHost := "https://test-cluster"
 
-	collector, err := newKubeCollector("../../fixtures/kube.config.context", expectedContext, nil)
+	collector, err := newKubeCollector(filepath.Join(FIXTURES_DIR, "kube.config.context"), expectedContext, nil)
 	if err != nil {
 		t.Fatalf("Failed to create kubeCollector from fake client with context %s: %s", expectedContext, err)
 	}
