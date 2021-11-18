@@ -110,3 +110,40 @@ func TestContextMissing(t *testing.T) {
 		t.Fatalf("Expected to fail when uisng non-existent context: %s", expectedContext)
 	}
 }
+
+type env struct {
+	initialVals  map[string]string
+	initialState map[string]bool
+	t            *testing.T
+}
+
+func setupEnv(t *testing.T, vars map[string]string) *env {
+	env := env{
+		initialState: make(map[string]bool),
+		initialVals:  make(map[string]string),
+	}
+
+	for k, v := range vars {
+		env.initialVals[k], env.initialState[k] = os.LookupEnv(k)
+		if err := os.Setenv(k, v); err != nil {
+			t.Fatalf("Failed so set %s env variable for test: %s", k, err)
+		}
+	}
+
+	return &env
+}
+
+func (e *env) reset() {
+	for k, v := range e.initialState {
+		var err error
+		if v {
+			err = os.Setenv(k, e.initialVals[k])
+		} else {
+			err = os.Unsetenv(k)
+		}
+
+		if err != nil {
+			e.t.Errorf("Failed to reset %s env variable after test: %s", k, err)
+		}
+	}
+}
