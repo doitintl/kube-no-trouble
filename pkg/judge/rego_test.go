@@ -2,12 +2,15 @@ package judge
 
 import (
 	"io/ioutil"
+	"path/filepath"
 	"testing"
 
 	"github.com/doitintl/kube-no-trouble/pkg/rules"
 	"github.com/ghodss/yaml"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
+
+const FIXTURES_DIR = "../../fixtures"
 
 func TestNewRegoJudge(t *testing.T) {
 	_, err := NewRegoJudge(&RegoOpts{}, []rules.Rule{})
@@ -40,8 +43,8 @@ func TestEvalRules(t *testing.T) {
 		inputFiles []string // file list
 		expected   []string // findings - kinds
 	}{
-		{"deprecated-1-16.rego", []string{"../../fixtures/deployment-v1beta1.yaml"}, []string{"Deployment"}},
-		{"deprecated-1-22.rego", []string{"../../fixtures/ingress-v1beta1.yaml"}, []string{"Ingress"}},
+		{"deprecated-1-16.rego", []string{"deployment-v1beta1.yaml"}, []string{"Deployment"}},
+		{"deprecated-1-22.rego", []string{"ingress-v1beta1.yaml"}, []string{"Ingress"}},
 	}
 
 	for _, tc := range testCases {
@@ -53,7 +56,7 @@ func TestEvalRules(t *testing.T) {
 				var input []byte
 				var err error
 
-				input, err = ioutil.ReadFile(f)
+				input, err = ioutil.ReadFile(filepath.Join(FIXTURES_DIR, f))
 				if err != nil {
 					t.Errorf("failed to read file %s: %v", f, err)
 				}

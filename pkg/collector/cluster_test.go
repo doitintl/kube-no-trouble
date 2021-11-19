@@ -1,8 +1,9 @@
 package collector
 
 import (
-	"encoding/json"
 	"io/ioutil"
+	"path/filepath"
+	"strings"
 	"testing"
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -15,14 +16,13 @@ import (
 
 func TestNewClusterCollectorBadPath(t *testing.T) {
 	testOpts := ClusterOpts{Kubeconfig: "bad path"}
-	result, funcErr := NewClusterCollector(&testOpts, []string{})
+	_, err := NewClusterCollector(&testOpts, []string{})
 
-	if funcErr.Error() != "invalid configuration: no configuration has been provided" {
-		out, err := json.Marshal(result)
+	if !strings.Contains(err.Error(), "no configuration has been provided") {
 		if err != nil {
-			t.Errorf("Should have errored with invalid configuration error instead got: %s", string(out))
+			t.Errorf("Should have errored with invalid configuration error instead got: %s", err)
 		} else {
-			t.Errorf("Should have errored instead got: %s", funcErr)
+			t.Errorf("Should have failed but succeeded")
 		}
 	}
 }
@@ -32,7 +32,7 @@ func TestNewClusterCollectorValidEmptyCollector(t *testing.T) {
 	clientset := fake.NewSimpleDynamicClient(scheme)
 	discoveryClient := discoveryFake.FakeDiscovery{}
 	testOpts := ClusterOpts{
-		Kubeconfig:      "../../fixtures/kube.config",
+		Kubeconfig:      filepath.Join(FIXTURES_DIR, "kube.config"),
 		ClientSet:       clientset,
 		DiscoveryClient: &discoveryClient,
 	}
@@ -74,10 +74,10 @@ func TestClusterCollectorGetFake(t *testing.T) {
 		expected int      // number of manifests
 	}{
 		{"empty", []string{}, 0},
-		{"withoutAnnotation", []string{"../../fixtures/fake-deployment-v1beta1-no-annotation.yaml"}, 0},
-		{"one", []string{"../../fixtures/fake-deployment-v1beta1-with-annotation.yaml"}, 1},
-		{"multiple", []string{"../../fixtures/fake-deployment-v1beta1-with-annotation.yaml", "../../fixtures/fake-ingress-v1beta1-with-annotation.yaml"}, 2},
-		{"mixed", []string{"../../fixtures/fake-deployment-v1beta1-no-annotation.yaml", "../../fixtures/fake-ingress-v1beta1-with-annotation.yaml"}, 1},
+		{"withoutAnnotation", []string{"fake-deployment-v1beta1-no-annotation.yaml"}, 0},
+		{"one", []string{"fake-deployment-v1beta1-with-annotation.yaml"}, 1},
+		{"multiple", []string{"fake-deployment-v1beta1-with-annotation.yaml", "fake-ingress-v1beta1-with-annotation.yaml"}, 2},
+		{"mixed", []string{"fake-deployment-v1beta1-no-annotation.yaml", "fake-ingress-v1beta1-with-annotation.yaml"}, 1},
 	}
 
 	for _, tc := range testCases {
@@ -88,7 +88,7 @@ func TestClusterCollectorGetFake(t *testing.T) {
 			for _, f := range tc.input {
 				obj := &unstructured.Unstructured{}
 
-				input, err := ioutil.ReadFile(f)
+				input, err := ioutil.ReadFile(filepath.Join(FIXTURES_DIR, f))
 				dec := yaml.NewDecodingSerializer(unstructured.UnstructuredJSONScheme)
 				_, _, err = dec.Decode(input, nil, obj)
 				if err != nil {
