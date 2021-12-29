@@ -20,8 +20,10 @@ jobs:
     runs-on: ubuntu-latest
     container: golang:1.17.1-alpine3.14
     steps:
+    - name: Install git
+      run: apk add --update --no-cache git
     - name: Checkout code
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Test
@@ -42,10 +44,12 @@ jobs:
           - os: windows
             arch: arm64
     steps:
+      - name: Install git
+        run: apk add --update --no-cache git
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
         with:
-          fetch-depth: 1
+          fetch-depth: 0
       - name: Build
         run: |
           scripts/alpine-setup.sh
@@ -77,7 +81,7 @@ jobs:
         ]
     steps:
     - name: Checkout
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2
       with:
         fetch-depth: 1
     - uses: actions/download-artifact@v1
