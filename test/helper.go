@@ -4,6 +4,10 @@ import (
 	"testing"
 
 	"github.com/doitintl/kube-no-trouble/pkg/collector"
+	"github.com/doitintl/kube-no-trouble/pkg/judge"
+	"github.com/doitintl/kube-no-trouble/pkg/rules"
+
+	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
 type resourceFixtureTestCase struct {
@@ -28,6 +32,25 @@ func testReourcesUsingFixtures(t *testing.T, testCases []resourceFixtureTestCase
 				t.Errorf("Expected to succeed for %s, failed: %s", tc.fixturePaths, err)
 			} else if len(manifests) != len(tc.expectedKinds) {
 				t.Errorf("Expected to get %d, got %d", len(tc.expectedKinds), len(manifests))
+			}
+
+			loadedRules, err := rules.FetchRegoRules([]schema.GroupVersionKind{})
+			if err != nil {
+				t.Errorf("Failed to load rules")
+			}
+
+			judge, err := judge.NewRegoJudge(&judge.RegoOpts{}, loadedRules)
+			if err != nil {
+				t.Errorf("failed to create judge instance: %s", err)
+			}
+
+			results, err := judge.Eval(manifests)
+			if err != nil {
+				t.Errorf("failed to evaluate input: %s", err)
+			}
+
+			if len(results) != len(tc.expectedKinds) {
+				t.Errorf("expected %d findings, instead got: %d", len(tc.expectedKinds), len(results))
 			}
 
 			for i := range manifests {
