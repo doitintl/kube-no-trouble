@@ -7,7 +7,7 @@ require (
 	github.com/DATA-DOG/go-sqlmock v1.4.1 // indirect
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/gofuzz v1.1.0 // indirect
-	github.com/hashicorp/go-version v1.3.0
+	github.com/hashicorp/go-version v1.4.0
 	github.com/jmoiron/sqlx v1.2.0 // indirect
 	github.com/lib/pq v1.3.0 // indirect
 	github.com/open-policy-agent/opa v0.34.2
