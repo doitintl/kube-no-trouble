@@ -87,6 +87,7 @@ Usage of ./kubent:
   -l, --log-level string          set log level (trace, debug, info, warn, error, fatal, panic, disabled) (default "info")
   -o, --output string             output format - [text|json] (default "text")
   -t, --target-version string     target K8s version in SemVer format (autodetected by default)
+  -v, --version                   prints the version of kubent and exits
 ```
 
 - *`-a, --additional-kind`*
