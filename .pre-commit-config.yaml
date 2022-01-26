@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: master
+    rev: v4.1.0
     hooks:
       - id: check-json
       - id: check-added-large-files
@@ -8,16 +8,12 @@ repos:
       - id: end-of-file-fixer
         exclude_types: [ svg ]
   - repo: https://github.com/jumanjihouse/pre-commit-hooks
-    rev: master
+    rev: 2.1.5
     hooks:
       - id: forbid-binary
         exclude_types: [ png ]
       - id: git-dirty
-  - repo: https://github.com/Lucas-C/pre-commit-hooks-go
-    rev: master
-    hooks:
-      - id: checkmake
   - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-    rev: v2.1.0
+    rev: v2.2.0
     hooks:
       - id: pretty-format-golang
