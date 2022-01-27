@@ -102,6 +102,11 @@ func main() {
 		log.Fatal().Err(err).Msg("failed to parse config flags")
 	}
 
+	if config.KubentVersion {
+		log.Info().Msgf("version %s (git sha %s)", version, gitSha)
+		os.Exit(EXIT_CODE_SUCCESS)
+	}
+
 	zerolog.SetGlobalLevel(zerolog.Level(config.LogLevel))
 
 	log.Info().Msg(">>> Kube No Trouble `kubent` <<<")

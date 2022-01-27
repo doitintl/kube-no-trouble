@@ -109,6 +109,8 @@ func TestMainExitCodes(t *testing.T) {
 		{"successFound", []string{"-c=false", "--helm2=false", "--helm3=false", "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0},
 		{"exitErrorFlagNone", []string{"-c=false", "--helm2=false", "--helm3=false", "-e"}, 0},
 		{"exitErrorFlagFound", []string{"-c=false", "--helm2=false", "--helm3=false", "-e", "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 200},
+		{"version short flag set", []string{"-v"}, 0},
+		{"version long flag set", []string{"--version"}, 0},
 	}
 
 	if os.Getenv("TEST_EXIT_CODE") == "1" {
