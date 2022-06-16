@@ -1,0 +1,64 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  namespace: kubent-system
+  name: kubent-reader
+rules:
+- apiGroups: [""]
+  resources: ["configmaps", "secrets"]
+  verbs: ["get", "watch", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kubent-reader-clusterrolebinding
+  namespace: kubent-system
+subjects:
+- kind: ServiceAccount
+  name: default # Name is case sensitive
+  namespace: kubent-system
+roleRef:
+  kind: ClusterRole
+  name: kubent-reader
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: kubent-scan-job
+spec:
+  schedule: "*/3 * * * *"
+  startingDeadlineSeconds: 60
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          volumes:
+          - name: cache-volume
+            emptyDir: {}
+          containers:
+          - name: jq-curl
+            image: apteno/alpine-jq:2022-06-12
+            command: 
+              - /bin/sh
+              - -ec
+              - |
+                cat /cache/scan.json |
+                jq -r '.[]|"kubent{"+([(to_entries[]|[((.key|ascii_downcase), .value)]|join("=\""))]|join("\", ")+"\"} 1")' |
+                curl -X PUT --data-binary @- http://prometheus-operator-prometheus-pushgateway.kubent-system.svc.cluster.local:9091/metrics/job/kubent
+            volumeMounts:
+            - mountPath: /cache
+              name: cache-volume
+          initContainers:
+          - name: kubent
+            image: oxuscloud/kubent:nightly-0.5.1-20-gfee7e2b
+            command:
+              - /bin/sh
+              - -ec
+              - |
+                /app/kubent -o json > /cache/scan.json
+            volumeMounts:
+            - mountPath: /cache
+              name: cache-volume
+          restartPolicy: Never

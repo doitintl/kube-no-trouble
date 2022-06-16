@@ -1,4 +1,4 @@
-FROM 1.17.1-alpine3.14 as builder
+FROM golang:1.18.3-alpine3.16 as builder
 
 WORKDIR /src
 
@@ -14,12 +14,10 @@ COPY . .
 
 RUN make all
 
-FROM scratch
+FROM alpine:3.16.0
 
 USER 1000
 
 COPY --from=builder /src/bin/kubent-linux-amd64 /app/kubent
 
 WORKDIR /app
-
-CMD ["./kubent"]
