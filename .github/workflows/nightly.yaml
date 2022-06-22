@@ -8,14 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.0.2
         with:
           fetch-depth: 0
-
+          set-safe-directory: true
       - name: Set tag name
         id: git_tag
         run: echo "::set-output name=tag::$(git describe --tags --match '[0-9].[0-9].[0-9]')"
-
       - name: check if tag exists
         id: tag_exists
         run: |
@@ -26,7 +25,6 @@ jobs:
           echo "::set-output name=result::${exists}"
         env:
           TAG: ${{ steps.git_tag.outputs.tag }}
-
       - name: Setup SSH Keys and known_hosts
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
@@ -36,7 +34,6 @@ jobs:
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
           ssh-add - <<< "${{ secrets.GH_SSH_KEY }}"
         if: ${{ steps.tag_exists.outputs.result != 'true' }}
-
       - name: Create tag
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock

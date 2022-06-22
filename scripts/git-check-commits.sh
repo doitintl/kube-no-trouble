@@ -7,7 +7,7 @@ COMMIT_TYPES="build|chore|ci|dep|docs|feat|fix|ref|style|test"
 COMMIT_REGEXP="^(${COMMIT_TYPES}): [A-Z]+.{5,}[^.]$"
 
 # Needed for ci
-git config --global --add safe.directory "$GITHUB_WORKSPACE" || true
+git config --global --add safe.directory "${GITHUB_WORKSPACE:-$PWD}" || true
 
 COMMITS_COUNT="$(git log --oneline --no-merges "${BASE_REF}..HEAD" | wc -l)"
 
