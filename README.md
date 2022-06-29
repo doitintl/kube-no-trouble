@@ -98,7 +98,7 @@ Usage of ./kubent:
   Select context from kubeconfig file (`current-context` from the file is used by default).
 
 - *`k, --kubeconfig`*
-  Path to kubeconfig file to use. This takes precedence over `KUBECONFIG` environemnt variable, which is also supported
+  Path to kubeconfig file to use. This takes precedence over `KUBECONFIG` environment variable, which is also supported
   and can contain multiple paths, and default `~.kube/config`.
 
 - *`-t, --target-version`*
