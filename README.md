@@ -133,7 +133,7 @@ fi
 You can also use `--exit-error` (`-e`) flag, which will make kubent to exit
 with non-zero return code (`200`) in case any issues are found.
 
-Alternatively, use the json output and smth. like `jq` to check if the result is
+Alternatively, use the json output and something. like `jq` to check if the result is
 empty:
 
 ```
