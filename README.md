@@ -184,7 +184,7 @@ Where type is one of:
 - **docs** - Documentation only change
 - **feat** - A new feature
 - **fix** - A bug fix
-- **ref** - Code refactoring without functinality change
+- **ref** - Code refactoring without functionality change
 - **style** - Formatting changes
 - **test** - Adding/changing tests
 
