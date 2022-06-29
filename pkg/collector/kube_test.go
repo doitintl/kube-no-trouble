@@ -95,7 +95,7 @@ func TestContextMissing(t *testing.T) {
 
 	_, err := newKubeCollector(filepath.Join(FIXTURES_DIR, "kube.config.context"), expectedContext, nil)
 	if err == nil {
-		t.Fatalf("Expected to fail when uisng nonexistent context: %s", expectedContext)
+		t.Fatalf("Expected to fail when using nonexistent context: %s", expectedContext)
 	}
 }
 
@@ -144,7 +144,7 @@ func TestNewClientRestConfigContextMissing(t *testing.T) {
 
 	_, err := newClientRestConfig(filepath.Join(FIXTURES_DIR, "kube.config.context"), expectedContext, rest.InClusterConfig)
 	if err == nil {
-		t.Fatalf("Expected to fail when uisng nonexistent context: %s", expectedContext)
+		t.Fatalf("Expected to fail when using nonexistent context: %s", expectedContext)
 	}
 }
 
