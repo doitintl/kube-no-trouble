@@ -48,7 +48,7 @@ func TestFilterNonRelevantResults(t *testing.T) {
 	}
 
 	if len(results) != 1 {
-		t.Errorf("expected 1 result after filter, got %d intead", len(results))
+		t.Errorf("expected 1 result after filter, got %d instead", len(results))
 	}
 }
 
@@ -63,7 +63,7 @@ func TestFilterNonRelevantResultsEmpty(t *testing.T) {
 	}
 
 	if len(results) != 0 {
-		t.Errorf("expected 0 results after filter, got %d intead", len(results))
+		t.Errorf("expected 0 results after filter, got %d instead", len(results))
 	}
 }
 
@@ -76,7 +76,7 @@ func TestFilterNonRelevantResultsWithNilVersion(t *testing.T) {
 	}
 
 	if len(results) != 1 {
-		t.Errorf("expected 1 results after filter, got %d intead", len(results))
+		t.Errorf("expected 1 results after filter, got %d instead", len(results))
 	}
 }
 
@@ -89,6 +89,6 @@ func TestFilterNonRelevantResultsNilTargetVersion(t *testing.T) {
 	}
 
 	if len(results) != len(testInput) {
-		t.Errorf("expected same number of results as in input: %d, got %d intead", len(testInput), len(results))
+		t.Errorf("expected same number of results as in input: %d, got %d instead", len(testInput), len(results))
 	}
 }
