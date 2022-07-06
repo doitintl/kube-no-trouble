@@ -10,7 +10,9 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3.0.2
+      with:
+        set-safe-directory: true
     - uses: actions/setup-python@v2
     - uses: pre-commit/action@v2.0.0
   test:
@@ -23,9 +25,10 @@ jobs:
     - name: Install git
       run: apk add --update --no-cache git
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3.0.2
       with:
         fetch-depth: 0
+        set-safe-directory: true
     - name: Test
       run: |
         scripts/alpine-setup.sh
@@ -47,9 +50,10 @@ jobs:
       - name: Install git
         run: apk add --update --no-cache git
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.0.2
         with:
           fetch-depth: 0
+          set-safe-directory: true
       - name: Build
         run: |
           scripts/alpine-setup.sh
@@ -81,9 +85,10 @@ jobs:
         ]
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3.0.2
       with:
-        fetch-depth: 1
+        fetch-depth: 0
+        set-safe-directory: true
     - uses: actions/download-artifact@v1
       with:
         name: release-artifacts-linux-amd64
