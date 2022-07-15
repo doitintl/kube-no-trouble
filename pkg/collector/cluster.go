@@ -17,8 +17,9 @@ const CLUSTER_COLLECTOR_NAME = "Cluster"
 type ClusterCollector struct {
 	*commonCollector
 	*kubeCollector
-	clientSet           dynamic.Interface
-	additionalResources []schema.GroupVersionResource
+	clientSet             dynamic.Interface
+	additionalResources   []schema.GroupVersionResource
+	additionalAnnotations []string
 }
 
 type ClusterOpts struct {
@@ -28,15 +29,17 @@ type ClusterOpts struct {
 	DiscoveryClient discovery.DiscoveryInterface
 }
 
-func NewClusterCollector(opts *ClusterOpts, additionalKinds []string, userAgent string) (*ClusterCollector, error) {
+func NewClusterCollector(opts *ClusterOpts, additionalKinds []string, additionalAnnotations []string, userAgent string) (
+	*ClusterCollector, error) {
 	kubeCollector, err := newKubeCollector(opts.Kubeconfig, opts.KubeContext, opts.DiscoveryClient, userAgent)
 	if err != nil {
 		return nil, err
 	}
 
 	collector := &ClusterCollector{
-		kubeCollector:   kubeCollector,
-		commonCollector: newCommonCollector(CLUSTER_COLLECTOR_NAME),
+		kubeCollector:         kubeCollector,
+		commonCollector:       newCommonCollector(CLUSTER_COLLECTOR_NAME),
+		additionalAnnotations: additionalAnnotations,
 	}
 
 	if opts.ClientSet == nil {
@@ -116,7 +119,7 @@ func (c *ClusterCollector) Get() ([]map[string]interface{}, error) {
 		}
 
 		for _, r := range rs.Items {
-			if jsonManifest, ok := r.GetAnnotations()["kubectl.kubernetes.io/last-applied-configuration"]; ok {
+			if jsonManifest, ok := c.getLastAppliedConfig(r.GetAnnotations()); ok {
 				var manifest map[string]interface{}
 
 				err := json.Unmarshal([]byte(jsonManifest), &manifest)
@@ -130,4 +133,15 @@ func (c *ClusterCollector) Get() ([]map[string]interface{}, error) {
 	}
 
 	return results, nil
+}
+
+func (c *ClusterCollector) getLastAppliedConfig(resourceAnnotations map[string]string) (string, bool) {
+	annotations := append([]string{"kubectl.kubernetes.io/last-applied-configuration"}, c.additionalAnnotations...)
+	for _, annotation := range annotations {
+		if jsonManifest, ok := resourceAnnotations[annotation]; ok {
+			return jsonManifest, ok
+		}
+	}
+
+	return "", false
 }

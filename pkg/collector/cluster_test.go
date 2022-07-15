@@ -16,7 +16,7 @@ import (
 
 func TestNewClusterCollectorBadPath(t *testing.T) {
 	testOpts := ClusterOpts{Kubeconfig: "bad path"}
-	_, err := NewClusterCollector(&testOpts, []string{}, USER_AGENT)
+	_, err := NewClusterCollector(&testOpts, []string{}, []string{}, USER_AGENT)
 
 	if !strings.Contains(err.Error(), "no configuration has been provided") {
 		if err != nil {
@@ -36,7 +36,7 @@ func TestNewClusterCollectorValidEmptyCollector(t *testing.T) {
 		ClientSet:       clientset,
 		DiscoveryClient: &discoveryClient,
 	}
-	collector, err := NewClusterCollector(&testOpts, []string{}, USER_AGENT)
+	collector, err := NewClusterCollector(&testOpts, []string{}, []string{}, USER_AGENT)
 
 	if err != nil {
 		t.Fatalf("Should have parsed config instead got: %s", err)
@@ -55,7 +55,7 @@ func TestNewClusterCollectorFakeClient(t *testing.T) {
 	discoveryClient := discoveryFake.FakeDiscovery{}
 	testOpts := ClusterOpts{ClientSet: clientset, DiscoveryClient: &discoveryClient}
 
-	collector, err := NewClusterCollector(&testOpts, []string{}, USER_AGENT)
+	collector, err := NewClusterCollector(&testOpts, []string{}, []string{}, USER_AGENT)
 	if err != nil {
 		t.Fatalf("failed to create cluster collector from fake client: %s", err)
 	}
@@ -69,15 +69,42 @@ func TestNewClusterCollectorFakeClient(t *testing.T) {
 
 func TestClusterCollectorGetFake(t *testing.T) {
 	testCases := []struct {
-		name     string
-		input    []string // file list
-		expected int      // number of manifests
+		name                  string
+		input                 []string // file list
+		additionalAnnotations []string
+		expected              int // number of manifests
 	}{
-		{"empty", []string{}, 0},
-		{"withoutAnnotation", []string{"fake-deployment-v1beta1-no-annotation.yaml"}, 0},
-		{"one", []string{"fake-deployment-v1beta1-with-annotation.yaml"}, 1},
-		{"multiple", []string{"fake-deployment-v1beta1-with-annotation.yaml", "fake-ingress-v1beta1-with-annotation.yaml"}, 2},
-		{"mixed", []string{"fake-deployment-v1beta1-no-annotation.yaml", "fake-ingress-v1beta1-with-annotation.yaml"}, 1},
+		{
+			name:     "empty",
+			input:    []string{},
+			expected: 0,
+		},
+		{
+			name:     "withoutAnnotation",
+			input:    []string{"fake-deployment-v1beta1-no-annotation.yaml"},
+			expected: 0,
+		},
+		{
+			name:     "one",
+			input:    []string{"fake-deployment-v1beta1-with-annotation.yaml"},
+			expected: 1,
+		},
+		{
+			name:     "multiple",
+			input:    []string{"fake-deployment-v1beta1-with-annotation.yaml", "fake-ingress-v1beta1-with-annotation.yaml"},
+			expected: 2,
+		},
+		{
+			name:     "mixed",
+			input:    []string{"fake-deployment-v1beta1-no-annotation.yaml", "fake-ingress-v1beta1-with-annotation.yaml"},
+			expected: 1,
+		},
+		{
+			name:                  "kappAnnotation",
+			input:                 []string{"fake-deployment-v1beta1-with-kapp-annotation.yaml"},
+			additionalAnnotations: []string{"kapp.k14s.io/original"},
+			expected:              1,
+		},
 	}
 
 	for _, tc := range testCases {
@@ -104,7 +131,7 @@ func TestClusterCollectorGetFake(t *testing.T) {
 			discoveryClient := discoveryFake.FakeDiscovery{}
 			testOpts := ClusterOpts{ClientSet: clientset, DiscoveryClient: &discoveryClient}
 
-			collector, err := NewClusterCollector(&testOpts, []string{}, USER_AGENT)
+			collector, err := NewClusterCollector(&testOpts, []string{}, tc.additionalAnnotations, USER_AGENT)
 
 			if err != nil {
 				t.Errorf("failed to create collector from fake client: %s", err)
@@ -117,6 +144,73 @@ func TestClusterCollectorGetFake(t *testing.T) {
 			}
 			if len(result) != tc.expected {
 				t.Errorf("expected to receive %d, received %d resources", tc.expected, len(result))
+			}
+		})
+	}
+}
+
+func TestClusterCollector_getLastAppliedConfig(t *testing.T) {
+	tests := []struct {
+		name                string
+		c                   *ClusterCollector
+		resourceAnnotations map[string]string
+		wantManifest        string
+		wantOk              bool
+	}{
+		{
+			name: "Default annotation",
+			c:    &ClusterCollector{},
+			resourceAnnotations: map[string]string{
+				"kubectl.kubernetes.io/last-applied-configuration": "Some config",
+				"another-annotation": "Bla",
+			},
+			wantManifest: "Some config",
+			wantOk:       true,
+		},
+		{
+			name: "Try kubectl annotation first",
+			c: &ClusterCollector{
+				additionalAnnotations: []string{"kapp.k14s.io/original"},
+			},
+			resourceAnnotations: map[string]string{
+				"kubectl.kubernetes.io/last-applied-configuration": "Some config",
+				"kapp.k14s.io/original":                            "Kapp config",
+				"another-annotation":                               "Bla",
+			},
+			wantManifest: "Some config",
+			wantOk:       true,
+		},
+		{
+			name: "Use additional annotation",
+			c: &ClusterCollector{
+				additionalAnnotations: []string{"kapp.k14s.io/original"},
+			},
+			resourceAnnotations: map[string]string{
+				"kapp.k14s.io/original": "Kapp config",
+				"another-annotation":    "Bla",
+			},
+			wantManifest: "Kapp config",
+			wantOk:       true,
+		},
+		{
+			name: "No annotation found",
+			c: &ClusterCollector{
+				additionalAnnotations: []string{},
+			},
+			resourceAnnotations: map[string]string{
+				"kapp.k14s.io/original": "Kapp config",
+				"another-annotation":    "Bla",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			manifest, ok := tt.c.getLastAppliedConfig(tt.resourceAnnotations)
+			if manifest != tt.wantManifest {
+				t.Errorf("ClusterCollector.getLastAppliedConfig() got = %v, want %v", manifest, tt.wantManifest)
+			}
+			if ok != tt.wantOk {
+				t.Errorf("ClusterCollector.getLastAppliedConfig() got1 = %v, want %v", ok, tt.wantOk)
 			}
 		})
 	}

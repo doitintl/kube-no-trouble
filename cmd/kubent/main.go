@@ -59,7 +59,8 @@ func storeCollector(collector collector.Collector, err error, collectors []colle
 func initCollectors(config *config.Config) []collector.Collector {
 	collectors := []collector.Collector{}
 	if config.Cluster {
-		collector, err := collector.NewClusterCollector(&collector.ClusterOpts{Kubeconfig: config.Kubeconfig, KubeContext: config.Context}, config.AdditionalKinds, generateUserAgent())
+		collector, err := collector.NewClusterCollector(&collector.ClusterOpts{Kubeconfig: config.Kubeconfig, KubeContext: config.Context},
+			config.AdditionalKinds, config.AdditionalAnnotations, generateUserAgent())
 		collectors = storeCollector(collector, err, collectors)
 	}
 

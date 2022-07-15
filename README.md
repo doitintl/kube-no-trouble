@@ -76,19 +76,24 @@ You can list all the configuration options available using `--help` switch:
 ```sh
 $./kubent -h
 Usage of ./kubent:
-  -a, --additional-kind strings   additional kinds of resources to report in Kind.version.group.com format
-  -c, --cluster                   enable Cluster collector (default true)
-  -x, --context string            kubeconfig context
-  -e, --exit-error                exit with non-zero code when issues are found
-  -f, --filename strings          manifests to check, use - for stdin
-      --helm2                     enable Helm v2 collector (default true)
-      --helm3                     enable Helm v3 collector (default true)
-  -k, --kubeconfig string         path to the kubeconfig file
-  -l, --log-level string          set log level (trace, debug, info, warn, error, fatal, panic, disabled) (default "info")
-  -o, --output string             output format - [text|json] (default "text")
-  -t, --target-version string     target K8s version in SemVer format (autodetected by default)
-  -v, --version                   prints the version of kubent and exits
+  -A, --additional-annotation strings   additional annotations that should be checked to determine the last applied config
+  -a, --additional-kind strings         additional kinds of resources to report in Kind.version.group.com format
+  -c, --cluster                         enable Cluster collector (default true)
+  -x, --context string                  kubeconfig context
+  -e, --exit-error                      exit with non-zero code when issues are found
+  -f, --filename strings                manifests to check, use - for stdin
+      --helm2                           enable Helm v2 collector (default true)
+      --helm3                           enable Helm v3 collector (default true)
+  -k, --kubeconfig string               path to the kubeconfig file
+  -l, --log-level string                set log level (trace, debug, info, warn, error, fatal, panic, disabled) (default "info")
+  -o, --output string                   output format - [text|json] (default "text")
+  -t, --target-version string           target K8s version in SemVer format (autodetected by default)
+  -v, --version                         prints the version of kubent and exits
+
 ```
+- *`--additional-annotation`*
+  Check additional annotations for the last applied configuration. This can be useful if a resource was applied
+  with a tool other than kubectl. The flag can be used multiple times.
 
 - *`-a, --additional-kind`*
   Tells `kubent` to flag additional custom resources when found in the specified version. The flag can be used multiple
