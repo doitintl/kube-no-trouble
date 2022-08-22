@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 # Set strict error checking
-set -emou pipefail
+set -eou pipefail
 
 GH_ORG="doitintl"
 GH_REPO="kube-no-trouble"
