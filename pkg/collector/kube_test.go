@@ -1,10 +1,11 @@
 package collector
 
 import (
-	"k8s.io/client-go/rest"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"k8s.io/client-go/rest"
 
 	goversion "github.com/hashicorp/go-version"
 	"k8s.io/apimachinery/pkg/version"
@@ -13,10 +14,13 @@ import (
 )
 
 const FIXTURES_DIR = "../../fixtures"
+const USER_AGENT = "testUserAgent"
+const BASIC_CONFIG = "kube.config.basic"
+const CONTEXT = "kube.config.context"
 
 func TestNewKubeCollector(t *testing.T) {
 	clientSet := fake.NewSimpleClientset()
-	col, err := newKubeCollector("", "", clientSet.Discovery())
+	col, err := newKubeCollector("", "", clientSet.Discovery(), USER_AGENT)
 
 	if err != nil {
 		t.Fatalf("Failed to create kubeCollector from fake discovery client")
@@ -27,7 +31,7 @@ func TestNewKubeCollector(t *testing.T) {
 }
 
 func TestNewKubeCollectorWithKubeconfigPath(t *testing.T) {
-	col, err := newKubeCollector(filepath.Join(FIXTURES_DIR, "kube.config.basic"), "", nil)
+	col, err := newKubeCollector(filepath.Join(FIXTURES_DIR, CONTEXT), "", nil, USER_AGENT)
 
 	if err != nil {
 		t.Fatalf("Failed to create kubeCollector from fake discovery client")
@@ -44,7 +48,7 @@ func TestNewKubeCollectorWithKubeconfigPath(t *testing.T) {
 }
 
 func TestNewKubeCollectorError(t *testing.T) {
-	_, err := newKubeCollector("does-not-exist", "", nil)
+	_, err := newKubeCollector("does-not-exist", "", nil, USER_AGENT)
 
 	if err == nil {
 		t.Errorf("Expected to fail with non-existent kubeconfig")
@@ -60,7 +64,7 @@ func TestGetServerVersion(t *testing.T) {
 		GitVersion: gitVersion,
 	}
 
-	collector, err := newKubeCollector("", "", clientSet.Discovery())
+	collector, err := newKubeCollector("", "", clientSet.Discovery(), USER_AGENT)
 	if err != nil {
 		t.Fatalf("failed to create kubeCollector from fake client: %s", err)
 	}
@@ -79,7 +83,7 @@ func TestContext(t *testing.T) {
 	expectedContext := "test-context"
 	expectedHost := "https://test-cluster"
 
-	collector, err := newKubeCollector(filepath.Join(FIXTURES_DIR, "kube.config.context"), expectedContext, nil)
+	collector, err := newKubeCollector(filepath.Join(FIXTURES_DIR, CONTEXT), expectedContext, nil, USER_AGENT)
 	if err != nil {
 		t.Fatalf("Failed to create kubeCollector from fake client with context %s: %s", expectedContext, err)
 	}
@@ -93,14 +97,14 @@ func TestContext(t *testing.T) {
 func TestContextMissing(t *testing.T) {
 	expectedContext := "non-existent"
 
-	_, err := newKubeCollector(filepath.Join(FIXTURES_DIR, "kube.config.context"), expectedContext, nil)
+	_, err := newKubeCollector(filepath.Join(FIXTURES_DIR, CONTEXT), expectedContext, nil, USER_AGENT)
 	if err == nil {
 		t.Fatalf("Expected to fail when uisng non-existent context: %s", expectedContext)
 	}
 }
 
 func TestNewClientRestConfigError(t *testing.T) {
-	_, err := newClientRestConfig("does-not-exist", "", rest.InClusterConfig)
+	_, err := newClientRestConfig("does-not-exist", "", rest.InClusterConfig, USER_AGENT)
 
 	if err == nil {
 		t.Errorf("Expected to fail with non-existent kubeconfig")
@@ -108,7 +112,7 @@ func TestNewClientRestConfigError(t *testing.T) {
 }
 
 func TestNewClientRestConfigWithKubeconfigPath(t *testing.T) {
-	_, err := newClientRestConfig(filepath.Join(FIXTURES_DIR, "kube.config.basic"), "", rest.InClusterConfig)
+	_, err := newClientRestConfig(filepath.Join(FIXTURES_DIR, BASIC_CONFIG), "", rest.InClusterConfig, USER_AGENT)
 	if err != nil {
 		t.Fatalf("Failed with: %s", err)
 	}
@@ -116,11 +120,11 @@ func TestNewClientRestConfigWithKubeconfigPath(t *testing.T) {
 
 func TestNewClientRestConfigMultipleFiles(t *testing.T) {
 	env := setupEnv(t, map[string]string{
-		"KUBECONFIG": filepath.Join(FIXTURES_DIR, "kube.config.empty") + ":" + filepath.Join(FIXTURES_DIR, "kube.config.basic"),
+		"KUBECONFIG": filepath.Join(FIXTURES_DIR, "kube.config.empty") + ":" + filepath.Join(FIXTURES_DIR, BASIC_CONFIG),
 	})
 	defer env.reset()
 
-	if _, err := newClientRestConfig("", "", rest.InClusterConfig); err != nil {
+	if _, err := newClientRestConfig("", "", rest.InClusterConfig, USER_AGENT); err != nil {
 		t.Fatalf("Failed with: %s", err)
 	}
 }
@@ -129,7 +133,7 @@ func TestNewClientRestConfigWithContext(t *testing.T) {
 	expectedContext := "test-context"
 	expectedHost := "https://test-cluster"
 
-	config, err := newClientRestConfig(filepath.Join(FIXTURES_DIR, "kube.config.context"), expectedContext, rest.InClusterConfig)
+	config, err := newClientRestConfig(filepath.Join(FIXTURES_DIR, CONTEXT), expectedContext, rest.InClusterConfig, USER_AGENT)
 	if err != nil {
 		t.Fatalf("Failed to create kubeCollector from fake client with context %s: %s", expectedContext, err)
 	}
@@ -142,7 +146,7 @@ func TestNewClientRestConfigWithContext(t *testing.T) {
 func TestNewClientRestConfigContextMissing(t *testing.T) {
 	expectedContext := "non-existent"
 
-	_, err := newClientRestConfig(filepath.Join(FIXTURES_DIR, "kube.config.context"), expectedContext, rest.InClusterConfig)
+	_, err := newClientRestConfig(filepath.Join(FIXTURES_DIR, CONTEXT), expectedContext, rest.InClusterConfig, USER_AGENT)
 	if err == nil {
 		t.Fatalf("Expected to fail when uisng non-existent context: %s", expectedContext)
 	}
@@ -154,7 +158,7 @@ func TestNewClientRestConfigInCluster(t *testing.T) {
 		return &rest.Config{Host: expectedHost}, nil
 	}
 
-	cfg, err := newClientRestConfig("", "", inClusterFn)
+	cfg, err := newClientRestConfig("", "", inClusterFn, USER_AGENT)
 	if err != nil {
 		t.Fatalf("Failed to create in-cluster config: %s", err)
 	}

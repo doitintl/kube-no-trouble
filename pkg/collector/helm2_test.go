@@ -13,7 +13,7 @@ func TestNewHelmV2Collector(t *testing.T) {
 	col, err := NewHelmV2Collector(&HelmV2Opts{
 		DiscoveryClient: clientSet.Discovery(),
 		CoreClient:      clientSet.CoreV1(),
-	})
+	}, USER_AGENT)
 	clientSet.CoreV1()
 
 	if err != nil {
