@@ -5,8 +5,8 @@ __*Easily check your clusters for use of deprecated APIs*__
 Kubernetes 1.16 is slowly starting to roll out, not only across various managed
 Kubernetes offerings, and with that come a lot of API deprecations[1][1].
 
-*Kube No Trouble (__`kubent`__)* is a simple tool to check whether you're using any
-of these API versions in your cluster and therefore should upgrade your
+*Kube No Trouble (__`kubent`__)* is a simple tool to check whether you're using
+any of these API versions in your cluster and therefore should upgrade your
 workloads first, before upgrading your Kubernetes cluster.
 
 This tool will be able to detect deprecated APIs depending on how you deploy
@@ -20,9 +20,9 @@ particular following tools are supported:
 [1]: https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/
 
 **Additional resources:**
-- Blog post on K8s deprecated APIs and introduction of kubent: [Kubernetes: How to automatically detect and deal with deprecated APIs][2]
+- Blog post on K8s deprecated APIs and introduction of kubent: [Kubernetes: Deprecated APIs aka Introducing Kube-No-Trouble][2]
 
-[2]: https://blog.doit-intl.com/kubernetes-how-to-automatically-detect-and-deal-with-deprecated-apis-f9a8fc23444c
+[2]: https://stepan.wtf/kubernetes-deprecated-apis-introducing-kubent/
 
 ## Install
 
