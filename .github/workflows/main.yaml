@@ -53,6 +53,7 @@ jobs:
       - name: Build
         run: |
           scripts/alpine-setup.sh
+          git show -s --no-show-signature --format=%H:%ct
           GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} make all
           make changelog
         shell: sh
