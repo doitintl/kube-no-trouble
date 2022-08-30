@@ -1,7 +1,6 @@
-FROM golang:1.17.1-alpine3.14 as builder
+FROM golang:1.19.0-alpine3.16 as builder
 WORKDIR /src
-COPY go.mod .
-COPY go.sum .
+COPY go.mod go.sum ./
 COPY scripts scripts
 RUN scripts/alpine-setup.sh
 RUN go mod download

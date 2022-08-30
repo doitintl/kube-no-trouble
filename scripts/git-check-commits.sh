@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 # Set strict error checking
-set -emou pipefail
+set -eou pipefail
 
 BASE_REF="origin/master"
 COMMIT_TYPES="build|chore|ci|dep|docs|feat|fix|ref|style|test"
