@@ -15,14 +15,14 @@ type kubeCollector struct {
 	restConfig      *rest.Config
 }
 
-func newKubeCollector(kubeconfig string, kubecontext string, discoveryClient discovery.DiscoveryInterface) (*kubeCollector, error) {
+func newKubeCollector(kubeconfig string, kubecontext string, discoveryClient discovery.DiscoveryInterface, userAgent string) (*kubeCollector, error) {
 	col := &kubeCollector{}
 
 	if discoveryClient != nil {
 		col.discoveryClient = discoveryClient
 	} else {
 		var err error
-		if col.restConfig, err = newClientRestConfig(kubeconfig, kubecontext, rest.InClusterConfig); err != nil {
+		if col.restConfig, err = newClientRestConfig(kubeconfig, kubecontext, rest.InClusterConfig, userAgent); err != nil {
 			return nil, fmt.Errorf("failed to assemble client config: %w", err)
 		}
 
@@ -34,9 +34,10 @@ func newKubeCollector(kubeconfig string, kubecontext string, discoveryClient dis
 	return col, nil
 }
 
-func newClientRestConfig(kubeconfig string, kubecontext string, inClusterFn func() (*rest.Config, error)) (*rest.Config, error) {
+func newClientRestConfig(kubeconfig string, kubecontext string, inClusterFn func() (*rest.Config, error), userAgent string) (*rest.Config, error) {
 	if kubeconfig == "" {
 		if restConfig, err := inClusterFn(); err == nil {
+			restConfig.UserAgent = userAgent
 			return restConfig, nil
 		}
 	}
@@ -62,6 +63,7 @@ func newClientRestConfig(kubeconfig string, kubecontext string, inClusterFn func
 		return nil, err
 	}
 
+	restConfig.UserAgent = userAgent
 	return restConfig, nil
 }
 

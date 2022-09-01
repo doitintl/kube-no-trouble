@@ -25,9 +25,9 @@ type HelmV2Opts struct {
 	CoreClient      corev1.CoreV1Interface
 }
 
-func NewHelmV2Collector(opts *HelmV2Opts) (*HelmV2Collector, error) {
+func NewHelmV2Collector(opts *HelmV2Opts, userAgent string) (*HelmV2Collector, error) {
 
-	kubeCollector, err := newKubeCollector(opts.Kubeconfig, opts.KubeContext, opts.DiscoveryClient)
+	kubeCollector, err := newKubeCollector(opts.Kubeconfig, opts.KubeContext, opts.DiscoveryClient, userAgent)
 	if err != nil {
 		return nil, err
 	}

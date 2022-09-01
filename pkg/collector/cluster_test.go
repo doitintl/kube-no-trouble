@@ -16,7 +16,7 @@ import (
 
 func TestNewClusterCollectorBadPath(t *testing.T) {
 	testOpts := ClusterOpts{Kubeconfig: "bad path"}
-	_, err := NewClusterCollector(&testOpts, []string{})
+	_, err := NewClusterCollector(&testOpts, []string{}, USER_AGENT)
 
 	if !strings.Contains(err.Error(), "no configuration has been provided") {
 		if err != nil {
@@ -36,7 +36,7 @@ func TestNewClusterCollectorValidEmptyCollector(t *testing.T) {
 		ClientSet:       clientset,
 		DiscoveryClient: &discoveryClient,
 	}
-	collector, err := NewClusterCollector(&testOpts, []string{})
+	collector, err := NewClusterCollector(&testOpts, []string{}, USER_AGENT)
 
 	if err != nil {
 		t.Fatalf("Should have parsed config instead got: %s", err)
@@ -55,7 +55,7 @@ func TestNewClusterCollectorFakeClient(t *testing.T) {
 	discoveryClient := discoveryFake.FakeDiscovery{}
 	testOpts := ClusterOpts{ClientSet: clientset, DiscoveryClient: &discoveryClient}
 
-	collector, err := NewClusterCollector(&testOpts, []string{})
+	collector, err := NewClusterCollector(&testOpts, []string{}, USER_AGENT)
 	if err != nil {
 		t.Fatalf("failed to create cluster collector from fake client: %s", err)
 	}
@@ -104,7 +104,7 @@ func TestClusterCollectorGetFake(t *testing.T) {
 			discoveryClient := discoveryFake.FakeDiscovery{}
 			testOpts := ClusterOpts{ClientSet: clientset, DiscoveryClient: &discoveryClient}
 
-			collector, err := NewClusterCollector(&testOpts, []string{})
+			collector, err := NewClusterCollector(&testOpts, []string{}, USER_AGENT)
 
 			if err != nil {
 				t.Errorf("failed to create collector from fake client: %s", err)
