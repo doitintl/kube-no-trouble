@@ -109,6 +109,8 @@ Usage of ./kubent:
 
 ### Use in CI
 
+#### Exit codes
+
 `kubent` will by default return `0` exit code if the program succeeds, even if
 it finds deprecated resources, and non-zero exit code if there is an error
 during runtime. Because all info output goes to stderr, it's easy to check in
@@ -138,6 +140,15 @@ empty:
 
 ```
 kubent -o json | jq -e 'length == 0'
+```
+
+#### Scanning all files in directory
+
+If you want to scan all files in a given directory, you can use the following
+shell snippet:
+
+```shell
+FILES=($(ls *.yaml)); kubent ${FILES[@]/#/-f} --helm2=false --helm3=false -c=false
 ```
 
 ## Development
