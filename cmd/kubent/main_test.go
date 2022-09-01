@@ -99,18 +99,25 @@ func TestStoreCollectorError(t *testing.T) {
 }
 
 func TestMainExitCodes(t *testing.T) {
+	expectedJsonOutput, _ := os.ReadFile(filepath.Join(FIXTURES_DIR, "expected-json-output.json"))
+	helm2FlagDisabled := "--helm2=false"
+	helm3FlagDisabled := "--helm3=false"
+	clusterFlagDisabled := "--cluster=false"
 	testCases := []struct {
 		name     string
 		args     []string // file list
 		expected int      // number of manifests
+		stdout   string   // stdout
 	}{
-		{"success", []string{"-c=false", "--helm2=false", "--helm3=false"}, 0},
-		{"errorBadFlag", []string{"-c=not-boolean"}, 2},
-		{"successFound", []string{"-c=false", "--helm2=false", "--helm3=false", "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0},
-		{"exitErrorFlagNone", []string{"-c=false", "--helm2=false", "--helm3=false", "-e"}, 0},
-		{"exitErrorFlagFound", []string{"-c=false", "--helm2=false", "--helm3=false", "-e", "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 200},
-		{"version short flag set", []string{"-v"}, 0},
-		{"version long flag set", []string{"--version"}, 0},
+		{"success", []string{clusterFlagDisabled, helm2FlagDisabled, helm3FlagDisabled}, 0, ""},
+		{"errorBadFlag", []string{"-c=not-boolean"}, 2, ""},
+		{"successFound", []string{"-o=json", clusterFlagDisabled, helm2FlagDisabled, helm3FlagDisabled, "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0, string(expectedJsonOutput)},
+		{"exitErrorFlagNone", []string{clusterFlagDisabled, helm2FlagDisabled, helm3FlagDisabled, "-e"}, 0, ""},
+		{"exitErrorFlagFound", []string{clusterFlagDisabled, helm2FlagDisabled, helm3FlagDisabled, "-e", "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 200, ""},
+		{"version short flag set", []string{"-v"}, 0, ""},
+		{"version long flag set", []string{"--version"}, 0, ""},
+		{"empty text output", []string{}, 0, ""},
+		{"empty json output", []string{"-o=json"}, 0, "[]\n"},
 	}
 
 	if os.Getenv("TEST_EXIT_CODE") == "1" {
@@ -131,7 +138,7 @@ func TestMainExitCodes(t *testing.T) {
 
 			cmd := exec.Command(os.Args[0], "-test.run=TestMainExitCodes")
 			cmd.Env = append(os.Environ(), "TEST_EXIT_CODE=1", "TEST_CASE="+strconv.Itoa(i))
-			err := cmd.Run()
+			out, err := cmd.Output()
 
 			if tc.expected == 0 && err != nil {
 				t.Fatalf("expected to succeed with exit code %d, failed with %v", tc.expected, err)
@@ -147,6 +154,9 @@ func TestMainExitCodes(t *testing.T) {
 				} else if !errors.As(err, &ee) {
 					t.Fatalf("expected to get exit code %d, failed with %v", tc.expected, err)
 				}
+			}
+			if tc.expected == 0 && err == nil && tc.stdout != string(out) {
+				t.Fatalf("expected to get stdout as %s, instead got %s", tc.stdout, out)
 			}
 		})
 	}
@@ -196,7 +206,7 @@ func TestGetServerVersion(t *testing.T) {
 		t.Errorf("Failed to get version with error: %s", err)
 	}
 
-	fakeVersion, err := judge.NewVersion(collector.FAKE_VERSION)
+	fakeVersion, _ := judge.NewVersion(collector.FAKE_VERSION)
 	if version.Compare(fakeVersion.Version) != 0 {
 		t.Errorf("Expected %s version to be detected, instead got: %s", fakeVersion.String(), version.String())
 	}
