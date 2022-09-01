@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/doitintl/kube-no-trouble/pkg/rules"
+
 	"github.com/ghodss/yaml"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
