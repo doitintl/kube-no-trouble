@@ -2,7 +2,13 @@ package collector
 
 import (
 	"testing"
+
+	"github.com/doitintl/kube-no-trouble/test"
 )
+
+func init() {
+	test.Setup()
+}
 
 func TestName(t *testing.T) {
 	testCollector := commonCollector{name: "I am a collector"}
