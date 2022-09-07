@@ -41,7 +41,7 @@ Configure Kubectl's current context to point to your cluster, `kubent` will
 look for the kube `.config` file in standard locations (you can point it to custom
 location using the `-k` switch).
 
-**`kubent`** will collect resources from your cluster and report on found issuses.
+**`kubent`** will collect resources from your cluster and report on found issues.
 
 *Please note that you need to have sufficient permissions to read Secrets in the
 cluster in order to use `Helm*` collectors.*
@@ -98,7 +98,7 @@ Usage of ./kubent:
   Select context from kubeconfig file (`current-context` from the file is used by default).
 
 - *`k, --kubeconfig`*
-  Path to kubeconfig file to use. This takes precedence over `KUBECONFIG` environemnt variable, which is also supported
+  Path to kubeconfig file to use. This takes precedence over `KUBECONFIG` environment variable, which is also supported
   and can contain multiple paths, and default `~.kube/config`.
 
 - *`-t, --target-version`*
@@ -117,7 +117,7 @@ during runtime. Because all info output goes to stderr, it's easy to check in
 shell if any issues were found:
 
 ```shell
-test -z "$(kubent)"                 # if stdout output is empty, means no issuse were found
+test -z "$(kubent)"                 # if stdout output is empty, means no issues were found
                                     # equivalent to [ -z "$(kubent)" ]
 ```
 
@@ -195,7 +195,7 @@ Where type is one of:
 - **docs** - Documentation only change
 - **feat** - A new feature
 - **fix** - A bug fix
-- **ref** - Code refactoring without functinality change
+- **ref** - Code refactoring without functionality change
 - **style** - Formatting changes
 - **test** - Adding/changing tests
 

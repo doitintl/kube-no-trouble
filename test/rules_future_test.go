@@ -11,5 +11,5 @@ func TestRegoFuture(t *testing.T) {
 		{"VolumeSnapshotContent", []string{"../fixtures/volumesnapshotcontent-v1beta1.yaml"}, []string{"VolumeSnapshotContent"}},
 	}
 
-	testReourcesUsingFixtures(t, testCases)
+	testResourcesUsingFixtures(t, testCases)
 }

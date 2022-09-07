@@ -51,7 +51,7 @@ func TestNewKubeCollectorError(t *testing.T) {
 	_, err := newKubeCollector("does-not-exist", "", nil, USER_AGENT)
 
 	if err == nil {
-		t.Errorf("Expected to fail with non-existent kubeconfig")
+		t.Errorf("Expected to fail with nonexistent kubeconfig")
 	}
 }
 
@@ -95,11 +95,11 @@ func TestContext(t *testing.T) {
 }
 
 func TestContextMissing(t *testing.T) {
-	expectedContext := "non-existent"
+	expectedContext := "nonexistent"
 
 	_, err := newKubeCollector(filepath.Join(FIXTURES_DIR, CONTEXT), expectedContext, nil, USER_AGENT)
 	if err == nil {
-		t.Fatalf("Expected to fail when uisng non-existent context: %s", expectedContext)
+		t.Fatalf("Expected to fail when uisng nonexistent context: %s", expectedContext)
 	}
 }
 
@@ -107,7 +107,7 @@ func TestNewClientRestConfigError(t *testing.T) {
 	_, err := newClientRestConfig("does-not-exist", "", rest.InClusterConfig, USER_AGENT)
 
 	if err == nil {
-		t.Errorf("Expected to fail with non-existent kubeconfig")
+		t.Errorf("Expected to fail with nonexistent kubeconfig")
 	}
 }
 
@@ -144,11 +144,11 @@ func TestNewClientRestConfigWithContext(t *testing.T) {
 }
 
 func TestNewClientRestConfigContextMissing(t *testing.T) {
-	expectedContext := "non-existent"
+	expectedContext := "nonexistent"
 
 	_, err := newClientRestConfig(filepath.Join(FIXTURES_DIR, CONTEXT), expectedContext, rest.InClusterConfig, USER_AGENT)
 	if err == nil {
-		t.Fatalf("Expected to fail when uisng non-existent context: %s", expectedContext)
+		t.Fatalf("Expected to fail when uisng nonexistent context: %s", expectedContext)
 	}
 }
 

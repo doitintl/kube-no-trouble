@@ -123,7 +123,7 @@ func TestMainExitCodes(t *testing.T) {
 	if os.Getenv("TEST_EXIT_CODE") == "1" {
 		tc, err := strconv.Atoi(os.Getenv("TEST_CASE"))
 		if err != nil {
-			t.Errorf("failed to determin the test case num (TEST_CASE env var): %v", err)
+			t.Errorf("failed to determine the test case num (TEST_CASE env var): %v", err)
 		}
 
 		os.Args = []string{os.Args[0]}

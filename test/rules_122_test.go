@@ -29,5 +29,5 @@ func TestRego122(t *testing.T) {
 		{"ValidatingWebhookConfiguration", []string{"../fixtures/validatingwebhookconfiguration-v1beta1.yaml"}, []string{"ValidatingWebhookConfiguration"}},
 	}
 
-	testReourcesUsingFixtures(t, testCases)
+	testResourcesUsingFixtures(t, testCases)
 }

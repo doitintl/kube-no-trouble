@@ -20,7 +20,7 @@ func init() {
 	Setup()
 }
 
-func testReourcesUsingFixtures(t *testing.T, testCases []resourceFixtureTestCase) {
+func testResourcesUsingFixtures(t *testing.T, testCases []resourceFixtureTestCase) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			c, err := collector.NewFileCollector(

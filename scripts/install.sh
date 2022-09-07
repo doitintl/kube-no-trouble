@@ -80,11 +80,11 @@ download_version() {
 
   if [ ! -w "${TARGET_DIR}" ]; then
     if [ -x "$(command -v 'sudo')" ]; then
-      echo "Target diectory (${TARGET_DIR}) is not writable, trying to use sudo"
+      echo "Target directory (${TARGET_DIR}) is not writable, trying to use sudo"
       sudo="sudo"
     fi
     ${sudo} [ -w "${TARGET_DIR}" ] \
-      || fail "Target diectory (${TARGET_DIR}) is not writable (destination can be changed using \$TARGET_DIR variable)"
+      || fail "Target directory (${TARGET_DIR}) is not writable (destination can be changed using \$TARGET_DIR variable)"
   fi
 
   curl -L -o- "https://github.com/${GITHUB_REPO}/releases/download/${version}/${APP_NAME}-${version}-${TARGET_OS}-${TARGET_ARCH}.tar.gz" \

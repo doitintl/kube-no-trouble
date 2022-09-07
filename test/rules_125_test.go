@@ -13,5 +13,5 @@ func TestRego125(t *testing.T) {
 		{"CronJob", []string{"../fixtures/cronjob-v1beta1.yaml"}, []string{"CronJob"}},
 	}
 
-	testReourcesUsingFixtures(t, testCases)
+	testResourcesUsingFixtures(t, testCases)
 }
