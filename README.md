@@ -87,9 +87,9 @@ Usage of ./kubent:
   -k, --kubeconfig string               path to the kubeconfig file
   -l, --log-level string                set log level (trace, debug, info, warn, error, fatal, panic, disabled) (default "info")
   -o, --output string                   output format - [text|json] (default "text")
+  -O, --output-file string        output file, use - for stdout (default "-")
   -t, --target-version string           target K8s version in SemVer format (autodetected by default)
   -v, --version                         prints the version of kubent and exits
-
 ```
 - *`--additional-annotation`*
   Check additional annotations for the last applied configuration. This can be useful if a resource was applied
