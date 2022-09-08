@@ -2,7 +2,6 @@ package printer
 
 import (
 	"fmt"
-	"os"
 	"sort"
 	"strings"
 	"text/tabwriter"
@@ -11,10 +10,24 @@ import (
 )
 
 type textPrinter struct {
+	*commonPrinter
 }
 
-func newTextPrinter() Printer {
-	return &textPrinter{}
+// newTextPrinter creates new text printer that prints to given output file
+func newTextPrinter(outputFileName string) (Printer, error) {
+	cp, err := newCommonPrinter(outputFileName)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create new common printer: %w", err)
+	}
+
+	return &textPrinter{
+		commonPrinter: cp,
+	}, nil
+}
+
+// Close will free resources used by the printer
+func (c *textPrinter) Close() error {
+	return c.commonPrinter.Close()
 }
 
 func (c *textPrinter) Print(results []judge.Result) error {
@@ -33,7 +46,7 @@ func (c *textPrinter) Print(results []judge.Result) error {
 	})
 
 	ruleSet := ""
-	w := tabwriter.NewWriter(os.Stdout, 10, 0, 3, ' ', 0)
+	w := tabwriter.NewWriter(c.commonPrinter.outputFile, 10, 0, 3, ' ', 0)
 
 	for _, r := range results {
 		if ruleSet != r.RuleSet {
