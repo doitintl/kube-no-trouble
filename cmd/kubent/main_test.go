@@ -1,11 +1,14 @@
 package main
 
 import (
+	"bytes"
+	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/doitintl/kube-no-trouble/pkg/collector"
@@ -121,23 +124,23 @@ func TestMainExitCodes(t *testing.T) {
 	}
 
 	if os.Getenv("TEST_EXIT_CODE") == "1" {
-		tc, err := strconv.Atoi(os.Getenv("TEST_CASE"))
-		if err != nil {
-			t.Errorf("failed to determine the test case num (TEST_CASE env var): %v", err)
-		}
-
-		os.Args = []string{os.Args[0]}
-		os.Args = append(os.Args, testCases[tc].args...)
+		args := []string{}
+		decodeBase64(&args, os.Getenv("TEST_ARGS"))
+		os.Args = append(os.Args[:1], args...)
 		main()
 		return
 	}
 
-	for i, tc := range testCases {
+	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			var ee *exec.ExitError
 
+			base64Args, _ := encodeBase64(tc.args)
+
 			cmd := exec.Command(os.Args[0], "-test.run=TestMainExitCodes")
-			cmd.Env = append(os.Environ(), "TEST_EXIT_CODE=1", "TEST_CASE="+strconv.Itoa(i))
+			cmd.Env = append(os.Environ(),
+				"TEST_EXIT_CODE=1",
+				"TEST_ARGS="+base64Args)
 			out, err := cmd.Output()
 
 			if tc.expected == 0 && err != nil {
@@ -210,4 +213,23 @@ func TestGetServerVersion(t *testing.T) {
 	if version.Compare(fakeVersion.Version) != 0 {
 		t.Errorf("Expected %s version to be detected, instead got: %s", fakeVersion.String(), version.String())
 	}
+}
+
+func encodeBase64(args []string) (string, error) {
+	var buf bytes.Buffer
+	encoder := base64.NewEncoder(base64.StdEncoding, &buf)
+	err := json.NewEncoder(encoder).Encode(args)
+	if err != nil {
+		return "", err
+	}
+	encoder.Close()
+	return buf.String(), nil
+}
+
+func decodeBase64(dst *[]string, encoded string) error {
+	r := strings.NewReader(encoded)
+	base64Dec := base64.NewDecoder(base64.StdEncoding, r)
+	jsonDec := json.NewDecoder(base64Dec)
+
+	return jsonDec.Decode(dst)
 }
