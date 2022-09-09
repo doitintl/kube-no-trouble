@@ -94,7 +94,7 @@ func TestFileCollectorGetNonExistent(t *testing.T) {
 	_, err = c.Get()
 
 	if err == nil {
-		t.Errorf("Expected error with non-existent file type")
+		t.Errorf("Expected error with nonexistent file type")
 	} else if !strings.Contains(err.Error(), expected) {
 		t.Errorf("Expected error message with %s, got %s", expected, err.Error())
 	}

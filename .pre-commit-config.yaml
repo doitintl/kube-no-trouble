@@ -17,3 +17,7 @@ repos:
     rev: v2.2.0
     hooks:
       - id: pretty-format-golang
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.2.1
+    hooks:
+      - id: codespell

@@ -130,7 +130,7 @@ jobs:
           draft: ${{ startsWith(steps.get_tag.outputs.git_tag, 'nightly') != true }}
           prerelease: ${{ startsWith(steps.get_tag.outputs.git_tag, 'nightly') }}
   release-artifacts:
-    name: Relase Artifacts
+    name: Release Artifacts
     needs:
       [create-release]
     runs-on: ubuntu-latest
