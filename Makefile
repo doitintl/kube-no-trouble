@@ -80,10 +80,18 @@ $(RELEASE_DIR)/%-$(RELEASE_SUFFIX): $(BIN_DIR)/%-$(BIN_ARCH)$(BIN_SUFFIX)
 	mkdir -p $(RELEASE_DIR)
 	$(TAR) -cvz --transform 's,$(BIN_DIR)/$(*)-$(BIN_ARCH)$(BIN_SUFFIX),$(*)$(BIN_SUFFIX),gi' -f "$@" "$<"
 
-## Run Go tests
-test: test-fmt test-git
-	go test -v -coverprofile fmtcoverage.html ./...
+## Run all the tests
+test: test-fmt test-git test-pre-commit test-go
 .PHONY: test
+
+## Run all the tests in CI (excludes tests run via individual GH actions)
+test-ci: test-fmt test-git test-go
+.PHONY: test-ci
+
+## Run Go tests
+test-go:
+	go test -v -coverprofile fmtcoverage.html ./...
+.PHONY: test-go
 
 ## Run go and opt fmt checks
 test-fmt:
@@ -95,6 +103,11 @@ test-fmt:
 test-git:
 	./scripts/git-check-commits.sh
 .PHONY: test-git
+
+## Run pre-commit set of tests
+test-pre-commit:
+	pre-commit run --all-files
+.PHONY: test-pre-commit
 
 ## Clean build artifacts
 clean:

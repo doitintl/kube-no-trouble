@@ -30,7 +30,7 @@ jobs:
     - name: Test
       run: |
         scripts/alpine-setup.sh
-        make test
+        make test-ci
   build:
     name: build
     runs-on: ubuntu-latest
