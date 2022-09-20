@@ -1,7 +1,11 @@
 package config
 
 import (
+	"errors"
 	"fmt"
+	"io/fs"
+	"os"
+	"path/filepath"
 	"strings"
 	"unicode"
 
@@ -24,6 +28,7 @@ type Config struct {
 	Kubeconfig            string
 	LogLevel              ZeroLogLevel
 	Output                string
+	OutputFile            string
 	TargetVersion         *judge.Version
 	KubentVersion         bool
 }
@@ -45,6 +50,7 @@ func NewFromFlags() (*Config, error) {
 	flag.StringSliceVarP(&config.Filenames, "filename", "f", []string{}, "manifests to check, use - for stdin")
 	flag.StringVarP(&config.Kubeconfig, "kubeconfig", "k", "", "path to the kubeconfig file")
 	flag.StringVarP(&config.Output, "output", "o", "text", "output format - [text|json]")
+	flag.StringVarP(&config.OutputFile, "output-file", "O", "-", "output file, use - for stdout")
 	flag.VarP(&config.LogLevel, "log-level", "l", "set log level (trace, debug, info, warn, error, fatal, panic, disabled)")
 	flag.VarP(config.TargetVersion, "target-version", "t", "target K8s version in SemVer format (autodetected by default)")
 
@@ -52,6 +58,10 @@ func NewFromFlags() (*Config, error) {
 
 	if _, err := printer.ParsePrinter(config.Output); err != nil {
 		return nil, fmt.Errorf("failed to validate argument output: %w", err)
+	}
+
+	if err := validateOutputFile(config.OutputFile); err != nil {
+		return nil, fmt.Errorf("failed to validate argument output-file: %w", err)
 	}
 
 	if err := validateAdditionalResources(config.AdditionalKinds); err != nil {
@@ -81,5 +91,22 @@ func validateAdditionalResources(resources []string) error {
 			return fmt.Errorf("failed to parse additional Kind, Kind is expected to be capitalized by convention, instead got: %s", parts[0])
 		}
 	}
+	return nil
+}
+
+// validateOutputFile checks if output file name is valid and if the
+// destination directory exists
+func validateOutputFile(outputFileName string) error {
+	if outputFileName == "" {
+		return fmt.Errorf("output file name can't be empty (use - for stdout)")
+	}
+
+	if outputFileName != "-" {
+		dir := filepath.Dir(outputFileName)
+		if _, err := os.Stat(dir); errors.Is(err, fs.ErrNotExist) {
+			return fmt.Errorf("output directory %s does not exist", dir)
+		}
+	}
+
 	return nil
 }

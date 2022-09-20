@@ -1,16 +1,13 @@
 package printer
 
 import (
-	"encoding/json"
+	"github.com/doitintl/kube-no-trouble/pkg/judge"
 	"io/ioutil"
 	"os"
-	"reflect"
 	"testing"
-
-	"github.com/doitintl/kube-no-trouble/pkg/judge"
 )
 
-func Test_newJSONPrinter(t *testing.T) {
+func Test_newTextPrinter(t *testing.T) {
 	tmpFile, err := ioutil.TempFile(os.TempDir(), "kubent-tests-")
 	if err != nil {
 		t.Fatalf("failed to create temp dir for testing: %v", err)
@@ -26,12 +23,12 @@ func Test_newJSONPrinter(t *testing.T) {
 		{"good-file", tmpFile.Name(), false},
 		{"bad-empty", "", true},
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := newJSONPrinter(tt.outputFileName)
+			got, err := newTextPrinter(tt.outputFileName)
 			if (err != nil) != tt.wantErr {
-				t.Fatalf("unexpected error: %v, expected error: %v", err, tt.wantErr)
+				t.Errorf("Unexpected error %v, wantErr %v", err, tt.wantErr)
+				return
 			}
 
 			if err != nil && got != nil {
@@ -41,40 +38,31 @@ func Test_newJSONPrinter(t *testing.T) {
 	}
 }
 
-func Test_jsonPrinter_Print(t *testing.T) {
+func Test_textPrinter_Print(t *testing.T) {
 	tmpFile, err := ioutil.TempFile(os.TempDir(), "kubent-tests-")
 	if err != nil {
 		t.Fatalf("failed to create temp dir for testing: %v", err)
 	}
 	defer os.Remove(tmpFile.Name())
 
-	c := &jsonPrinter{
+	tp := &textPrinter{
 		commonPrinter: &commonPrinter{tmpFile},
 	}
 
 	version, _ := judge.NewVersion("1.2.3")
 	results := []judge.Result{{"Name", "Namespace", "Kind", "1.2.3", "Test", "4.5.6", version}}
 
-	if err := c.Print(results); err != nil {
+	if err := tp.Print(results); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	tmpFile.Seek(0, 0)
-
-	var readResults []judge.Result
-	readBytes, err := ioutil.ReadAll(tmpFile)
-	if err != nil {
-		t.Fatalf("unexpected error reading back the file: %v", err)
-	}
-	if err := json.Unmarshal(readBytes, &readResults); err != nil {
-		t.Fatalf("unexpected error unmarshalling the previously written file: %v", err)
-	}
-	if !reflect.DeepEqual(readResults, results) {
-		t.Fatalf("written and read result do not seem to be equal")
+	fi, _ := tmpFile.Stat()
+	if fi.Size() == 0 {
+		t.Fatalf("expected non-zero size output file: %v", err)
 	}
 }
 
-func Test_jsonPrinter_Close(t *testing.T) {
+func Test_textPrinter_Close(t *testing.T) {
 	tmpFile, err := ioutil.TempFile(os.TempDir(), "kubent-tests-")
 	if err != nil {
 		t.Fatalf("failed to create temp dir for testing: %v", err)
@@ -91,7 +79,7 @@ func Test_jsonPrinter_Close(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &jsonPrinter{
+			c := &textPrinter{
 				commonPrinter: &commonPrinter{tt.outputFile},
 			}
 			if err := c.Close(); (err != nil) != tt.wantErr {

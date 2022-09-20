@@ -155,14 +155,9 @@ func main() {
 		log.Fatal().Err(err).Str("name", "Rego").Msg("Failed to filter results")
 	}
 
-	printer, err := printer.NewPrinter(config.Output)
+	err = outputResults(results, config.Output, config.OutputFile)
 	if err != nil {
-		log.Fatal().Err(err).Msg("Failed to create printer")
-	}
-
-	err = printer.Print(results)
-	if err != nil {
-		log.Fatal().Err(err).Msg("Failed to print results")
+		log.Fatal().Err(err).Msgf("Failed to output results")
 	}
 
 	if config.ExitError && len(results) > 0 {
@@ -171,4 +166,19 @@ func main() {
 		exitCode = EXIT_CODE_SUCCESS
 	}
 	os.Exit(exitCode)
+}
+
+func outputResults(results []judge.Result, outputType string, outputFile string) error {
+	printer, err := printer.NewPrinter(outputType, outputFile)
+	if err != nil {
+		return fmt.Errorf("failed to create printer: %v", err)
+	}
+	defer printer.Close()
+
+	err = printer.Print(results)
+	if err != nil {
+		return fmt.Errorf("failed to print results: %v", err)
+	}
+
+	return nil
 }

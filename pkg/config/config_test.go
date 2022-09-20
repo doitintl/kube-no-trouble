@@ -161,3 +161,24 @@ func TestContext(t *testing.T) {
 		}
 	}
 }
+
+func Test_validateOutputFile(t *testing.T) {
+	tests := []struct {
+		name    string
+		arg     string
+		wantErr bool
+	}{
+		{"empty", "", true},
+		{"does-not-exist", "/this/directory/is/unlikely/to/exist", true},
+		{"relative", "my.log", false},
+		{"absolute", "/my.log", false},
+		{"stdout", "-", false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := validateOutputFile(tt.arg); (err != nil) != tt.wantErr {
+				t.Errorf("expected error = %v, got %v instead", err, tt.wantErr)
+			}
+		})
+	}
+}
