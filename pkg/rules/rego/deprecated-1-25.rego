@@ -46,6 +46,11 @@ deprecated_api(kind, api_version) = api {
 			"new": "batch/v1",
 			"since": "1.21",
 		},
+		"HorizontalPodAutoscaler": {
+			"old": ["autoscaling/v2beta1"],
+			"new": "autoscaling/v2",
+			"since": "1.23",
+		},
 	}
 
 	deprecated_apis[kind].old[_] == api_version
