@@ -2,8 +2,14 @@ package collector
 
 import (
 	"encoding/json"
-	goversion "github.com/hashicorp/go-version"
 	"testing"
+
+	goversion "github.com/hashicorp/go-version"
+)
+
+const (
+	defaultOutput   = "expected: %q, got: %q"
+	expectedSuccess = "expected to succeed, failed instead: %v"
 )
 
 func TestVersionMarshalText(t *testing.T) {
@@ -20,7 +26,7 @@ func TestVersionMarshalText(t *testing.T) {
 		t.Fatal(err)
 	}
 	if string(actual) != v {
-		t.Fatalf("expected: %q, got: %q", v, actual)
+		t.Fatalf(defaultOutput, v, actual)
 	}
 }
 
@@ -38,7 +44,7 @@ func TestVersionString(t *testing.T) {
 		t.Fatal(err)
 	}
 	if actual != v {
-		t.Fatalf("expected: %q, got: %q", v, actual)
+		t.Fatalf(defaultOutput, v, actual)
 	}
 }
 
@@ -49,7 +55,7 @@ func TestVersionStringNil(t *testing.T) {
 	actual := version.String()
 
 	if actual != expected {
-		t.Fatalf("expected: %q, got: %q", expected, actual)
+		t.Fatalf(defaultOutput, expected, actual)
 	}
 }
 
@@ -62,7 +68,7 @@ func TestNewVersion(t *testing.T) {
 	}
 
 	if v.String() != expected {
-		t.Fatalf("expected: %q, got: %q", expected, v.String())
+		t.Fatalf(defaultOutput, expected, v.String())
 	}
 }
 
@@ -81,11 +87,11 @@ func TestVersionSet(t *testing.T) {
 
 	err := v.Set(expected)
 	if err != nil {
-		t.Fatalf("expected to succeed, failed instead: %v", err)
+		t.Fatalf(expectedSuccess, err)
 	}
 
 	if v.String() != expected {
-		t.Fatalf("expected: %q, got: %q", expected, v.String())
+		t.Fatalf(defaultOutput, expected, v.String())
 	}
 }
 
@@ -93,16 +99,16 @@ func TestVersionNewFromGoVersion(t *testing.T) {
 	expected := "1.2.3"
 	goVer, err := goversion.NewVersion(expected)
 	if err != nil {
-		t.Fatalf("expected to succeed, failed instead: %v", err)
+		t.Fatalf(expectedSuccess, err)
 	}
 
 	v, err := NewFromGoVersion(goVer)
 	if err != nil {
-		t.Fatalf("expected to succeed, failed instead: %v", err)
+		t.Fatalf(expectedSuccess, err)
 	}
 
 	if v.String() != expected {
-		t.Fatalf("expected: %q, got: %q", expected, v.String())
+		t.Fatalf(defaultOutput, expected, v.String())
 	}
 }
 
@@ -124,6 +130,6 @@ func TestVersionUnmarshalText(t *testing.T) {
 	}
 
 	if v.String() != expected {
-		t.Fatalf("expected: %q, got: %q", expected, v.String())
+		t.Fatalf(defaultOutput, expected, v.String())
 	}
 }
