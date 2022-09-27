@@ -9,7 +9,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/doitintl/kube-no-trouble/pkg/judge"
+	"github.com/doitintl/kube-no-trouble/pkg/collector"
 	"github.com/doitintl/kube-no-trouble/pkg/printer"
 
 	"github.com/rs/zerolog"
@@ -29,14 +29,14 @@ type Config struct {
 	LogLevel              ZeroLogLevel
 	Output                string
 	OutputFile            string
-	TargetVersion         *judge.Version
+	TargetVersion         *collector.Version
 	KubentVersion         bool
 }
 
 func NewFromFlags() (*Config, error) {
 	config := Config{
 		LogLevel:      ZeroLogLevel(zerolog.InfoLevel),
-		TargetVersion: &judge.Version{},
+		TargetVersion: &collector.Version{},
 	}
 
 	flag.StringSliceVarP(&config.AdditionalKinds, "additional-kind", "a", []string{}, "additional kinds of resources to report in Kind.version.group.com format")

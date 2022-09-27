@@ -3,7 +3,7 @@ kind: VolumeSnapshotContent
 metadata:
   name: new-snapshot-content-test
   annotations:
-    - snapshot.storage.kubernetes.io/allowVolumeModeChange: "true"
+    snapshot.storage.kubernetes.io/allowVolumeModeChange: "true"
 spec:
   deletionPolicy: Delete
   driver: hostpath.csi.k8s.io

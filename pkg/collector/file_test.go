@@ -52,9 +52,9 @@ func TestFileCollectorGet(t *testing.T) {
 				t.Errorf("Expected to get %d, got %d", len(tc.expected), len(manifests))
 			}
 
-			for i, _ := range manifests {
-				if manifests[i]["kind"] != tc.expected[i] {
-					t.Errorf("Expected to get %s, instead got: %s", tc.expected[i], manifests[i]["kind"])
+			for i := range manifests {
+				if manifests[i].Kind != tc.expected[i] {
+					t.Errorf("Expected to get %s, instead got: %s", tc.expected[i], manifests[i].Kind)
 				}
 			}
 		})
@@ -75,7 +75,7 @@ func TestFileCollectorGetUnknown(t *testing.T) {
 	result, _ := c.Get()
 
 	if len(result) != 0 {
-		t.Errorf("Expected empty result instead got %s", result)
+		t.Errorf("Expected empty result instead got %v", result)
 	}
 }
 

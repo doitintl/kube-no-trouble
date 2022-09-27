@@ -1,10 +1,12 @@
 package printer
 
 import (
-	"github.com/doitintl/kube-no-trouble/pkg/judge"
 	"io/ioutil"
 	"os"
 	"testing"
+
+	"github.com/doitintl/kube-no-trouble/pkg/collector"
+	"github.com/doitintl/kube-no-trouble/pkg/judge"
 )
 
 func Test_newTextPrinter(t *testing.T) {
@@ -49,7 +51,7 @@ func Test_textPrinter_Print(t *testing.T) {
 		commonPrinter: &commonPrinter{tmpFile},
 	}
 
-	version, _ := judge.NewVersion("1.2.3")
+	version, _ := collector.NewVersion("1.2.3")
 	results := []judge.Result{{"Name", "Namespace", "Kind", "1.2.3", "Test", "4.5.6", version}}
 
 	if err := tp.Print(results); err != nil {

@@ -231,7 +231,7 @@ func TestGetServerVersion(t *testing.T) {
 		t.Errorf("Failed to get version with error: %s", err)
 	}
 
-	fakeVersion, _ := judge.NewVersion(collector.FAKE_VERSION)
+	fakeVersion, _ := collector.NewVersion(collector.FAKE_VERSION)
 	if version.Compare(fakeVersion.Version) != 0 {
 		t.Errorf("Expected %s version to be detected, instead got: %s", fakeVersion.String(), version.String())
 	}
@@ -257,7 +257,7 @@ func decodeBase64(dst *[]string, encoded string) error {
 }
 
 func Test_outputResults(t *testing.T) {
-	testVersion, _ := judge.NewVersion("4.5.6")
+	testVersion, _ := collector.NewVersion("4.5.6")
 	testResults := []judge.Result{{"name", "ns", "kind",
 		"1.2.3", "rs", "rep", testVersion}}
 

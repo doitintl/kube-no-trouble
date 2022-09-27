@@ -33,8 +33,8 @@ func generateUserAgent() string {
 	return fmt.Sprintf("kubent (%s/%s)", version, gitSha)
 }
 
-func getCollectors(collectors []collector.Collector) []map[string]interface{} {
-	var inputs []map[string]interface{}
+func getCollectors(collectors []collector.Collector) []collector.MetaOject {
+	var inputs []collector.MetaOject
 	for _, c := range collectors {
 		rs, err := c.Get()
 		if err != nil {
@@ -81,7 +81,7 @@ func initCollectors(config *config.Config) []collector.Collector {
 	return collectors
 }
 
-func getServerVersion(cv *judge.Version, collectors []collector.Collector) (*judge.Version, error) {
+func getServerVersion(cv *collector.Version, collectors []collector.Collector) (*collector.Version, error) {
 	if cv == nil {
 		for _, c := range collectors {
 			if versionCol, ok := c.(collector.VersionCollector); ok {
@@ -121,6 +121,9 @@ func main() {
 	initCollectors := initCollectors(config)
 
 	config.TargetVersion, err = getServerVersion(config.TargetVersion, initCollectors)
+	if err != nil {
+		log.Warn().Msgf("failed to get server version: %s", err)
+	}
 	if config.TargetVersion != nil {
 		log.Info().Msgf("Target K8s version is %s", config.TargetVersion.String())
 	}

@@ -1,5 +1,7 @@
 package judge
 
+import "github.com/doitintl/kube-no-trouble/pkg/collector"
+
 type Result struct {
 	Name        string
 	Namespace   string
@@ -7,9 +9,9 @@ type Result struct {
 	ApiVersion  string
 	RuleSet     string
 	ReplaceWith string
-	Since       *Version
+	Since       *collector.Version
 }
 
 type Judge interface {
-	Eval([]map[string]interface{}) ([]Result, error)
+	Eval([]collector.MetaOject) ([]Result, error)
 }

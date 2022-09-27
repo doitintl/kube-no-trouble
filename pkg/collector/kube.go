@@ -6,8 +6,6 @@ import (
 	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-
-	"github.com/doitintl/kube-no-trouble/pkg/judge"
 )
 
 type kubeCollector struct {
@@ -67,13 +65,13 @@ func newClientRestConfig(kubeconfig string, kubecontext string, inClusterFn func
 	return restConfig, nil
 }
 
-func (c *kubeCollector) GetServerVersion() (*judge.Version, error) {
+func (c *kubeCollector) GetServerVersion() (*Version, error) {
 	version, err := c.discoveryClient.ServerVersion()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get server version %w", err)
 	}
 
-	return judge.NewVersion(version.String())
+	return NewVersion(version.String())
 }
 
 func (c *kubeCollector) GetRestConfig() *rest.Config {

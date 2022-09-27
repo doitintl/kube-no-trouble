@@ -1,9 +1,5 @@
 package collector
 
-import (
-	"github.com/doitintl/kube-no-trouble/pkg/judge"
-)
-
 const (
 	FAKE_VERSION        = "1.2.3"
 	FAKE_COLLECTOR_NAME = "Fake"
@@ -13,8 +9,8 @@ type fakeCollector struct {
 	*commonCollector
 }
 
-func (c *fakeCollector) Get() ([]map[string]interface{}, error) {
-	return []map[string]interface{}{}, nil
+func (c *fakeCollector) Get() ([]MetaOject, error) {
+	return []MetaOject{}, nil
 }
 
 func NewFakeCollector() *fakeCollector {
@@ -23,8 +19,8 @@ func NewFakeCollector() *fakeCollector {
 	}
 }
 
-func (c *fakeCollector) GetServerVersion() (*judge.Version, error) {
-	version, err := judge.NewVersion(FAKE_VERSION)
+func (c *fakeCollector) GetServerVersion() (*Version, error) {
+	version, err := NewVersion(FAKE_VERSION)
 
 	return version, err
 }

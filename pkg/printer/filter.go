@@ -1,10 +1,11 @@
 package printer
 
 import (
+	"github.com/doitintl/kube-no-trouble/pkg/collector"
 	"github.com/doitintl/kube-no-trouble/pkg/judge"
 )
 
-func FilterNonRelevantResults(results []judge.Result, tv *judge.Version) ([]judge.Result, error) {
+func FilterNonRelevantResults(results []judge.Result, tv *collector.Version) ([]judge.Result, error) {
 	if tv != nil {
 		filtered := []judge.Result{}
 

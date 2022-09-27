@@ -2,6 +2,8 @@ package judge
 
 import (
 	"context"
+
+	"github.com/doitintl/kube-no-trouble/pkg/collector"
 	"github.com/doitintl/kube-no-trouble/pkg/rules"
 	"github.com/open-policy-agent/opa/rego"
 	"github.com/rs/zerolog/log"
@@ -35,7 +37,7 @@ func NewRegoJudge(opts *RegoOpts, rules []rules.Rule) (*RegoJudge, error) {
 	return judge, nil
 }
 
-func (j *RegoJudge) Eval(input []map[string]interface{}) ([]Result, error) {
+func (j *RegoJudge) Eval(input []collector.MetaOject) ([]Result, error) {
 	ctx := context.Background()
 
 	log.Trace().Msgf("evaluating +%v", input)
@@ -51,7 +53,7 @@ func (j *RegoJudge) Eval(input []map[string]interface{}) ([]Result, error) {
 				m := i.(map[string]interface{})
 				log.Trace().Msgf("parsing +%v", m)
 
-				since, err := NewVersion(m["Since"].(string))
+				since, err := collector.NewVersion(m["Since"].(string))
 				if err != nil {
 					log.Debug().Msgf("Failed to parse version: %s", err)
 				}

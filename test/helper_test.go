@@ -58,8 +58,8 @@ func testResourcesUsingFixtures(t *testing.T, testCases []resourceFixtureTestCas
 			}
 
 			for i := range manifests {
-				if manifests[i]["kind"] != tc.expectedKinds[i] {
-					t.Errorf("Expected to get %s, instead got: %s", tc.expectedKinds[i], manifests[i]["kind"])
+				if manifests[i].Kind != tc.expectedKinds[i] {
+					t.Errorf("Expected to get %s, instead got: %s", tc.expectedKinds[i], manifests[i].Kind)
 				}
 			}
 		})

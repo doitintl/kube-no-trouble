@@ -1,8 +1,9 @@
 package collector
 
 import (
-	"reflect"
 	"testing"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func TestSplitManifests(t *testing.T) {
@@ -41,19 +42,15 @@ func TestSplitManifests(t *testing.T) {
 func TestFixNamespace(t *testing.T) {
 	testCases := []struct {
 		name     string
-		input    map[string]interface{} // manifest
-		expected string                 // kinds of objects
+		input    MetaOject // manifest
+		expected string    // kinds of objects
 	}{
 		{"present",
-			map[string]interface{}{"metadata": map[string]interface{}{"namespace": "some-namespace"}},
+			MetaOject{ObjectMeta: metav1.ObjectMeta{Namespace: "some-namespace"}},
 			"some-namespace",
 		},
 		{"missing",
-			map[string]interface{}{"metadata": map[string]interface{}{}},
-			"default-namespace",
-		},
-		{"nil",
-			map[string]interface{}{"metadata": map[string]interface{}{"namespace": nil}},
+			MetaOject{},
 			"default-namespace",
 		},
 	}
@@ -63,20 +60,7 @@ func TestFixNamespace(t *testing.T) {
 
 			fixNamespace(&tc.input, tc.expected)
 
-			meta, ok := tc.input["metadata"]
-			if !ok {
-				t.Fatalf("Expected fixed manifest to have metadata key")
-			}
-
-			expectedType := "map[string]interface {}"
-			if reflect.TypeOf(meta).String() != expectedType {
-				t.Fatalf("Expected metadata type to be %s, instead got: %T", expectedType, meta)
-			}
-
-			actual, ok := meta.(map[string]interface{})["namespace"]
-			if !ok {
-				t.Fatalf("Expected fixed manifest to have metadata.namespace key")
-			}
+			actual := tc.input.ObjectMeta.Namespace
 
 			if actual != tc.expected {
 				t.Fatalf("Expected namespace to be: %s, instead got: %s", tc.expected, actual)

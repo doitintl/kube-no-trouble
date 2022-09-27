@@ -18,6 +18,9 @@ func TestFetchRules(t *testing.T) {
 		}
 		return nil
 	})
+	if err != nil {
+		t.Errorf("failed to read files: %s", err)
+	}
 
 	rules, err := FetchRegoRules([]schema.GroupVersionKind{})
 	if err != nil {
@@ -38,6 +41,9 @@ func TestFetchRulesWithAdditionalResources(t *testing.T) {
 		}
 		return nil
 	})
+	if err != nil {
+		t.Errorf("failed to read files: %s", err)
+	}
 
 	additionalKindsStr := []string{
 		"ManagedCertificate.v1.networking.gke.io",

@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/doitintl/kube-no-trouble/pkg/collector"
 	"github.com/doitintl/kube-no-trouble/pkg/rules"
 
 	"github.com/ghodss/yaml"
@@ -21,7 +22,7 @@ func TestNewRegoJudge(t *testing.T) {
 }
 
 func TestEvalEmpty(t *testing.T) {
-	inputs := []map[string]interface{}{}
+	inputs := []collector.MetaOject{}
 
 	judge, err := NewRegoJudge(&RegoOpts{}, []rules.Rule{})
 	if err != nil {
@@ -51,7 +52,7 @@ func TestEvalRules(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 
-			var manifests []map[string]interface{}
+			var manifests []collector.MetaOject
 
 			for _, f := range tc.inputFiles {
 				var input []byte
@@ -62,7 +63,7 @@ func TestEvalRules(t *testing.T) {
 					t.Errorf("failed to read file %s: %v", f, err)
 				}
 
-				var manifest map[string]interface{}
+				var manifest collector.MetaOject
 				err = yaml.Unmarshal([]byte(input), &manifest)
 				if err != nil {
 					t.Errorf("failed to parse file %s: %v", f, err)

@@ -1,10 +1,9 @@
 package collector
 
 import (
-	"encoding/json"
-
 	"github.com/rs/zerolog/log"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/discovery/cached/memory"
@@ -68,7 +67,7 @@ func NewClusterCollector(opts *ClusterOpts, additionalKinds []string, additional
 	return collector, nil
 }
 
-func (c *ClusterCollector) Get() ([]map[string]interface{}, error) {
+func (c *ClusterCollector) Get() ([]MetaOject, error) {
 	gvrs := []schema.GroupVersionResource{
 		schema.GroupVersionResource{Group: "apps", Version: "v1", Resource: "daemonsets"},
 		schema.GroupVersionResource{Group: "apps", Version: "v1", Resource: "deployments"},
@@ -108,7 +107,7 @@ func (c *ClusterCollector) Get() ([]map[string]interface{}, error) {
 	}
 	gvrs = append(gvrs, c.additionalResources...)
 
-	var results []map[string]interface{}
+	var results []MetaOject
 	for _, g := range gvrs {
 		ri := c.clientSet.Resource(g)
 		log.Debug().Msgf("Retrieving: %s.%s.%s", g.Resource, g.Version, g.Group)
@@ -119,16 +118,13 @@ func (c *ClusterCollector) Get() ([]map[string]interface{}, error) {
 		}
 
 		for _, r := range rs.Items {
-			if jsonManifest, ok := c.getLastAppliedConfig(r.GetAnnotations()); ok {
-				var manifest map[string]interface{}
+			var manifest MetaOject
 
-				err := json.Unmarshal([]byte(jsonManifest), &manifest)
-				if err != nil {
-					log.Warn().Msgf("failed to parse 'last-applied-configuration' annotation of resource %s/%s: %v", r.GetNamespace(), r.GetName(), err)
-					continue
-				}
-				results = append(results, manifest)
+			err = runtime.DefaultUnstructuredConverter.FromUnstructured(r.Object, &manifest)
+			if err != nil {
+				return nil, err
 			}
+			results = append(results, manifest)
 		}
 	}
 

@@ -3,11 +3,12 @@ package printer
 import (
 	"testing"
 
+	"github.com/doitintl/kube-no-trouble/pkg/collector"
 	"github.com/doitintl/kube-no-trouble/pkg/judge"
 )
 
-var testVersion1, _ = judge.NewVersion("1.1.1")
-var testVersion2, _ = judge.NewVersion("2.2.2")
+var testVersion1, _ = collector.NewVersion("1.1.1")
+var testVersion2, _ = collector.NewVersion("2.2.2")
 
 var testInput []judge.Result = []judge.Result{
 	{
@@ -40,7 +41,7 @@ var testInput []judge.Result = []judge.Result{
 }
 
 func TestFilterNonRelevantResults(t *testing.T) {
-	filterVersion, _ := judge.NewVersion("2.0.0")
+	filterVersion, _ := collector.NewVersion("2.0.0")
 
 	results, err := FilterNonRelevantResults(testInput[0:2], filterVersion)
 	if err != nil {
@@ -53,7 +54,7 @@ func TestFilterNonRelevantResults(t *testing.T) {
 }
 
 func TestFilterNonRelevantResultsEmpty(t *testing.T) {
-	filterVersion, _ := judge.NewVersion("2.0.0")
+	filterVersion, _ := collector.NewVersion("2.0.0")
 
 	var input []judge.Result = []judge.Result{}
 
@@ -68,7 +69,7 @@ func TestFilterNonRelevantResultsEmpty(t *testing.T) {
 }
 
 func TestFilterNonRelevantResultsWithNilVersion(t *testing.T) {
-	filterVersion, _ := judge.NewVersion("2.0.0")
+	filterVersion, _ := collector.NewVersion("2.0.0")
 
 	results, err := FilterNonRelevantResults(testInput[2:3], filterVersion)
 	if err != nil {
@@ -81,7 +82,7 @@ func TestFilterNonRelevantResultsWithNilVersion(t *testing.T) {
 }
 
 func TestFilterNonRelevantResultsNilTargetVersion(t *testing.T) {
-	var filterVersion *judge.Version
+	var filterVersion *collector.Version
 
 	results, err := FilterNonRelevantResults(testInput, filterVersion)
 	if err != nil {

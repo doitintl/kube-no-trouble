@@ -1,7 +1,8 @@
-package judge
+package collector
 
 import (
 	"fmt"
+
 	goversion "github.com/hashicorp/go-version"
 )
 

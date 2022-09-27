@@ -52,7 +52,7 @@ func NewHelmV2Collector(opts *HelmV2Opts, userAgent string) (*HelmV2Collector, e
 	return collector, nil
 }
 
-func (c *HelmV2Collector) Get() ([]map[string]interface{}, error) {
+func (c *HelmV2Collector) Get() ([]MetaOject, error) {
 	releases, err := c.secretsStore.ListDeployed()
 	if err != nil {
 		return nil, err
@@ -65,7 +65,7 @@ func (c *HelmV2Collector) Get() ([]map[string]interface{}, error) {
 
 	releases = append(releases, releasesConfig...)
 
-	var results []map[string]interface{}
+	var results []MetaOject
 
 	for _, r := range releases {
 		if manifests, err := parseManifests(r.Manifest, r.Namespace); err != nil {

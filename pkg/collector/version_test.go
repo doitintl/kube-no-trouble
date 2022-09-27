@@ -1,4 +1,4 @@
-package judge
+package collector
 
 import (
 	"encoding/json"

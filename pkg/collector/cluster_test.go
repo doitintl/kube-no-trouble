@@ -82,7 +82,7 @@ func TestClusterCollectorGetFake(t *testing.T) {
 		{
 			name:     "withoutAnnotation",
 			input:    []string{"fake-deployment-v1beta1-no-annotation.yaml"},
-			expected: 0,
+			expected: 1,
 		},
 		{
 			name:     "one",
@@ -97,7 +97,7 @@ func TestClusterCollectorGetFake(t *testing.T) {
 		{
 			name:     "mixed",
 			input:    []string{"fake-deployment-v1beta1-no-annotation.yaml", "fake-ingress-v1beta1-with-annotation.yaml"},
-			expected: 1,
+			expected: 2,
 		},
 		{
 			name:                  "kappAnnotation",
@@ -116,6 +116,9 @@ func TestClusterCollectorGetFake(t *testing.T) {
 				obj := &unstructured.Unstructured{}
 
 				input, err := ioutil.ReadFile(filepath.Join(FIXTURES_DIR, f))
+				if err != nil {
+					t.Errorf("failed to read file: %s", err)
+				}
 				dec := yaml.NewDecodingSerializer(unstructured.UnstructuredJSONScheme)
 				_, _, err = dec.Decode(input, nil, obj)
 				if err != nil {

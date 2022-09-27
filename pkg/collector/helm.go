@@ -3,16 +3,16 @@ package collector
 import (
 	"fmt"
 
-	"github.com/ghodss/yaml"
 	"helm.sh/helm/v3/pkg/releaseutil"
+	"sigs.k8s.io/yaml"
 )
 
-func parseManifests(manifest string, defaultNamespace string) ([]map[string]interface{}, error) {
-	var results []map[string]interface{}
+func parseManifests(manifest string, defaultNamespace string) ([]MetaOject, error) {
+	var results []MetaOject
 
 	manifests := releaseutil.SplitManifests(manifest)
 	for i, m := range manifests {
-		var manifest map[string]interface{}
+		var manifest MetaOject
 
 		err := yaml.Unmarshal([]byte(m), &manifest)
 		if err != nil {
@@ -28,14 +28,9 @@ func parseManifests(manifest string, defaultNamespace string) ([]map[string]inte
 	return results, nil
 }
 
-func fixNamespace(manifest *map[string]interface{}, defaultNamespace string) {
+func fixNamespace(manifest *MetaOject, defaultNamespace string) {
 	// Default to the release namespace if the manifest doesn't have the namespace set
-	if meta, ok := (*manifest)["metadata"]; ok {
-		switch v := meta.(type) {
-		case map[string]interface{}:
-			if val, ok := v["namespace"]; !ok || val == nil {
-				v["namespace"] = defaultNamespace
-			}
-		}
+	if manifest.Namespace == "" {
+		manifest.Namespace = defaultNamespace
 	}
 }

@@ -1,16 +1,15 @@
 package collector
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"sort"
 
-	"github.com/ghodss/yaml"
 	"github.com/rs/zerolog/log"
 	"helm.sh/helm/v3/pkg/releaseutil"
+	"sigs.k8s.io/yaml"
 )
 
 const FILE_COLLECTOR_NAME = "File"
@@ -38,9 +37,9 @@ func NewFileCollector(opts *FileOpts) (*FileCollector, error) {
 	return collector, nil
 }
 
-func (c *FileCollector) Get() ([]map[string]interface{}, error) {
+func (c *FileCollector) Get() ([]MetaOject, error) {
 
-	var results []map[string]interface{}
+	var results []MetaOject
 
 	for _, f := range c.filenames {
 		var input []byte
@@ -54,34 +53,24 @@ func (c *FileCollector) Get() ([]map[string]interface{}, error) {
 			return nil, fmt.Errorf("failed to read file %s: %v", f, err)
 		}
 
-		// try to parse JSON
-		var manifest map[string]interface{}
-		err = json.Unmarshal(input, &manifest)
-		if err == nil {
-			results = append(results, manifest)
+		manifests := releaseutil.SplitManifests(string(input))
+
+		// keep output stable
+		var keys []string
+		for key := range manifests {
+			keys = append(keys, key)
 		}
+		sort.Sort(releaseutil.BySplitManifestsOrder(keys))
 
-		// let's try YAML too
-		if err != nil {
-			manifests := releaseutil.SplitManifests(string(input))
-
-			// keep output stable
-			var keys []string
-			for key := range manifests {
-				keys = append(keys, key)
+		for _, k := range keys {
+			var manifest MetaOject
+			err := yaml.Unmarshal([]byte(manifests[k]), &manifest)
+			if err != nil {
+				log.Warn().Msgf("failed to parse file %s: %v", f, err)
+				continue
 			}
-			sort.Sort(releaseutil.BySplitManifestsOrder(keys))
 
-			for _, k := range keys {
-				var manifest map[string]interface{}
-				err := yaml.Unmarshal([]byte(manifests[k]), &manifest)
-				if err != nil {
-					log.Warn().Msgf("failed to parse file %s: %v", f, err)
-					continue
-				}
-
-				results = append(results, manifest)
-			}
+			results = append(results, manifest)
 		}
 
 	}
