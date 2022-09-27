@@ -27,6 +27,7 @@ const (
 	EXIT_CODE_SUCCESS      = 0
 	EXIT_CODE_FAIL_GENERIC = 1
 	EXIT_CODE_FOUND_ISSUES = 200
+	LastAppliedConfig      = "kubectl.kubernetes.io/last-applied-configuration"
 )
 
 func generateUserAgent() string {
@@ -110,6 +111,10 @@ func main() {
 	if config.KubentVersion {
 		log.Info().Msgf("version %s (git sha %s)", version, gitSha)
 		os.Exit(EXIT_CODE_SUCCESS)
+	}
+
+	if config.LastAppliedConfig {
+		config.AdditionalAnnotations = append(config.AdditionalAnnotations, LastAppliedConfig)
 	}
 
 	zerolog.SetGlobalLevel(zerolog.Level(config.LogLevel))

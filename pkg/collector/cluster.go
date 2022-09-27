@@ -9,6 +9,7 @@ import (
 	"k8s.io/client-go/discovery/cached/memory"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/restmapper"
+	"sigs.k8s.io/yaml"
 )
 
 const CLUSTER_COLLECTOR_NAME = "Cluster"
@@ -125,19 +126,19 @@ func (c *ClusterCollector) Get() ([]MetaOject, error) {
 				return nil, err
 			}
 			results = append(results, manifest)
+			if manifest.Annotations == nil {
+				continue
+			}
+			for _, annotation := range c.additionalAnnotations {
+				if config, ok := manifest.Annotations[annotation]; ok {
+					var m MetaOject
+					if err := yaml.Unmarshal([]byte(config), &m); err == nil {
+						results = append(results, m)
+					}
+				}
+			}
 		}
 	}
 
 	return results, nil
-}
-
-func (c *ClusterCollector) getLastAppliedConfig(resourceAnnotations map[string]string) (string, bool) {
-	annotations := append([]string{"kubectl.kubernetes.io/last-applied-configuration"}, c.additionalAnnotations...)
-	for _, annotation := range annotations {
-		if jsonManifest, ok := resourceAnnotations[annotation]; ok {
-			return jsonManifest, ok
-		}
-	}
-
-	return "", false
 }

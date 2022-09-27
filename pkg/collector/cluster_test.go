@@ -103,7 +103,7 @@ func TestClusterCollectorGetFake(t *testing.T) {
 			name:                  "kappAnnotation",
 			input:                 []string{"fake-deployment-v1beta1-with-kapp-annotation.yaml"},
 			additionalAnnotations: []string{"kapp.k14s.io/original"},
-			expected:              1,
+			expected:              2,
 		},
 	}
 
@@ -147,73 +147,6 @@ func TestClusterCollectorGetFake(t *testing.T) {
 			}
 			if len(result) != tc.expected {
 				t.Errorf("expected to receive %d, received %d resources", tc.expected, len(result))
-			}
-		})
-	}
-}
-
-func TestClusterCollector_getLastAppliedConfig(t *testing.T) {
-	tests := []struct {
-		name                string
-		c                   *ClusterCollector
-		resourceAnnotations map[string]string
-		wantManifest        string
-		wantOk              bool
-	}{
-		{
-			name: "Default annotation",
-			c:    &ClusterCollector{},
-			resourceAnnotations: map[string]string{
-				"kubectl.kubernetes.io/last-applied-configuration": "Some config",
-				"another-annotation": "Bla",
-			},
-			wantManifest: "Some config",
-			wantOk:       true,
-		},
-		{
-			name: "Try kubectl annotation first",
-			c: &ClusterCollector{
-				additionalAnnotations: []string{"kapp.k14s.io/original"},
-			},
-			resourceAnnotations: map[string]string{
-				"kubectl.kubernetes.io/last-applied-configuration": "Some config",
-				"kapp.k14s.io/original":                            "Kapp config",
-				"another-annotation":                               "Bla",
-			},
-			wantManifest: "Some config",
-			wantOk:       true,
-		},
-		{
-			name: "Use additional annotation",
-			c: &ClusterCollector{
-				additionalAnnotations: []string{"kapp.k14s.io/original"},
-			},
-			resourceAnnotations: map[string]string{
-				"kapp.k14s.io/original": "Kapp config",
-				"another-annotation":    "Bla",
-			},
-			wantManifest: "Kapp config",
-			wantOk:       true,
-		},
-		{
-			name: "No annotation found",
-			c: &ClusterCollector{
-				additionalAnnotations: []string{},
-			},
-			resourceAnnotations: map[string]string{
-				"kapp.k14s.io/original": "Kapp config",
-				"another-annotation":    "Bla",
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			manifest, ok := tt.c.getLastAppliedConfig(tt.resourceAnnotations)
-			if manifest != tt.wantManifest {
-				t.Errorf("ClusterCollector.getLastAppliedConfig() got = %v, want %v", manifest, tt.wantManifest)
-			}
-			if ok != tt.wantOk {
-				t.Errorf("ClusterCollector.getLastAppliedConfig() got1 = %v, want %v", ok, tt.wantOk)
 			}
 		})
 	}
