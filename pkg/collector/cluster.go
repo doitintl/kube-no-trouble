@@ -120,22 +120,31 @@ func (c *ClusterCollector) Get() ([]MetaOject, error) {
 
 		for _, r := range rs.Items {
 			var manifest MetaOject
-
-			err = runtime.DefaultUnstructuredConverter.FromUnstructured(r.Object, &manifest)
+			if err := runtime.DefaultUnstructuredConverter.FromUnstructured(r.Object, &manifest); err != nil {
+				return nil, err
+			}
+			res, err := c.parseManifest(manifest)
 			if err != nil {
 				return nil, err
 			}
-			results = append(results, manifest)
-			if manifest.Annotations == nil {
-				continue
-			}
-			for _, annotation := range c.additionalAnnotations {
-				if config, ok := manifest.Annotations[annotation]; ok {
-					var m MetaOject
-					if err := yaml.Unmarshal([]byte(config), &m); err == nil {
-						results = append(results, m)
-					}
-				}
+			results = append(results, res...)
+		}
+	}
+
+	return results, nil
+}
+
+func (c *ClusterCollector) parseManifest(manifest MetaOject) ([]MetaOject, error) {
+	var results []MetaOject
+	results = append(results, manifest)
+	if manifest.Annotations == nil {
+		return results, nil
+	}
+	for _, annotation := range c.additionalAnnotations {
+		if config, ok := manifest.Annotations[annotation]; ok {
+			var m MetaOject
+			if err := yaml.Unmarshal([]byte(config), &m); err == nil {
+				results = append(results, m)
 			}
 		}
 	}
