@@ -1,7 +1,7 @@
 # fake client resource are a bit special
 # apiVersion need to match versions we're collection, i.e. apps/v1
 # true version is taken from kubectl.kubernetes.io/last-applied-configuration
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
@@ -15,7 +15,7 @@ metadata:
   name: test-ingress
   namespace: default
   resourceVersion: "676987"
-  selfLink: /apis/extensions/v1beta1/namespaces/default/ingresses/test-ingress
+  selfLink: /apis/networking.k8s.io/v1/namespaces/default/ingresses/test-ingress
   uid: eefa4af8-cde3-4dc5-b1a4-0f6008d67273
 spec:
   rules:
