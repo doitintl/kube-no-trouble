@@ -55,8 +55,8 @@ cat << EOF
 OPTIONS:
    -h      Show help.
    -d      Directory where kubent will be installed. Default is /usr/local/bin
-   -a      Architecture to install (x86_64 only atm.). Default is to auto-detect.
-   -o      OS (linux, macos). Default is to auto-detect.
+   -a      Architecture to install (amd64, arm64). Default is to auto-detect.
+   -o      OS (linux, macos, windows [amd64 only]). Default is to auto-detect.
    -n      Install latest nightly. Default is to install the latest stable release.
 EOF
 }
