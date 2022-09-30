@@ -67,7 +67,7 @@ func (c *HelmV3Collector) Get() ([]map[string]interface{}, error) {
 	var results []map[string]interface{}
 
 	for _, r := range releases {
-		if manifests, err := parseManifests(r.Manifest, r.Namespace); err != nil {
+		if manifests, err := parseManifests(r.Manifest, r.Namespace, c.discoveryClient); err != nil {
 			log.Warn().Msgf("failed to parse release %s/%s: %v", r.Namespace, r.Name, err)
 		} else {
 			results = append(results, manifests...)

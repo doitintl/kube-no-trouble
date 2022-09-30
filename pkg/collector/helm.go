@@ -2,12 +2,16 @@ package collector
 
 import (
 	"fmt"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/client-go/discovery"
 
 	"github.com/ghodss/yaml"
+	"github.com/rs/zerolog/log"
 	"helm.sh/helm/v3/pkg/releaseutil"
 )
 
-func parseManifests(manifest string, defaultNamespace string) ([]map[string]interface{}, error) {
+func parseManifests(manifest string, defaultNamespace string, discoveryClient discovery.DiscoveryInterface) ([]map[string]interface{}, error) {
 	var results []map[string]interface{}
 
 	manifests := releaseutil.SplitManifests(manifest)
@@ -20,7 +24,7 @@ func parseManifests(manifest string, defaultNamespace string) ([]map[string]inte
 			return nil, err
 		}
 
-		fixNamespace(&manifest, defaultNamespace)
+		fixNamespace(&unstructured.Unstructured{Object: manifest}, defaultNamespace, discoveryClient)
 
 		results = append(results, manifest)
 	}
@@ -28,14 +32,27 @@ func parseManifests(manifest string, defaultNamespace string) ([]map[string]inte
 	return results, nil
 }
 
-func fixNamespace(manifest *map[string]interface{}, defaultNamespace string) {
+func fixNamespace(resource *unstructured.Unstructured, defaultNamespace string, discoveryClient discovery.DiscoveryInterface) {
 	// Default to the release namespace if the manifest doesn't have the namespace set
-	if meta, ok := (*manifest)["metadata"]; ok {
-		switch v := meta.(type) {
-		case map[string]interface{}:
-			if val, ok := v["namespace"]; !ok || val == nil {
-				v["namespace"] = defaultNamespace
-			}
+	if resource.GetNamespace() == "" && isResourceNamespaced(discoveryClient, resource.GroupVersionKind()) {
+		resource.SetNamespace(defaultNamespace)
+	}
+}
+
+func isResourceNamespaced(discoveryClient discovery.DiscoveryInterface, gvk schema.GroupVersionKind) bool {
+	rs, err := discoveryClient.ServerResourcesForGroupVersion(gvk.GroupVersion().String())
+	// It seems discovery client fails with error if resource is not found
+	// this can happen, but is not fatal, we should notify user but continue
+	if err != nil {
+		log.Warn().Msgf("failed to discover supported resources for %s: %v", gvk.GroupVersion(), err)
+		return false
+	}
+
+	for _, r := range rs.APIResources {
+		if r.Kind == gvk.Kind {
+			return r.Namespaced
 		}
 	}
+
+	return false
 }
