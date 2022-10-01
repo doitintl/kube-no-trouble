@@ -169,14 +169,14 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.IMAGE_NAME }}:${{ needs.create-release.outputs.tag_name }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.create-release.outputs.tag_name }}
       - name: Push latest
         uses: docker/build-push-action@v3
         if: ${{ !contains(github.ref, 'nightly') }}
         with:
           context: .
           push: true
-          tags: ${{ env.IMAGE_NAME }}:latest
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
   release-artifacts:
     name: Release Artifacts
     needs:
