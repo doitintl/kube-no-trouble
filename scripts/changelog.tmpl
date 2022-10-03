@@ -68,4 +68,4 @@
 {{- end -}}
 
 **Docker Image**:
-{{ expandenv "ghcr.io/$GH_ORG/$GH_REPO:$GITHUB_REF_NAME" }}
+{{ expandenv "$REGISTRY/$IMAGE_NAME:$GITHUB_REF_NAME" }}
