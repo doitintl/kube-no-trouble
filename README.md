@@ -111,6 +111,32 @@ Usage of ./kubent:
   version for scenarios like use in CI with the file collector only, when detection from an actual cluster is not possible.
   Expected format is `major.minor[.patch]`, e.g. `1.16` or `1.16.3`.
 
+### Docker Image
+
+We also publish official container image, which can be found at:
+`ghcr.io/doitintl/kube-no-trouble:latest` (also available tagged with each
+individual release version).
+
+To run locally, you'll need to provide credentials, e.g. by sharing your
+kubectl config:
+
+```sh
+$ docker run -it --rm \
+    -v "${HOME}/.kube/config:/.kubeconfig" \
+    ghcr.io/doitintl/kube-no-trouble:latest \
+    -k /.kubeconfig
+```
+
+You can use `kubectl run` to run inside a K8S cluster, as a one-off. In that
+case the credentials will be picked up via the pod's service account from the
+environment, but you'll want to grant relevant permissions first (see
+[docs/k8s-sa-and-role-example.yaml](docs/k8s-sa-and-role-example.yaml)):
+
+```sh
+$ kubectl run kubent --restart=Never --rm -i --tty \
+    --image ghcr.io/doitintl/kube-no-trouble:latest \
+    --overrides='{"spec": {"serviceAccount": "kubent"}}'
+```
 
 ### Use in CI
 
