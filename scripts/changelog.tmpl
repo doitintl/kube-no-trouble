@@ -27,6 +27,10 @@
 {{end -}}
 {{- end -}}
 
+**Docker Image**: `{{ expandenv "$REGISTRY/$IMAGE_NAME:$GITHUB_REF_NAME" }}`
+
+### Changelog
+
 {{- if gt (len $breaking) 0 -}}
 **Breaking Changes**:
 
@@ -66,6 +70,3 @@
 * {{. }}
 {{end -}}
 {{- end -}}
-
-**Docker Image**:
-{{ expandenv "$REGISTRY/$IMAGE_NAME:$GITHUB_REF_NAME" }}
