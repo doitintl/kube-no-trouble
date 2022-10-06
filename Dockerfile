@@ -8,7 +8,6 @@ RUN go mod download
 COPY cmd cmd
 COPY pkg pkg
 COPY Makefile Makefile
-RUN export
 RUN make all
 
 FROM scratch
