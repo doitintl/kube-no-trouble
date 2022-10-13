@@ -24,7 +24,10 @@ func parseManifests(manifest string, defaultNamespace string, discoveryClient di
 			return nil, err
 		}
 
-		fixNamespace(&unstructured.Unstructured{Object: manifest}, defaultNamespace, discoveryClient)
+		umanifest := &unstructured.Unstructured{Object: manifest}
+		log.Debug().Msgf("retrieved: %s/%s (%s)", umanifest.GetNamespace(), umanifest.GetName(), umanifest.GroupVersionKind())
+
+		fixNamespace(umanifest, defaultNamespace, discoveryClient)
 
 		results = append(results, manifest)
 	}
