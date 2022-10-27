@@ -23,13 +23,15 @@ func parseManifests(manifest string, defaultNamespace string, discoveryClient di
 			err = fmt.Errorf("failed to parse manifest %s: %v", i, err)
 			return nil, err
 		}
+		// the helm's SplitManifests can keep empty documents in some cases
+		if len(manifest) != 0 {
+			umanifest := &unstructured.Unstructured{Object: manifest}
+			log.Debug().Msgf("retrieved: %s/%s (%s)", umanifest.GetNamespace(), umanifest.GetName(), umanifest.GroupVersionKind())
 
-		umanifest := &unstructured.Unstructured{Object: manifest}
-		log.Debug().Msgf("retrieved: %s/%s (%s)", umanifest.GetNamespace(), umanifest.GetName(), umanifest.GroupVersionKind())
+			fixNamespace(umanifest, defaultNamespace, discoveryClient)
 
-		fixNamespace(umanifest, defaultNamespace, discoveryClient)
-
-		results = append(results, manifest)
+			results = append(results, manifest)
+		}
 	}
 
 	return results, nil
