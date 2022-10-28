@@ -19,7 +19,7 @@ var FAKE_API_RESOURCES = &metav1.APIResourceList{
 	},
 }
 
-func TestSplitManifests(t *testing.T) {
+func TestParseManifests(t *testing.T) {
 	testCases := []struct {
 		name     string
 		input    string // manifest
@@ -31,6 +31,14 @@ func TestSplitManifests(t *testing.T) {
 		},
 		{"multiple",
 			"abc: x\n---\ndef: y",
+			2,
+		},
+		{"empty",
+			"---\n---\n\n---\n\n\n---\n---",
+			0,
+		},
+		{"mix-with-empty",
+			"abc: x\n---\n\n---\ndef: y\n",
 			2,
 		},
 	}
