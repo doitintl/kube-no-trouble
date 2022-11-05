@@ -8,6 +8,7 @@ OPA_VERSION="0.22.0"
 CHANGELOG_VERSION="1.1.0"
 
 apk add --update --no-cache \
+	bash \
 	curl \
 	git \
 	jq \
