@@ -1,4 +1,4 @@
-.SHELL := bash
+SHELL := bash
 .SHELLFLAGS := -eu -o pipefail -c
 .ONESHELL:
 .SECONDEXPANSION:
