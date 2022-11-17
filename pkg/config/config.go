@@ -23,7 +23,6 @@ type Config struct {
 	Context               string
 	ExitError             bool
 	Filenames             []string
-	Helm2                 bool
 	Helm3                 bool
 	Kubeconfig            string
 	LogLevel              ZeroLogLevel
@@ -45,7 +44,6 @@ func NewFromFlags() (*Config, error) {
 	flag.StringVarP(&config.Context, "context", "x", "", "kubeconfig context")
 	flag.BoolVarP(&config.ExitError, "exit-error", "e", false, "exit with non-zero code when issues are found")
 	flag.BoolVarP(&config.KubentVersion, "version", "v", false, "prints the version of kubent and exits")
-	flag.BoolVar(&config.Helm2, "helm2", true, "enable Helm v2 collector")
 	flag.BoolVar(&config.Helm3, "helm3", true, "enable Helm v3 collector")
 	flag.StringSliceVarP(&config.Filenames, "filename", "f", []string{}, "manifests to check, use - for stdin")
 	flag.StringVarP(&config.Kubeconfig, "kubeconfig", "k", "", "path to the kubeconfig file")

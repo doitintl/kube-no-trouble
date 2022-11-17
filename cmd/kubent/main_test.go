@@ -25,7 +25,6 @@ func TestInitCollectors(t *testing.T) {
 	testConfig := config.Config{
 		Filenames:  []string{filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")},
 		Cluster:    false,
-		Helm2:      false,
 		Helm3:      false,
 		Kubeconfig: "test",
 		LogLevel:   config.ZeroLogLevel(zerolog.ErrorLevel),
@@ -110,7 +109,6 @@ func TestMainExitCodes(t *testing.T) {
 	defer os.RemoveAll(tmpDir)
 
 	expectedJsonOutput, _ := os.ReadFile(filepath.Join(FIXTURES_DIR, "expected-json-output.json"))
-	helm2FlagDisabled := "--helm2=false"
 	helm3FlagDisabled := "--helm3=false"
 	clusterFlagDisabled := "--cluster=false"
 	testCases := []struct {
@@ -120,19 +118,19 @@ func TestMainExitCodes(t *testing.T) {
 		stdout      string   // expected stdout
 		outFileName string
 	}{
-		{"success", []string{clusterFlagDisabled, helm2FlagDisabled, helm3FlagDisabled}, 0, "", ""},
+		{"success", []string{clusterFlagDisabled, helm3FlagDisabled}, 0, "", ""},
 		{"errorBadFlag", []string{"-c=not-boolean"}, 2, "", ""},
-		{"successFound", []string{"-o=json", clusterFlagDisabled, helm2FlagDisabled, helm3FlagDisabled, "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0, string(expectedJsonOutput), ""},
-		{"exitErrorFlagNone", []string{clusterFlagDisabled, helm2FlagDisabled, helm3FlagDisabled, "-e"}, 0, "", ""},
-		{"exitErrorFlagFound", []string{clusterFlagDisabled, helm2FlagDisabled, helm3FlagDisabled, "-e", "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 200, "", ""},
+		{"successFound", []string{"-o=json", clusterFlagDisabled, helm3FlagDisabled, "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0, string(expectedJsonOutput), ""},
+		{"exitErrorFlagNone", []string{clusterFlagDisabled, helm3FlagDisabled, "-e"}, 0, "", ""},
+		{"exitErrorFlagFound", []string{clusterFlagDisabled, helm3FlagDisabled, "-e", "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 200, "", ""},
 		{"version short flag set", []string{"-v"}, 0, "", ""},
 		{"version long flag set", []string{"--version"}, 0, "", ""},
-		{"empty text output", []string{clusterFlagDisabled, helm2FlagDisabled, helm3FlagDisabled}, 0, "", ""},
-		{"empty json output", []string{"-o=json", clusterFlagDisabled, helm2FlagDisabled, helm3FlagDisabled}, 0, "[]\n", ""},
-		{"json-file", []string{"-o=json", clusterFlagDisabled, helm2FlagDisabled, helm3FlagDisabled, "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0, "", filepath.Join(tmpDir, "json-file.out")},
-		{"text-file", []string{"-o=json", clusterFlagDisabled, helm2FlagDisabled, helm3FlagDisabled, "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0, "", filepath.Join(tmpDir, "text-file.out")},
-		{"json-stdout", []string{"-o=json", clusterFlagDisabled, helm2FlagDisabled, helm3FlagDisabled, "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0, string(expectedJsonOutput), "-"},
-		{"error-bad-file", []string{clusterFlagDisabled, helm2FlagDisabled, helm3FlagDisabled}, 1, "", "/this/dir/is/unlikely/to/exist"},
+		{"empty text output", []string{clusterFlagDisabled, helm3FlagDisabled}, 0, "", ""},
+		{"empty json output", []string{"-o=json", clusterFlagDisabled, helm3FlagDisabled}, 0, "[]\n", ""},
+		{"json-file", []string{"-o=json", clusterFlagDisabled, helm3FlagDisabled, "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0, "", filepath.Join(tmpDir, "json-file.out")},
+		{"text-file", []string{"-o=json", clusterFlagDisabled, helm3FlagDisabled, "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0, "", filepath.Join(tmpDir, "text-file.out")},
+		{"json-stdout", []string{"-o=json", clusterFlagDisabled, helm3FlagDisabled, "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0, string(expectedJsonOutput), "-"},
+		{"error-bad-file", []string{clusterFlagDisabled, helm3FlagDisabled}, 1, "", "/this/dir/is/unlikely/to/exist"},
 	}
 
 	if os.Getenv("TEST_EXIT_CODE") == "1" {
