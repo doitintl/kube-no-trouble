@@ -1,6 +1,7 @@
 package collector
 
 import (
+	"context"
 	"encoding/json"
 
 	"github.com/rs/zerolog/log"
@@ -113,7 +114,7 @@ func (c *ClusterCollector) Get() ([]map[string]interface{}, error) {
 	for _, g := range gvrs {
 		ri := c.clientSet.Resource(g)
 		log.Debug().Msgf("Retrieving: %s.%s.%s", g.Resource, g.Version, g.Group)
-		rs, err := ri.List(metav1.ListOptions{})
+		rs, err := ri.List(context.Background(), metav1.ListOptions{})
 		if err != nil {
 			log.Debug().Msgf("Failed to retrieve: %s: %s", g, err)
 			continue
