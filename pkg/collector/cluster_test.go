@@ -8,6 +8,7 @@ import (
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/runtime/serializer/yaml"
 	discoveryFake "k8s.io/client-go/discovery/fake"
 	"k8s.io/client-go/dynamic/fake"
@@ -28,8 +29,11 @@ func TestNewClusterCollectorBadPath(t *testing.T) {
 }
 
 func TestNewClusterCollectorValidEmptyCollector(t *testing.T) {
-	scheme := runtime.NewScheme()
-	clientset := fake.NewSimpleDynamicClient(scheme)
+	rscheme := scheme.Scheme
+	registerRequiredListsForFakeClient(rscheme)
+
+	clientset := fake.NewSimpleDynamicClient(rscheme)
+
 	discoveryClient := discoveryFake.FakeDiscovery{}
 	testOpts := ClusterOpts{
 		Kubeconfig:      filepath.Join(FIXTURES_DIR, "kube.config"),
@@ -50,8 +54,10 @@ func TestNewClusterCollectorValidEmptyCollector(t *testing.T) {
 }
 
 func TestNewClusterCollectorFakeClient(t *testing.T) {
-	scheme := runtime.NewScheme()
-	clientset := fake.NewSimpleDynamicClient(scheme)
+	rscheme := scheme.Scheme
+	registerRequiredListsForFakeClient(rscheme)
+
+	clientset := fake.NewSimpleDynamicClientWithCustomListKinds(rscheme, map[schema.GroupVersionResource]string{})
 	discoveryClient := discoveryFake.FakeDiscovery{}
 	testOpts := ClusterOpts{ClientSet: clientset, DiscoveryClient: &discoveryClient}
 
@@ -124,8 +130,8 @@ func TestClusterCollectorGetFake(t *testing.T) {
 				objs = append(objs, obj)
 			}
 
-			rscheme := runtime.NewScheme()
-			_ = scheme.AddToScheme(rscheme)
+			rscheme := scheme.Scheme
+			registerRequiredListsForFakeClient(rscheme)
 
 			clientset := fake.NewSimpleDynamicClient(rscheme, objs...)
 			discoveryClient := discoveryFake.FakeDiscovery{}
@@ -214,4 +220,15 @@ func TestClusterCollector_getLastAppliedConfig(t *testing.T) {
 			}
 		})
 	}
+}
+
+func registerRequiredListsForFakeClient(s *runtime.Scheme) {
+	s.AddKnownTypeWithName(schema.GroupVersionKind{Group: "authorization.k8s.io", Version: "v1", Kind: "SubjectAccessReviewList"}, &unstructured.UnstructuredList{})
+	s.AddKnownTypeWithName(schema.GroupVersionKind{Group: "authorization.k8s.io", Version: "v1", Kind: "SelfSubjectAccessReviewList"}, &unstructured.UnstructuredList{})
+	s.AddKnownTypeWithName(schema.GroupVersionKind{Group: "authorization.k8s.io", Version: "v1", Kind: "LocalSubjectAccessReviewList"}, &unstructured.UnstructuredList{})
+	s.AddKnownTypeWithName(schema.GroupVersionKind{Group: "authentication.k8s.io", Version: "v1", Kind: "TokenReviewList"}, &unstructured.UnstructuredList{})
+	s.AddKnownTypeWithName(schema.GroupVersionKind{Group: "apiregistration.k8s.io", Version: "v1", Kind: "ApiServiceList"}, &unstructured.UnstructuredList{})
+	s.AddKnownTypeWithName(schema.GroupVersionKind{Group: "snapshot.storage.k8s.io", Version: "v1", Kind: "VolumeSnapshotList"}, &unstructured.UnstructuredList{})
+	s.AddKnownTypeWithName(schema.GroupVersionKind{Group: "snapshot.storage.k8s.io", Version: "v1", Kind: "VolumeSnapshotClassList"}, &unstructured.UnstructuredList{})
+	s.AddKnownTypeWithName(schema.GroupVersionKind{Group: "snapshot.storage.k8s.io", Version: "v1", Kind: "VolumeSnapshotContentList"}, &unstructured.UnstructuredList{})
 }
