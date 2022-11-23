@@ -64,11 +64,6 @@ func initCollectors(config *config.Config) []collector.Collector {
 		collectors = storeCollector(collector, err, collectors)
 	}
 
-	if config.Helm2 {
-		collector, err := collector.NewHelmV2Collector(&collector.HelmV2Opts{Kubeconfig: config.Kubeconfig, KubeContext: config.Context}, generateUserAgent())
-		collectors = storeCollector(collector, err, collectors)
-	}
-
 	if config.Helm3 {
 		collector, err := collector.NewHelmV3Collector(&collector.HelmV3Opts{Kubeconfig: config.Kubeconfig, KubeContext: config.Context}, generateUserAgent())
 		collectors = storeCollector(collector, err, collectors)
