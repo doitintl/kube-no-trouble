@@ -1,7 +1,9 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/doitintl/kube-no-trouble/pkg/collector"
@@ -16,6 +18,7 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth/azure"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/oidc"
+	"k8s.io/klog/v2"
 )
 
 var (
@@ -95,7 +98,7 @@ func getServerVersion(cv *judge.Version, collectors []collector.Collector) (*jud
 func main() {
 	exitCode := EXIT_CODE_FAIL_GENERIC
 
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	configureGlobalLogging()
 
 	config, err := config.NewFromFlags()
 	if err != nil {
@@ -161,6 +164,17 @@ func main() {
 		exitCode = EXIT_CODE_SUCCESS
 	}
 	os.Exit(exitCode)
+}
+
+func configureGlobalLogging() {
+	// disable any logging from K8S go-client
+	// unfortunately restConfig.WarningHandler does not handle auth plugins
+	klog.SetOutput(io.Discard)
+	flags := &flag.FlagSet{}
+	klog.InitFlags(flags)
+	flags.Set("logtostderr", "false")
+
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 }
 
 func outputResults(results []judge.Result, outputType string, outputFile string) error {

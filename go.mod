@@ -6,11 +6,12 @@ require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/hashicorp/go-version v1.3.0
 	github.com/open-policy-agent/opa v0.46.1
-	github.com/rs/zerolog v1.21.1-0.20210413053206-582f0cf0e39b
+	github.com/rs/zerolog v1.26.1
 	github.com/spf13/pflag v1.0.5
 	helm.sh/helm/v3 v3.10.2
 	k8s.io/apimachinery v0.25.4
 	k8s.io/client-go v0.25.4
+	k8s.io/klog/v2 v2.70.1
 )
 
 require (
@@ -77,7 +78,6 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/api v0.25.4 // indirect
 	k8s.io/apiextensions-apiserver v0.25.2 // indirect
-	k8s.io/klog/v2 v2.70.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20220803162953-67bda5d908f1 // indirect
 	k8s.io/utils v0.0.0-20220728103510-ee6ede2d64ed // indirect
 	sigs.k8s.io/json v0.0.0-20220713155537-f223a00ba0e2 // indirect

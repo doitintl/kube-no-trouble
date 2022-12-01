@@ -117,20 +117,22 @@ func TestMainExitCodes(t *testing.T) {
 		expected    int      // expected exit code
 		stdout      string   // expected stdout
 		outFileName string
+		emptyStderr bool
 	}{
-		{"success", []string{clusterFlagDisabled, helm3FlagDisabled}, 0, "", ""},
-		{"errorBadFlag", []string{"-c=not-boolean"}, 2, "", ""},
-		{"successFound", []string{"-o=json", clusterFlagDisabled, helm3FlagDisabled, "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0, string(expectedJsonOutput), ""},
-		{"exitErrorFlagNone", []string{clusterFlagDisabled, helm3FlagDisabled, "-e"}, 0, "", ""},
-		{"exitErrorFlagFound", []string{clusterFlagDisabled, helm3FlagDisabled, "-e", "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 200, "", ""},
-		{"version short flag set", []string{"-v"}, 0, "", ""},
-		{"version long flag set", []string{"--version"}, 0, "", ""},
-		{"empty text output", []string{clusterFlagDisabled, helm3FlagDisabled}, 0, "", ""},
-		{"empty json output", []string{"-o=json", clusterFlagDisabled, helm3FlagDisabled}, 0, "[]\n", ""},
-		{"json-file", []string{"-o=json", clusterFlagDisabled, helm3FlagDisabled, "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0, "", filepath.Join(tmpDir, "json-file.out")},
-		{"text-file", []string{"-o=json", clusterFlagDisabled, helm3FlagDisabled, "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0, "", filepath.Join(tmpDir, "text-file.out")},
-		{"json-stdout", []string{"-o=json", clusterFlagDisabled, helm3FlagDisabled, "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0, string(expectedJsonOutput), "-"},
-		{"error-bad-file", []string{clusterFlagDisabled, helm3FlagDisabled}, 1, "", "/this/dir/is/unlikely/to/exist"},
+		{"success", []string{clusterFlagDisabled, helm3FlagDisabled}, 0, "", "", false},
+		{"errorBadFlag", []string{"-c=not-boolean"}, 2, "", "", false},
+		{"successFound", []string{"-o=json", clusterFlagDisabled, helm3FlagDisabled, "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0, string(expectedJsonOutput), "", false},
+		{"exitErrorFlagNone", []string{clusterFlagDisabled, helm3FlagDisabled, "-e"}, 0, "", "", false},
+		{"exitErrorFlagFound", []string{clusterFlagDisabled, helm3FlagDisabled, "-e", "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 200, "", "", false},
+		{"version short flag set", []string{"-v"}, 0, "", "", false},
+		{"version long flag set", []string{"--version"}, 0, "", "", false},
+		{"empty text output", []string{clusterFlagDisabled, helm3FlagDisabled}, 0, "", "", false},
+		{"empty json output", []string{"-o=json", clusterFlagDisabled, helm3FlagDisabled}, 0, "[]\n", "", false},
+		{"json-file", []string{"-o=json", clusterFlagDisabled, helm3FlagDisabled, "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0, "", filepath.Join(tmpDir, "json-file.out"), false},
+		{"text-file", []string{"-o=text", clusterFlagDisabled, helm3FlagDisabled, "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0, "", filepath.Join(tmpDir, "text-file.out"), false},
+		{"json-stdout", []string{"-o=json", clusterFlagDisabled, helm3FlagDisabled, "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0, string(expectedJsonOutput), "-", false},
+		{"error-bad-file", []string{clusterFlagDisabled, helm3FlagDisabled}, 1, "", "/this/dir/is/unlikely/to/exist", false},
+		{"no-3rdparty-output", []string{clusterFlagDisabled, helm3FlagDisabled, "-l=disabled"}, 0, "", "", true},
 	}
 
 	if os.Getenv("TEST_EXIT_CODE") == "1" {
@@ -150,11 +152,18 @@ func TestMainExitCodes(t *testing.T) {
 			}
 			base64Args, _ := encodeBase64(tc.args)
 
+			var stdout, stderr bytes.Buffer
+
 			cmd := exec.Command(os.Args[0], "-test.run=TestMainExitCodes")
 			cmd.Env = append(os.Environ(),
 				"TEST_EXIT_CODE=1",
 				"TEST_ARGS="+base64Args)
-			out, err := cmd.Output()
+			cmd.Stdout = &stdout
+			cmd.Stderr = &stderr
+			err := cmd.Run()
+
+			outStr := stdout.String()
+			errStr := stderr.String()
 
 			if tc.expected == 0 && err != nil {
 				t.Fatalf("expected to succeed with exit code %d, failed with %v", tc.expected, err)
@@ -171,16 +180,19 @@ func TestMainExitCodes(t *testing.T) {
 					t.Fatalf("expected to get exit code %d, failed with %v", tc.expected, err)
 				}
 			}
-			if tc.expected == 0 && err == nil && tc.stdout != string(out) {
-				t.Fatalf("expected to get stdout as %s, instead got %s", tc.stdout, out)
+			if tc.expected == 0 && err == nil && tc.stdout != outStr {
+				t.Fatalf("expected to get stdout as %s, instead got %s", tc.stdout, outStr)
 			}
 
 			if tc.expected == 0 && err == nil && tc.outFileName != "" && tc.outFileName != "-" {
 				if fs, err := os.Stat(tc.outFileName); err != nil || fs.Size() == 0 {
-					t.Fatalf("expected non-empty outputdile: %s, got error: %v", tc.outFileName, err)
+					t.Fatalf("expected non-empty outputfile: %s, got error: %v", tc.outFileName, err)
 				}
 			}
 
+			if tc.emptyStderr && errStr != "" {
+				t.Fatalf("expected empty stderr, got: %s", errStr)
+			}
 		})
 	}
 }
@@ -281,4 +293,10 @@ func Test_outputResults(t *testing.T) {
 			}
 		})
 	}
+}
+
+func Test_configureGlobalLogging(t *testing.T) {
+	// just make sure the method runs, this is mostly covered
+	//by the Test_MainExitCodes
+	configureGlobalLogging()
 }
