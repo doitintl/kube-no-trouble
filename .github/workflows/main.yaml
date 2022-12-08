@@ -89,13 +89,13 @@ jobs:
     strategy:
       matrix:
         k8s_version: [
-          "kindest/node:v1.20.7",
-          "kindest/node:v1.19.11",
-          "kindest/node:v1.18.19",
-          "kindest/node:v1.17.17",
-          "kindest/node:v1.16.15",
-          "kindest/node:v1.15.12",
-          "kindest/node:v1.14.10"
+          "kindest/node:v1.19.16",
+          "kindest/node:v1.20.15",
+          "kindest/node:v1.21.14",
+          "kindest/node:v1.22.15",
+          "kindest/node:v1.23.13",
+          "kindest/node:v1.24.7",
+          "kindest/node:v1.25.3"
         ]
     steps:
     - name: Checkout
@@ -108,7 +108,7 @@ jobs:
         name: release-artifacts-linux-amd64
         path: release-artifacts
     - name: Create k8s Kind Cluster
-      uses: helm/kind-action@v1.1.0
+      uses: helm/kind-action@v1.4.0
       with:
         node_image: ${{ matrix.k8s_version }}
         cluster_name: kubent-test-cluster
