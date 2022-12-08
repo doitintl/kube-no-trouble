@@ -3,6 +3,7 @@ package collector
 import (
 	"os"
 	"path/filepath"
+	"reflect"
 	"testing"
 
 	"k8s.io/client-go/rest"
@@ -141,6 +142,14 @@ func TestNewClientRestConfigWithContext(t *testing.T) {
 	if config.Host != expectedHost {
 		t.Fatalf("Expected host from context %s to be: %s, got %s instead", expectedContext, expectedHost, config.Host)
 	}
+
+	if config.UserAgent != USER_AGENT {
+		t.Fatalf("Expected %s UserAgent, instead got: %s", USER_AGENT, config.UserAgent)
+	}
+
+	if _, ok := config.WarningHandler.(rest.NoWarnings); !ok {
+		t.Fatalf("Expected NoWarnings warnings handler, instead got: %s", reflect.TypeOf(config.WarningHandler).Name())
+	}
 }
 
 func TestNewClientRestConfigContextMissing(t *testing.T) {
@@ -164,6 +173,12 @@ func TestNewClientRestConfigInCluster(t *testing.T) {
 	}
 	if cfg.Host != expectedHost {
 		t.Fatalf("Expected %s host, instead got: %s", expectedHost, cfg.Host)
+	}
+	if cfg.UserAgent != USER_AGENT {
+		t.Fatalf("Expected %s UserAgent, instead got: %s", USER_AGENT, cfg.UserAgent)
+	}
+	if _, ok := cfg.WarningHandler.(rest.NoWarnings); !ok {
+		t.Fatalf("Expected NoWarnings warnings handler, instead got: %s", reflect.TypeOf(cfg.WarningHandler).Name())
 	}
 }
 

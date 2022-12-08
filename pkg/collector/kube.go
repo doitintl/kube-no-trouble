@@ -38,6 +38,7 @@ func newClientRestConfig(kubeconfig string, kubecontext string, inClusterFn func
 	if kubeconfig == "" {
 		if restConfig, err := inClusterFn(); err == nil {
 			restConfig.UserAgent = userAgent
+			restConfig.WarningHandler = rest.NoWarnings{}
 			return restConfig, nil
 		}
 	}
@@ -64,6 +65,7 @@ func newClientRestConfig(kubeconfig string, kubecontext string, inClusterFn func
 	}
 
 	restConfig.UserAgent = userAgent
+	restConfig.WarningHandler = rest.NoWarnings{}
 	return restConfig, nil
 }
 
