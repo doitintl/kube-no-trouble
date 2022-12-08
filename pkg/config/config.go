@@ -38,7 +38,7 @@ func NewFromFlags() (*Config, error) {
 		TargetVersion: &judge.Version{},
 	}
 
-	flag.StringSliceVarP(&config.AdditionalKinds, "additional-kind", "a", []string{}, "additional kinds of resources to report in Kind.version.group.com format")
+	flag.StringSliceVarP(&config.AdditionalKinds, "additional-kind", "a", []string{}, "additional kinds of resources to report in Kind.version.group format")
 	flag.StringSliceVarP(&config.AdditionalAnnotations, "additional-annotation", "A", []string{}, "additional annotations that should be checked to determine the last applied config")
 	flag.BoolVarP(&config.Cluster, "cluster", "c", true, "enable Cluster collector")
 	flag.StringVarP(&config.Context, "context", "x", "", "kubeconfig context")
@@ -76,13 +76,13 @@ func NewFromFlags() (*Config, error) {
 	return &config, nil
 }
 
-// validateAdditionalResources check that all resources are provided in full form
-// resource.version.group.com. E.g. managedcertificate.v1beta1.networking.gke.io
+// validateAdditionalResources check that all resources are provided
+// resource.version.group. E.g. admissionregistration.k8s.io
 func validateAdditionalResources(resources []string) error {
 	for _, r := range resources {
 		parts := strings.Split(r, ".")
-		if len(parts) < 4 {
-			return fmt.Errorf("failed to parse additional Kind, full form Kind.version.group.com is expected, instead got: %s", r)
+		if len(parts) < 3 {
+			return fmt.Errorf("failed to parse additional Kind, full form Kind.version.group is expected, instead got: %s", r)
 		}
 
 		if !unicode.IsUpper(rune(parts[0][0])) {

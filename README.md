@@ -94,7 +94,7 @@ Usage of ./kubent:
 
 - *`-a, --additional-kind`*
   Tells `kubent` to flag additional custom resources when found in the specified version. The flag can be used multiple
-  times. The expected format is full *Kind.version.group.com* form - e.g. `-a ManagedCertificate.v1.networking.gke.io`.
+  times. The expected format is *Kind.version.group* form - e.g. `-a admissionregistration.k8s.io.
 
 - *`-x, --context`*
   Select context from kubeconfig file (`current-context` from the file is used by default).
