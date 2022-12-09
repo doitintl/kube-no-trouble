@@ -13,9 +13,8 @@ jobs:
           exempt-issue-labels: 'awaiting-approval,work-in-progress'
           close-issue-message: 'This Issue was closed because it has been stalled for 30 days with no activity.'
           stale-pr-message: 'Message to comment on stale PRs. If none provided, will not mark PRs stale'
-          exempt-issue-labels: 'awaiting-approval,work-in-progress'
+          exempt-pr-labels: 'awaiting-approval,work-in-progress'
           close-pr-message: 'This PR was closed because it has been stalled for 45 days with no activity.'
-          exempt-issue-labels: 'awaiting-approval,work-in-progress'
           stale-pr-label: 'stale'
           days-before-issue-stale: 30
           days-before-pr-stale: 45
