@@ -9,14 +9,11 @@ jobs:
     steps:
       - uses: actions/stale@v6
         with:
-          stale-issue-message: 'Message to comment on stale issues. If none provided, will not mark issues stale'
-          exempt-issue-labels: 'awaiting-approval,work-in-progress'
-          close-issue-message: 'This Issue was closed because it has been stalled for 30 days with no activity.'
-          stale-pr-message: 'Message to comment on stale PRs. If none provided, will not mark PRs stale'
-          exempt-pr-labels: 'awaiting-approval,work-in-progress'
-          close-pr-message: 'This PR was closed because it has been stalled for 45 days with no activity.'
-          stale-pr-label: 'stale'
-          days-before-issue-stale: 30
-          days-before-pr-stale: 45
-          days-before-issue-close: 5
-          days-before-pr-close: 10
+          exempt-issue-labels: 'awaiting-approval,work-in-progress,not-stale'
+          exempt-pr-labels: 'awaiting-approval,work-in-progress,not-stale'
+          days-before-stale: 60
+          days-before-close: 30
+          stale-issue-message: 'This issue has not seen any activity in last 60 days, and has been marked as stale.'
+          stale-pr-message: 'This PR has not seen any activity in last 60 days and has been marked as stale'
+          close-issue-message: 'This issue was closed because it has been stalled for 90 days with no activity.'
+          close-pr-message: 'This PR was closed because it has been stalled for 90 days with no activity.'
