@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/hashicorp/go-version v1.6.0
-	github.com/open-policy-agent/opa v0.47.2
+	github.com/open-policy-agent/opa v0.47.3
 	github.com/rs/zerolog v1.28.0
 	github.com/spf13/pflag v1.0.5
 	helm.sh/helm/v3 v3.10.2
