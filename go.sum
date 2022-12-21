@@ -328,8 +328,8 @@ github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLA
 github.com/olekukonko/tablewriter v0.0.5/go.mod h1:hPp6KlRPjbx+hW8ykQs1w3UBbZlj6HuIJcUGPhkA7kY=
 github.com/onsi/ginkgo/v2 v2.4.0 h1:+Ig9nvqgS5OBSACXNk15PLdp0U9XPYROt9CFzVdFGIs=
 github.com/onsi/gomega v1.23.0 h1:/oxKu9c2HVap+F3PfKort2Hw5DEU+HGlW8n+tguWsys=
-github.com/open-policy-agent/opa v0.47.2 h1:9QmIumL6MRPYoXboBDSU/c1fG2PN5J4lo800RK36jrc=
-github.com/open-policy-agent/opa v0.47.2/go.mod h1:I5DbT677OGqfk9gvu5i54oIt0rrVf4B5pedpqDquAXo=
+github.com/open-policy-agent/opa v0.47.4 h1:CTPIoAv6/UJX+BkSkqytbofWrZHyfQ/A0ESE4FSKR9A=
+github.com/open-policy-agent/opa v0.47.4/go.mod h1:I5DbT677OGqfk9gvu5i54oIt0rrVf4B5pedpqDquAXo=
 github.com/pascaldekloe/goe v0.0.0-20180627143212-57f6aae5913c/go.mod h1:lzWF7FIEvWOWxwDKqyGYQf6ZUaNfKdP144TG7ZOy1lc=
 github.com/pelletier/go-toml v1.9.3/go.mod h1:u1nR/EPcESfeI/szUZKdtJ0xRNbUoANCkoOuaOx1Y+c=
 github.com/pkg/diff v0.0.0-20210226163009-20ebb0f2a09e/go.mod h1:pJLUxLENpZxwdsKMEsNbx1VGcRFpLqf3715MtcvvzbA=
