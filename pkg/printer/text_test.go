@@ -1,16 +1,17 @@
 package printer
 
 import (
-	"github.com/doitintl/kube-no-trouble/pkg/judge"
 	"io/ioutil"
 	"os"
 	"testing"
+
+	"github.com/doitintl/kube-no-trouble/pkg/judge"
 )
 
 func Test_newTextPrinter(t *testing.T) {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), "kubent-tests-")
+	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
 	if err != nil {
-		t.Fatalf("failed to create temp dir for testing: %v", err)
+		t.Fatalf(tempFileCreateFailureMessage, err)
 	}
 	defer os.Remove(tmpFile.Name())
 
@@ -39,9 +40,9 @@ func Test_newTextPrinter(t *testing.T) {
 }
 
 func Test_textPrinter_Print(t *testing.T) {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), "kubent-tests-")
+	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
 	if err != nil {
-		t.Fatalf("failed to create temp dir for testing: %v", err)
+		t.Fatalf(tempFileCreateFailureMessage, err)
 	}
 	defer os.Remove(tmpFile.Name())
 
@@ -63,9 +64,9 @@ func Test_textPrinter_Print(t *testing.T) {
 }
 
 func Test_textPrinter_Close(t *testing.T) {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), "kubent-tests-")
+	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
 	if err != nil {
-		t.Fatalf("failed to create temp dir for testing: %v", err)
+		t.Fatalf(tempFileCreateFailureMessage, err)
 	}
 	defer os.Remove(tmpFile.Name())
 

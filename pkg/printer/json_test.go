@@ -11,9 +11,9 @@ import (
 )
 
 func Test_newJSONPrinter(t *testing.T) {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), "kubent-tests-")
+	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
 	if err != nil {
-		t.Fatalf("failed to create temp dir for testing: %v", err)
+		t.Fatalf(tempFileCreateFailureMessage, err)
 	}
 	defer os.Remove(tmpFile.Name())
 
@@ -42,9 +42,9 @@ func Test_newJSONPrinter(t *testing.T) {
 }
 
 func Test_jsonPrinter_Print(t *testing.T) {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), "kubent-tests-")
+	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
 	if err != nil {
-		t.Fatalf("failed to create temp dir for testing: %v", err)
+		t.Fatalf(tempFileCreateFailureMessage, err)
 	}
 	defer os.Remove(tmpFile.Name())
 
@@ -75,9 +75,9 @@ func Test_jsonPrinter_Print(t *testing.T) {
 }
 
 func Test_jsonPrinter_Close(t *testing.T) {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), "kubent-tests-")
+	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
 	if err != nil {
-		t.Fatalf("failed to create temp dir for testing: %v", err)
+		t.Fatalf(tempFileCreateFailureMessage, err)
 	}
 	defer os.Remove(tmpFile.Name())
 

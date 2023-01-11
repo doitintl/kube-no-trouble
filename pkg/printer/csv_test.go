@@ -8,10 +8,10 @@ import (
 	"github.com/doitintl/kube-no-trouble/pkg/judge"
 )
 
-func Test_newCSVPrinter(t *testing.T) {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), "kubent-tests-")
+func TestNewCSVPrinter(t *testing.T) {
+	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
 	if err != nil {
-		t.Fatalf("failed to create temp dir for testing: %v", err)
+		t.Fatalf(tempFileCreateFailureMessage, err)
 	}
 	defer os.Remove(tmpFile.Name())
 
@@ -39,10 +39,10 @@ func Test_newCSVPrinter(t *testing.T) {
 	}
 }
 
-func Test_csvPrinter_Print(t *testing.T) {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), "kubent-tests-")
+func TestCSVPrinterPrint(t *testing.T) {
+	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
 	if err != nil {
-		t.Fatalf("failed to create temp dir for testing: %v", err)
+		t.Fatalf(tempFileCreateFailureMessage, err)
 	}
 	defer os.Remove(tmpFile.Name())
 
@@ -63,10 +63,10 @@ func Test_csvPrinter_Print(t *testing.T) {
 	}
 }
 
-func Test_csvPrinter_Close(t *testing.T) {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), "kubent-tests-")
+func TestCSVPrinterClose(t *testing.T) {
+	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
 	if err != nil {
-		t.Fatalf("failed to create temp dir for testing: %v", err)
+		t.Fatalf(tempFileCreateFailureMessage, err)
 	}
 	defer os.Remove(tmpFile.Name())
 
