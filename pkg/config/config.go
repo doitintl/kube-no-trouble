@@ -47,7 +47,7 @@ func NewFromFlags() (*Config, error) {
 	flag.BoolVar(&config.Helm3, "helm3", true, "enable Helm v3 collector")
 	flag.StringSliceVarP(&config.Filenames, "filename", "f", []string{}, "manifests to check, use - for stdin")
 	flag.StringVarP(&config.Kubeconfig, "kubeconfig", "k", "", "path to the kubeconfig file")
-	flag.StringVarP(&config.Output, "output", "o", "text", "output format - [text|json]")
+	flag.StringVarP(&config.Output, "output", "o", "text", "output format - [text|json|csv]")
 	flag.StringVarP(&config.OutputFile, "output-file", "O", "-", "output file, use - for stdout")
 	flag.VarP(&config.LogLevel, "log-level", "l", "set log level (trace, debug, info, warn, error, fatal, panic, disabled)")
 	flag.VarP(config.TargetVersion, "target-version", "t", "target K8s version in SemVer format (autodetected by default)")

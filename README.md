@@ -83,7 +83,7 @@ Usage of ./kubent:
       --helm3                           enable Helm v3 collector (default true)
   -k, --kubeconfig string               path to the kubeconfig file
   -l, --log-level string                set log level (trace, debug, info, warn, error, fatal, panic, disabled) (default "info")
-  -o, --output string                   output format - [text|json] (default "text")
+  -o, --output string                   output format - [text|json|csv] (default "text")
   -O, --output-file string        output file, use - for stdout (default "-")
   -t, --target-version string           target K8s version in SemVer format (autodetected by default)
   -v, --version                         prints the version of kubent and exits
