@@ -30,6 +30,7 @@ type Config struct {
 	OutputFile            string
 	TargetVersion         *judge.Version
 	KubentVersion         bool
+	DoNotResolvePaths     bool
 }
 
 func NewFromFlags() (*Config, error) {
@@ -51,6 +52,7 @@ func NewFromFlags() (*Config, error) {
 	flag.StringVarP(&config.OutputFile, "output-file", "O", "-", "output file, use - for stdout")
 	flag.VarP(&config.LogLevel, "log-level", "l", "set log level (trace, debug, info, warn, error, fatal, panic, disabled)")
 	flag.VarP(config.TargetVersion, "target-version", "t", "target K8s version in SemVer format (autodetected by default)")
+	flag.BoolVar(&config.DoNotResolvePaths, "do-not-resolve-paths", true, "kubeconfig loader setting \"DoNotResolvePaths\"")
 
 	flag.Parse()
 

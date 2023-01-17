@@ -19,14 +19,15 @@ type HelmV3Collector struct {
 }
 
 type HelmV3Opts struct {
-	Kubeconfig      string
-	KubeContext     string
-	DiscoveryClient discovery.DiscoveryInterface
-	CoreClient      corev1.CoreV1Interface
+	Kubeconfig            string
+	KubeContext           string
+	KubeDoNotResolvePaths bool
+	DiscoveryClient       discovery.DiscoveryInterface
+	CoreClient            corev1.CoreV1Interface
 }
 
 func NewHelmV3Collector(opts *HelmV3Opts, userAgent string) (*HelmV3Collector, error) {
-	kubeCollector, err := newKubeCollector(opts.Kubeconfig, opts.KubeContext, opts.DiscoveryClient, userAgent)
+	kubeCollector, err := newKubeCollector(opts.Kubeconfig, opts.KubeContext, opts.DiscoveryClient, userAgent, opts.KubeDoNotResolvePaths)
 	if err != nil {
 		return nil, err
 	}

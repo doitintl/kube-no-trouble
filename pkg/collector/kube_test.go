@@ -21,7 +21,7 @@ const CONTEXT = "kube.config.context"
 
 func TestNewKubeCollector(t *testing.T) {
 	clientSet := fake.NewSimpleClientset()
-	col, err := newKubeCollector("", "", clientSet.Discovery(), USER_AGENT)
+	col, err := newKubeCollector("", "", clientSet.Discovery(), USER_AGENT, true)
 
 	if err != nil {
 		t.Fatalf("Failed to create kubeCollector from fake discovery client")
@@ -32,7 +32,7 @@ func TestNewKubeCollector(t *testing.T) {
 }
 
 func TestNewKubeCollectorWithKubeconfigPath(t *testing.T) {
-	col, err := newKubeCollector(filepath.Join(FIXTURES_DIR, CONTEXT), "", nil, USER_AGENT)
+	col, err := newKubeCollector(filepath.Join(FIXTURES_DIR, CONTEXT), "", nil, USER_AGENT, true)
 
 	if err != nil {
 		t.Fatalf("Failed to create kubeCollector from fake discovery client")
@@ -49,7 +49,7 @@ func TestNewKubeCollectorWithKubeconfigPath(t *testing.T) {
 }
 
 func TestNewKubeCollectorError(t *testing.T) {
-	_, err := newKubeCollector("does-not-exist", "", nil, USER_AGENT)
+	_, err := newKubeCollector("does-not-exist", "", nil, USER_AGENT, true)
 
 	if err == nil {
 		t.Errorf("Expected to fail with nonexistent kubeconfig")
@@ -65,7 +65,7 @@ func TestGetServerVersion(t *testing.T) {
 		GitVersion: gitVersion,
 	}
 
-	collector, err := newKubeCollector("", "", clientSet.Discovery(), USER_AGENT)
+	collector, err := newKubeCollector("", "", clientSet.Discovery(), USER_AGENT, true)
 	if err != nil {
 		t.Fatalf("failed to create kubeCollector from fake client: %s", err)
 	}
@@ -84,7 +84,7 @@ func TestContext(t *testing.T) {
 	expectedContext := "test-context"
 	expectedHost := "https://test-cluster"
 
-	collector, err := newKubeCollector(filepath.Join(FIXTURES_DIR, CONTEXT), expectedContext, nil, USER_AGENT)
+	collector, err := newKubeCollector(filepath.Join(FIXTURES_DIR, CONTEXT), expectedContext, nil, USER_AGENT, true)
 	if err != nil {
 		t.Fatalf("Failed to create kubeCollector from fake client with context %s: %s", expectedContext, err)
 	}
@@ -98,14 +98,14 @@ func TestContext(t *testing.T) {
 func TestContextMissing(t *testing.T) {
 	expectedContext := "nonexistent"
 
-	_, err := newKubeCollector(filepath.Join(FIXTURES_DIR, CONTEXT), expectedContext, nil, USER_AGENT)
+	_, err := newKubeCollector(filepath.Join(FIXTURES_DIR, CONTEXT), expectedContext, nil, USER_AGENT, true)
 	if err == nil {
 		t.Fatalf("Expected to fail when using nonexistent context: %s", expectedContext)
 	}
 }
 
 func TestNewClientRestConfigError(t *testing.T) {
-	_, err := newClientRestConfig("does-not-exist", "", rest.InClusterConfig, USER_AGENT)
+	_, err := newClientRestConfig("does-not-exist", "", rest.InClusterConfig, USER_AGENT, true)
 
 	if err == nil {
 		t.Errorf("Expected to fail with nonexistent kubeconfig")
@@ -113,7 +113,7 @@ func TestNewClientRestConfigError(t *testing.T) {
 }
 
 func TestNewClientRestConfigWithKubeconfigPath(t *testing.T) {
-	_, err := newClientRestConfig(filepath.Join(FIXTURES_DIR, BASIC_CONFIG), "", rest.InClusterConfig, USER_AGENT)
+	_, err := newClientRestConfig(filepath.Join(FIXTURES_DIR, BASIC_CONFIG), "", rest.InClusterConfig, USER_AGENT, true)
 	if err != nil {
 		t.Fatalf("Failed with: %s", err)
 	}
@@ -125,7 +125,7 @@ func TestNewClientRestConfigMultipleFiles(t *testing.T) {
 	})
 	defer env.reset()
 
-	if _, err := newClientRestConfig("", "", rest.InClusterConfig, USER_AGENT); err != nil {
+	if _, err := newClientRestConfig("", "", rest.InClusterConfig, USER_AGENT, true); err != nil {
 		t.Fatalf("Failed with: %s", err)
 	}
 }
@@ -134,7 +134,7 @@ func TestNewClientRestConfigWithContext(t *testing.T) {
 	expectedContext := "test-context"
 	expectedHost := "https://test-cluster"
 
-	config, err := newClientRestConfig(filepath.Join(FIXTURES_DIR, CONTEXT), expectedContext, rest.InClusterConfig, USER_AGENT)
+	config, err := newClientRestConfig(filepath.Join(FIXTURES_DIR, CONTEXT), expectedContext, rest.InClusterConfig, USER_AGENT, true)
 	if err != nil {
 		t.Fatalf("Failed to create kubeCollector from fake client with context %s: %s", expectedContext, err)
 	}
@@ -155,7 +155,7 @@ func TestNewClientRestConfigWithContext(t *testing.T) {
 func TestNewClientRestConfigContextMissing(t *testing.T) {
 	expectedContext := "nonexistent"
 
-	_, err := newClientRestConfig(filepath.Join(FIXTURES_DIR, CONTEXT), expectedContext, rest.InClusterConfig, USER_AGENT)
+	_, err := newClientRestConfig(filepath.Join(FIXTURES_DIR, CONTEXT), expectedContext, rest.InClusterConfig, USER_AGENT, true)
 	if err == nil {
 		t.Fatalf("Expected to fail when using nonexistent context: %s", expectedContext)
 	}
@@ -167,7 +167,7 @@ func TestNewClientRestConfigInCluster(t *testing.T) {
 		return &rest.Config{Host: expectedHost}, nil
 	}
 
-	cfg, err := newClientRestConfig("", "", inClusterFn, USER_AGENT)
+	cfg, err := newClientRestConfig("", "", inClusterFn, USER_AGENT, true)
 	if err != nil {
 		t.Fatalf("Failed to create in-cluster config: %s", err)
 	}
