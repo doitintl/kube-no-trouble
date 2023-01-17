@@ -8,7 +8,7 @@ import (
 	"github.com/doitintl/kube-no-trouble/pkg/judge"
 )
 
-func Test_newTextPrinter(t *testing.T) {
+func TestNewCSVPrinter(t *testing.T) {
 	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
 	if err != nil {
 		t.Fatalf(tempFileCreateFailureMessage, err)
@@ -26,7 +26,7 @@ func Test_newTextPrinter(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := newTextPrinter(tt.outputFileName)
+			got, err := newCSVPrinter(tt.outputFileName)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Unexpected error %v, wantErr %v", err, tt.wantErr)
 				return
@@ -39,14 +39,14 @@ func Test_newTextPrinter(t *testing.T) {
 	}
 }
 
-func Test_textPrinter_Print(t *testing.T) {
+func TestCSVPrinterPrint(t *testing.T) {
 	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
 	if err != nil {
 		t.Fatalf(tempFileCreateFailureMessage, err)
 	}
 	defer os.Remove(tmpFile.Name())
 
-	tp := &textPrinter{
+	tp := &csvPrinter{
 		commonPrinter: &commonPrinter{tmpFile},
 	}
 
@@ -63,7 +63,7 @@ func Test_textPrinter_Print(t *testing.T) {
 	}
 }
 
-func Test_textPrinter_Close(t *testing.T) {
+func TestCSVPrinterClose(t *testing.T) {
 	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
 	if err != nil {
 		t.Fatalf(tempFileCreateFailureMessage, err)
@@ -80,7 +80,7 @@ func Test_textPrinter_Close(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &textPrinter{
+			c := &csvPrinter{
 				commonPrinter: &commonPrinter{tt.outputFile},
 			}
 			if err := c.Close(); (err != nil) != tt.wantErr {

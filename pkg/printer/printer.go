@@ -10,6 +10,7 @@ import (
 var printers = map[string]func(string) (Printer, error){
 	"json": newJSONPrinter,
 	"text": newTextPrinter,
+	"csv":  newCSVPrinter,
 }
 
 type Printer interface {

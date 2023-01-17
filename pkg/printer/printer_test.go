@@ -7,6 +7,11 @@ import (
 	"testing"
 )
 
+const (
+	tempFilePrefix               = "kubent-tests-"
+	tempFileCreateFailureMessage = "failed to create temp dir for testing: %v"
+)
+
 func TestParsePrinter(t *testing.T) {
 	for k, v := range printers {
 		p, err := ParsePrinter(k)
@@ -28,9 +33,9 @@ func TestParsePrinterInvalid(t *testing.T) {
 }
 
 func TestNewPrinter(t *testing.T) {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), "kubent-tests-")
+	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
 	if err != nil {
-		t.Fatalf("failed to create temp dir for testing: %v", err)
+		t.Fatalf(tempFileCreateFailureMessage, err)
 	}
 	defer os.Remove(tmpFile.Name())
 
@@ -63,9 +68,9 @@ func TestNewPrinter(t *testing.T) {
 }
 
 func Test_newCommonPrinter(t *testing.T) {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), "kubent-tests-")
+	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
 	if err != nil {
-		t.Fatalf("failed to create temp dir for testing: %v", err)
+		t.Fatalf(tempFileCreateFailureMessage, err)
 	}
 	defer os.Remove(tmpFile.Name())
 
@@ -103,9 +108,9 @@ func Test_newCommonPrinter(t *testing.T) {
 }
 
 func Test_ensureOutputFileExists(t *testing.T) {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), "kubent-tests-")
+	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
 	if err != nil {
-		t.Fatalf("failed to create temp dir for testing: %v", err)
+		t.Fatalf(tempFileCreateFailureMessage, err)
 	}
 
 	tests := []struct {
@@ -145,9 +150,9 @@ func Test_ensureOutputFileExists(t *testing.T) {
 }
 
 func Test_commonPrinter_Close(t *testing.T) {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), "kubent-tests-")
+	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
 	if err != nil {
-		t.Fatalf("failed to create temp dir for testing: %v", err)
+		t.Fatalf(tempFileCreateFailureMessage, err)
 	}
 	defer os.Remove(tmpFile.Name())
 
