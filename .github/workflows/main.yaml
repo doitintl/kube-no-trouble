@@ -78,9 +78,19 @@ jobs:
           set-safe-directory: true
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      - name: build docker image
-        run: |
-          docker buildx build --build-arg GITHUB_REF --build-arg GITHUB_SHA .
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: false
+          platforms: |
+            linux/arm64
+            linux/amd64
+          build-args: |
+            GITHUB_REF
+            GITHUB_SHA
+          cache-from: type=gha
+          cache-to: type=gha
   integration-test:
     name: integration test
     needs:
@@ -169,12 +179,17 @@ jobs:
         with:
           context: .
           push: true
+          platforms: |
+            linux/arm64
+            linux/amd64
           tags: |
             ${{ format('{0}/{1}:{2}', env.REGISTRY, env.IMAGE_NAME, needs.create-release.outputs.tag_name) }}
             ${{ ( !startsWith(github.ref, 'refs/tags/nightly') && format('{0}/{1}:{2}', env.REGISTRY, env.IMAGE_NAME, 'latest') ) || '' }}
           build-args: |
             GITHUB_REF
             GITHUB_SHA
+          cache-from: type=gha
+          cache-to: type=gha
   release-artifacts:
     name: Release Artifacts
     needs:
