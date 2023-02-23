@@ -1,4 +1,4 @@
-FROM golang:1.19.4-alpine3.16 as builder
+FROM --platform=$BUILDPLATFORM golang:1.19.4-alpine3.16 AS builder
 ARG GITHUB_REF GITHUB_SHA
 WORKDIR /src
 COPY go.mod go.sum ./
@@ -8,10 +8,13 @@ RUN go mod download
 COPY cmd cmd
 COPY pkg pkg
 COPY Makefile Makefile
-RUN make all
 
-FROM scratch
+ARG TARGETOS TARGETARCH
+RUN GOOS=$TARGETOS GOARCH=$TARGETARCH make all
+
+FROM scratch AS kubent
 USER 10000:10000
 WORKDIR /app
-COPY --from=builder /src/bin/kubent-linux-amd64 /app/kubent
+ARG TARGETOS TARGETARCH
+COPY --from=builder /src/bin/kubent-$TARGETOS-$TARGETARCH /app/kubent
 ENTRYPOINT ["/app/kubent"]
