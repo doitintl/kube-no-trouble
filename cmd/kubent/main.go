@@ -7,11 +7,13 @@ import (
 	"io"
 	"os"
 
-	"github.com/doitintl/kube-no-trouble/pkg/collector"
-	"github.com/doitintl/kube-no-trouble/pkg/config"
-	"github.com/doitintl/kube-no-trouble/pkg/judge"
-	"github.com/doitintl/kube-no-trouble/pkg/printer"
-	"github.com/doitintl/kube-no-trouble/pkg/rules"
+	"github.com/LeMyst/kube-no-trouble/pkg/collector"
+	"github.com/LeMyst/kube-no-trouble/pkg/config"
+	"github.com/LeMyst/kube-no-trouble/pkg/judge"
+	"github.com/LeMyst/kube-no-trouble/pkg/printer"
+	"github.com/LeMyst/kube-no-trouble/pkg/rules"
+
+	"k8s.io/klog/v2"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -19,7 +21,6 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth/azure"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/oidc"
-	"k8s.io/klog/v2"
 )
 
 var (

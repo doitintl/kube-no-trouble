@@ -3,7 +3,7 @@ package collector
 import (
 	"testing"
 
-	"github.com/doitintl/kube-no-trouble/test"
+	"github.com/LeMyst/kube-no-trouble/test"
 )
 
 func init() {

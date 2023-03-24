@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	ctxKey "github.com/doitintl/kube-no-trouble/pkg/context"
+	ctxKey "github.com/LeMyst/kube-no-trouble/pkg/context"
 )
 
 func TestNewCSVPrinter(t *testing.T) {

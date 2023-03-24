@@ -7,7 +7,7 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/doitintl/kube-no-trouble/pkg/judge"
+	"github.com/LeMyst/kube-no-trouble/pkg/judge"
 )
 
 type textPrinter struct {

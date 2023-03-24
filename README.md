@@ -36,7 +36,7 @@ sh -c "$(curl -sSL https://git.io/install-kubent)"
 ### Manual Installation
 
 You can download the
-[latest release](https://github.com/doitintl/kube-no-trouble/releases/latest)
+[latest release](https://github.com/LeMyst/kube-no-trouble/releases/latest)
 for your platform and unpack manually.
 
 ### Third-Party Installation
@@ -139,7 +139,7 @@ Usage of ./kubent:
 ### Docker Image
 
 We also publish official container image, which can be found at:
-`ghcr.io/doitintl/kube-no-trouble:latest` (also available tagged with each
+`ghcr.io/LeMyst/kube-no-trouble:latest` (also available tagged with each
 individual release version).
 
 To run locally, you'll need to provide credentials, e.g. by sharing your
@@ -148,7 +148,7 @@ kubectl config:
 ```sh
 $ docker run -it --rm \
     -v "${HOME}/.kube/config:/.kubeconfig" \
-    ghcr.io/doitintl/kube-no-trouble:latest \
+    ghcr.io/LeMyst/kube-no-trouble:latest \
     -k /.kubeconfig
 ```
 
@@ -159,7 +159,7 @@ environment, but you'll want to grant relevant permissions first (see
 
 ```sh
 $ kubectl run kubent --restart=Never --rm -i --tty \
-    --image ghcr.io/doitintl/kube-no-trouble:latest \
+    --image ghcr.io/LeMyst/kube-no-trouble:latest \
     --overrides='{"spec": {"serviceAccount": "kubent"}}'
 ```
 
@@ -213,7 +213,7 @@ The simplest way to build `kubent` is:
 
 ```sh
 # Clone the repository
-git clone https://github.com/doitintl/kube-no-trouble.git
+git clone https://github.com/LeMyst/kube-no-trouble.git
 cd kube-no-trouble/
 # Build
 go build -o bin/kubent cmd/kubent/main.go
@@ -288,7 +288,7 @@ This is an example release note!
 
 ## Issues and Contributions
 
-Please open any issues and/or PRs against github.com/doitintl/kube-no-trouble repository.
+Please open any issues and/or PRs against github.com/LeMyst/kube-no-trouble repository.
 
 Please ensure any contributions are signed with a valid gpg key. We use this to validate that you have committed this and no one else. You can learn how to create a GPG key [here](https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key).
 

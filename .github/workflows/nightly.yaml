@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
           set-safe-directory: true
@@ -40,6 +40,6 @@ jobs:
           TAG: "nightly-${{ steps.git_tag.outputs.tag }}"
         run: |
           git tag "${TAG}"
-          git remote set-url origin git@github.com:doitintl/kube-no-trouble.git
+          git remote set-url origin git@github.com:LeMyst/kube-no-trouble.git
           git push origin "refs/tags/${TAG}"
         if: ${{ steps.tag_exists.outputs.result != 'true' }}

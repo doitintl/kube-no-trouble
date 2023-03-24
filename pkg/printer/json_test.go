@@ -8,8 +8,8 @@ import (
 	"reflect"
 	"testing"
 
-	ctxKey "github.com/doitintl/kube-no-trouble/pkg/context"
-	"github.com/doitintl/kube-no-trouble/pkg/judge"
+	ctxKey "github.com/LeMyst/kube-no-trouble/pkg/context"
+	"github.com/LeMyst/kube-no-trouble/pkg/judge"
 )
 
 func Test_newJSONPrinter(t *testing.T) {
