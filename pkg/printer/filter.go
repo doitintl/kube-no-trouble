@@ -1,7 +1,7 @@
 package printer
 
 import (
-	"github.com/doitintl/kube-no-trouble/pkg/judge"
+	"github.com/LeMyst/kube-no-trouble/pkg/judge"
 )
 
 func FilterNonRelevantResults(results []judge.Result, tv *judge.Version) ([]judge.Result, error) {

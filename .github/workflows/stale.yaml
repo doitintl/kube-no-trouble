@@ -7,7 +7,7 @@ jobs:
   stale:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/stale@v6
+      - uses: actions/stale@v8
         with:
           exempt-issue-labels: 'awaiting-approval,work-in-progress,not-stale'
           exempt-pr-labels: 'awaiting-approval,work-in-progress,not-stale'

@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/doitintl/kube-no-trouble/pkg/judge"
+	"github.com/LeMyst/kube-no-trouble/pkg/judge"
 )
 
 func Test_newTextPrinter(t *testing.T) {
