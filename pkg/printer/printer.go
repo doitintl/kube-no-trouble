@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/doitintl/kube-no-trouble/pkg/judge"
+	"github.com/LeMyst/kube-no-trouble/pkg/judge"
 )
 
 var printers = map[string]func(string) (Printer, error){

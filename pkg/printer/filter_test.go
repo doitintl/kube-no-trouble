@@ -3,7 +3,7 @@ package printer
 import (
 	"testing"
 
-	"github.com/doitintl/kube-no-trouble/pkg/judge"
+	"github.com/LeMyst/kube-no-trouble/pkg/judge"
 )
 
 var testVersion1, _ = judge.NewVersion("1.1.1")

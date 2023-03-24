@@ -2,7 +2,7 @@
 # Set strict error checking
 set -eou pipefail
 
-GH_ORG="doitintl"
+GH_ORG="LeMyst"
 GH_REPO="kube-no-trouble"
 CHANGELOG_TEMPLATE="./scripts/changelog.tmpl"
 OUTPUT_FILE="${OUTPUT_FILE:="./changelog.md"}"

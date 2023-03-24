@@ -9,7 +9,7 @@ LC_CTYPE=C
 
 # Optional vars
 APP_NAME="${APP_NAME:="kubent"}"
-GITHUB_REPO="${GITHUB_REPO:="doitintl/kube-no-trouble"}"
+GITHUB_REPO="${GITHUB_REPO:="LeMyst/kube-no-trouble"}"
 TARGET_DIR="${TARGET_DIR:="/usr/local/bin"}"
 TARGET_ARCH="${TARGET_ARCH:="$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')"}"
 TARGET_OS="${TARGET_OS:="$(uname -s | tr '[:upper:]' '[:lower:]')"}"
