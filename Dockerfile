@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM golang:1.19.4-alpine3.16 AS builder
+FROM --platform=$BUILDPLATFORM golang:1.20.2-alpine3.16 AS builder
 ARG GITHUB_REF GITHUB_SHA
 WORKDIR /src
 COPY go.mod go.sum ./
