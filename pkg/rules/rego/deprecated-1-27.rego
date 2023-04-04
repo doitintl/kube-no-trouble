@@ -10,7 +10,7 @@ main[return] {
 		"Kind": resource.kind,
 		"ApiVersion": api.old,
 		"ReplaceWith": api.new,
-		"RuleSet": "Deprecated APIs removed in 1.26",
+		"RuleSet": "Deprecated APIs removed in 1.27",
 		"Since": api.since,
 	}
 }
