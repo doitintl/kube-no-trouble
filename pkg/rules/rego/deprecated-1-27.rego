@@ -1,4 +1,4 @@
-package deprecated126
+package deprecated127
 
 main[return] {
 	resource := input[_]
@@ -20,23 +20,11 @@ deprecated_resource(r) = api {
 }
 
 deprecated_api(kind, api_version) = api {
-	deprecated_apis = {
-		"HorizontalPodAutoscaler": {
-			"old": ["autoscaling/v2beta1", "autoscaling/v2beta2"],
-			"new": "autoscaling/v2",
-			"since": "1.23",
-		},
-		"FlowSchema": {
-			"old": ["flowcontrol.apiserver.k8s.io/v1beta1"],
-			"new": "flowcontrol.apiserver.k8s.io/v1beta3",
-			"since": "1.26",
-		},
-		"PriorityLevelConfiguration": {
-			"old": ["flowcontrol.apiserver.k8s.io/v1beta1"],
-			"new": "flowcontrol.apiserver.k8s.io/v1beta3",
-			"since": "1.26",
-		},
-	}
+	deprecated_apis = {"CSIStorageCapacity": {
+		"old": ["storage.k8s.io/v1beta1"],
+		"new": "storage.k8s.io/v1",
+		"since": "1.24",
+	}}
 
 	deprecated_apis[kind].old[_] == api_version
 
