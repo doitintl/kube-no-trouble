@@ -20,11 +20,11 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           set-safe-directory: true
-      - uses: actions/setup-python@v4
-      - uses: pre-commit/action@v3.0.0
+      - uses: actions/setup-python@v5
+      - uses: pre-commit/action@v3.0.1
   test:
     name: test
     runs-on: ubuntu-latest
@@ -33,7 +33,7 @@ jobs:
       - name: Install git
         run: apk add --update --no-cache git
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           set-safe-directory: true
@@ -56,7 +56,7 @@ jobs:
       - name: Install git
         run: apk add --update --no-cache git
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           set-safe-directory: true
@@ -78,14 +78,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           set-safe-directory: true
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
       - name: Build and push Docker image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: false
@@ -112,18 +112,19 @@ jobs:
           "kindest/node:v1.23.17",
           "kindest/node:v1.24.17",
           "kindest/node:v1.25.16",
-          "kindest/node:v1.26.14",
-          "kindest/node:v1.27.11",
-          "kindest/node:v1.28.7",
-          "kindest/node:v1.29.2"
+          "kindest/node:v1.26.15",
+          "kindest/node:v1.27.13",
+          "kindest/node:v1.28.9",
+          "kindest/node:v1.29.4",
+          "kindest/node:v1.30.0"
         ]
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           set-safe-directory: true
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: release-artifacts-linux-amd64
           path: release-artifacts
@@ -135,7 +136,7 @@ jobs:
       - name: run integration test
         run: |
           tar xvzf release-artifacts/kubent-*-linux-amd64.tar.gz
-          kubectl version --short
+          kubectl version
           kubectl cluster-info --context kind-kubent-test-cluster
           ./kubent
   create-release:
@@ -195,19 +196,19 @@ jobs:
         with:
           string: ${{ env.IMAGE_NAME }}
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
       - name: Log in to the Container registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
       - name: Build and push Docker image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: true
