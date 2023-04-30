@@ -8,6 +8,8 @@ updates:
       time: "10:00"
     commit-message:
       prefix: "dep: Go "
+    assignees:
+      - "LeMyst"
 
   - package-ecosystem: "docker"
     directory: "/"
@@ -16,6 +18,8 @@ updates:
       time: "10:00"
     commit-message:
       prefix: "dep: Docker "
+    assignees:
+      - "LeMyst"
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -24,3 +28,5 @@ updates:
       time: "10:00"
     commit-message:
       prefix: "dep: Github Actions "
+    assignees:
+      - "LeMyst"
