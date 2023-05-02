@@ -9,8 +9,8 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/doitintl/kube-no-trouble/pkg/judge"
-	"github.com/doitintl/kube-no-trouble/pkg/printer"
+	"github.com/LeMyst/kube-no-trouble/pkg/judge"
+	"github.com/LeMyst/kube-no-trouble/pkg/printer"
 	"k8s.io/client-go/tools/clientcmd"
 
 	"github.com/rs/zerolog"
