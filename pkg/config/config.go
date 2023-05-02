@@ -10,8 +10,8 @@ import (
 	"strings"
 	"unicode"
 
-	ctxKey "github.com/doitintl/kube-no-trouble/pkg/context"
-	"github.com/doitintl/kube-no-trouble/pkg/judge"
+	ctxKey "github.com/LeMyst/kube-no-trouble/pkg/context"
+	"github.com/LeMyst/kube-no-trouble/pkg/judge"
 	"k8s.io/client-go/tools/clientcmd"
 
 	"github.com/rs/zerolog"
