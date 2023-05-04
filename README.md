@@ -262,4 +262,6 @@ This is an example release note!
 
 Please open any issues and/or PRs against github.com/doitintl/kube-no-trouble repository.
 
+Please ensure any contributions are signed with a valid gpg key. We use this to validate that you have committed this and no one else. You can learn how to create a GPG key [here](https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key).
+
 Feedback and contributions are always welcome!
