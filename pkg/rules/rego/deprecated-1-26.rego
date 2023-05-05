@@ -21,7 +21,7 @@ deprecated_resource(r) = api {
 
 deprecated_api(kind, api_version) = api {
 	deprecated_apis = {"HorizontalPodAutoscaler": {
-		"old": ["autoscaling/v2beta1", "autoscaling/v2beta2"],
+		"old": ["autoscaling/v2beta2"],
 		"new": "autoscaling/v2",
 		"since": "1.23",
 	}}
