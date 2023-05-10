@@ -33,6 +33,12 @@ Or download the
 [latest release](https://github.com/doitintl/kube-no-trouble/releases/latest)
 for your platform and unpack manually.
 
+### Install on Windows with [Scoop](https://scoop.sh)
+
+```powershell
+scoop install kubent
+```
+
 
 ## Usage
 
