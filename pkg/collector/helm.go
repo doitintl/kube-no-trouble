@@ -39,7 +39,7 @@ func parseManifests(manifest string, defaultNamespace string, discoveryClient di
 
 func fixNamespace(resource *unstructured.Unstructured, defaultNamespace string, discoveryClient discovery.DiscoveryInterface) {
 	// Default to the release namespace if the manifest doesn't have the namespace set
-	if resource.GetNamespace() == "" && isResourceNamespaced(discoveryClient, resource.GroupVersionKind()) {
+	if resource.GetNamespace() == "" && !isResourceNamespaced(discoveryClient, resource.GroupVersionKind()) {
 		resource.SetNamespace(defaultNamespace)
 	}
 }
