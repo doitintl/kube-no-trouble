@@ -13,7 +13,7 @@ func TestNewHelmV3Collector(t *testing.T) {
 	col, err := NewHelmV3Collector(&HelmV3Opts{
 		DiscoveryClient: clientSet.Discovery(),
 		CoreClient:      clientSet.CoreV1(),
-	}, USER_AGENT)
+	}, []string{}, USER_AGENT)
 
 	if err != nil {
 		t.Fatalf("Failed to create collector from fake discovery client")
