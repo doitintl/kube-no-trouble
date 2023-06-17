@@ -2,6 +2,7 @@ package collector
 
 import (
 	"github.com/rs/zerolog/log"
+	"helm.sh/helm/v3/pkg/release"
 	"helm.sh/helm/v3/pkg/storage"
 	"helm.sh/helm/v3/pkg/storage/driver"
 	"k8s.io/client-go/discovery"
@@ -13,9 +14,9 @@ const HELM_V3_COLLECTOR_NAME = "Helm v3"
 type HelmV3Collector struct {
 	*commonCollector
 	*kubeCollector
-	client       corev1.CoreV1Interface
-	secretsStore *storage.Storage
-	configStore  *storage.Storage
+	client        corev1.CoreV1Interface
+	secretsStores []*storage.Storage
+	configStores  []*storage.Storage
 }
 
 type HelmV3Opts struct {
@@ -25,7 +26,7 @@ type HelmV3Opts struct {
 	CoreClient      corev1.CoreV1Interface
 }
 
-func NewHelmV3Collector(opts *HelmV3Opts, userAgent string) (*HelmV3Collector, error) {
+func NewHelmV3Collector(opts *HelmV3Opts, namespaces []string, userAgent string) (*HelmV3Collector, error) {
 	kubeCollector, err := newKubeCollector(opts.Kubeconfig, opts.KubeContext, opts.DiscoveryClient, userAgent)
 	if err != nil {
 		return nil, err
@@ -42,27 +43,35 @@ func NewHelmV3Collector(opts *HelmV3Opts, userAgent string) (*HelmV3Collector, e
 		return nil, err
 	}
 
-	secretsDriver := driver.NewSecrets(collector.client.Secrets(""))
-	collector.secretsStore = storage.Init(secretsDriver)
+	for _, namespace := range namespaces {
+		secretsDriver := driver.NewSecrets(collector.client.Secrets(namespace))
+		collector.secretsStores = append(collector.secretsStores, storage.Init(secretsDriver))
 
-	configDriver := driver.NewConfigMaps(collector.client.ConfigMaps(""))
-	collector.configStore = storage.Init(configDriver)
+		configDriver := driver.NewConfigMaps(collector.client.ConfigMaps(namespace))
+		collector.configStores = append(collector.configStores, storage.Init(configDriver))
+	}
 
 	return collector, nil
 }
 
 func (c *HelmV3Collector) Get() ([]map[string]interface{}, error) {
-	releases, err := c.secretsStore.ListDeployed()
-	if err != nil {
-		return nil, err
+	var releases []*release.Release
+
+	for _, secretsStore := range c.secretsStores {
+		releasesSecret, err := secretsStore.ListDeployed()
+		if err != nil {
+			return nil, err
+		}
+		releases = append(releases, releasesSecret...)
 	}
 
-	releasesConfig, err := c.configStore.ListDeployed()
-	if err != nil {
-		return nil, err
+	for _, configStore := range c.configStores {
+		releasesConfig, err := configStore.ListDeployed()
+		if err != nil {
+			return nil, err
+		}
+		releases = append(releases, releasesConfig...)
 	}
-
-	releases = append(releases, releasesConfig...)
 
 	var results []map[string]interface{}
 
