@@ -21,6 +21,7 @@ type ClusterCollector struct {
 	clientSet             dynamic.Interface
 	additionalResources   []schema.GroupVersionResource
 	additionalAnnotations []string
+	namespaces            []string
 }
 
 type ClusterOpts struct {
@@ -30,7 +31,7 @@ type ClusterOpts struct {
 	DiscoveryClient discovery.DiscoveryInterface
 }
 
-func NewClusterCollector(opts *ClusterOpts, additionalKinds []string, additionalAnnotations []string, userAgent string) (
+func NewClusterCollector(opts *ClusterOpts, namespaces []string, additionalKinds []string, additionalAnnotations []string, userAgent string) (
 	*ClusterCollector, error) {
 	kubeCollector, err := newKubeCollector(opts.Kubeconfig, opts.KubeContext, opts.DiscoveryClient, userAgent)
 	if err != nil {
@@ -41,6 +42,7 @@ func NewClusterCollector(opts *ClusterOpts, additionalKinds []string, additional
 		kubeCollector:         kubeCollector,
 		commonCollector:       newCommonCollector(CLUSTER_COLLECTOR_NAME),
 		additionalAnnotations: additionalAnnotations,
+		namespaces:            namespaces,
 	}
 
 	if opts.ClientSet == nil {
@@ -112,25 +114,33 @@ func (c *ClusterCollector) Get() ([]map[string]interface{}, error) {
 	gvrs = append(gvrs, c.additionalResources...)
 
 	var results []map[string]interface{}
-	for _, g := range gvrs {
-		ri := c.clientSet.Resource(g)
-		log.Debug().Msgf("Retrieving: %s.%s.%s", g.Resource, g.Version, g.Group)
-		rs, err := ri.List(context.Background(), metav1.ListOptions{})
-		if err != nil {
-			log.Debug().Msgf("Failed to retrieve: %s: %s", g, err)
-			continue
-		}
 
-		for _, r := range rs.Items {
-			if jsonManifest, ok := c.getLastAppliedConfig(r.GetAnnotations()); ok {
-				var manifest map[string]interface{}
+	for _, namespace := range c.namespaces {
+		for _, g := range gvrs {
+			var ri dynamic.ResourceInterface
+			if len(namespace) > 0 {
+				ri = c.clientSet.Resource(g).Namespace(namespace)
+			} else {
+				ri = c.clientSet.Resource(g)
+			}
+			log.Debug().Msgf("Retrieving: %s.%s.%s", g.Resource, g.Version, g.Group)
+			rs, err := ri.List(context.Background(), metav1.ListOptions{})
+			if err != nil {
+				log.Debug().Msgf("Failed to retrieve: %s: %s", g, err)
+				continue
+			}
 
-				err := json.Unmarshal([]byte(jsonManifest), &manifest)
-				if err != nil {
-					log.Warn().Msgf("failed to parse 'last-applied-configuration' annotation of resource %s/%s: %v", r.GetNamespace(), r.GetName(), err)
-					continue
+			for _, r := range rs.Items {
+				if jsonManifest, ok := c.getLastAppliedConfig(r.GetAnnotations()); ok {
+					var manifest map[string]interface{}
+
+					err := json.Unmarshal([]byte(jsonManifest), &manifest)
+					if err != nil {
+						log.Warn().Msgf("failed to parse 'last-applied-configuration' annotation of resource %s/%s: %v", r.GetNamespace(), r.GetName(), err)
+						continue
+					}
+					results = append(results, manifest)
 				}
-				results = append(results, manifest)
 			}
 		}
 	}

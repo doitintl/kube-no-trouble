@@ -22,6 +22,7 @@ type Config struct {
 	AdditionalAnnotations []string
 	Cluster               bool
 	Context               string
+	Namespaces            []string
 	ExitError             bool
 	Filenames             []string
 	Helm3                 bool
@@ -48,6 +49,7 @@ func NewFromFlags() (*Config, error) {
 	flag.BoolVar(&config.Helm3, "helm3", true, "enable Helm v3 collector")
 	flag.StringSliceVarP(&config.Filenames, "filename", "f", []string{}, "manifests to check, use - for stdin")
 	flag.StringVarP(&config.Kubeconfig, "kubeconfig", "k", os.Getenv(clientcmd.RecommendedConfigPathEnvVar), "path to the kubeconfig file")
+	flag.StringSliceVarP(&config.Namespaces, "namespace", "n", []string{}, "namespaces to check (all by default)")
 	flag.StringVarP(&config.Output, "output", "o", "text", "output format - [text|json|csv]")
 	flag.StringVarP(&config.OutputFile, "output-file", "O", "-", "output file, use - for stdout")
 	flag.VarP(&config.LogLevel, "log-level", "l", "set log level (trace, debug, info, warn, error, fatal, panic, disabled)")
