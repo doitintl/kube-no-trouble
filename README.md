@@ -12,6 +12,7 @@ workloads first, before upgrading your Kubernetes cluster.
 This tool will be able to detect deprecated APIs depending on how you deploy
 your resources, as we need the original manifest to be stored somewhere. In
 particular following tools are supported:
+
 - **file**    - local manifests in YAML or JSON
 - **kubectl** - uses the `kubectl.kubernetes.io/last-applied-configuration` annotation
 - **Helm v3** - uses Helm manifests stored as Secrets or ConfigMaps directly in individual namespaces
@@ -19,7 +20,9 @@ particular following tools are supported:
 [1]: https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/
 
 **Additional resources:**
-- Blog post on K8s deprecated APIs and introduction of kubent: [Kubernetes: Deprecated APIs aka Introducing Kube-No-Trouble][2]
+
+- Blog post on K8s deprecated APIs and introduction of
+  kubent: [Kubernetes: Deprecated APIs aka Introducing Kube-No-Trouble][2]
 
 [2]: https://stepan.wtf/kubernetes-deprecated-apis-introducing-kubent/
 
@@ -111,6 +114,7 @@ Ingress   default     test-ingress   extensions/v1beta1
 ### Arguments
 
 You can list all the configuration options available using `--help` switch:
+
 ```sh
 $./kubent -h
 Usage of ./kubent:
@@ -123,11 +127,13 @@ Usage of ./kubent:
       --helm3                           enable Helm v3 collector (default true)
   -k, --kubeconfig string               path to the kubeconfig file
   -l, --log-level string                set log level (trace, debug, info, warn, error, fatal, panic, disabled) (default "info")
+  -n, --namespace strings               namespaces to check (all by default)
   -o, --output string                   output format - [text|json|csv] (default "text")
-  -O, --output-file string        output file, use - for stdout (default "-")
+  -O, --output-file string              output file, use - for stdout (default "-")
   -t, --target-version string           target K8s version in SemVer format (autodetected by default)
   -v, --version                         prints the version of kubent and exits
 ```
+
 - *`--additional-annotation`*
   Check additional annotations for the last applied configuration. This can be useful if a resource was applied
   with a tool other than kubectl. The flag can be used multiple times.
@@ -232,6 +238,7 @@ go build -o bin/kubent ./...
 ```
 
 Otherwise there's `Makefile`
+
 ```sh
 $ make
 make
