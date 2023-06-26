@@ -2,6 +2,7 @@ package collector
 
 import (
 	"fmt"
+	"os"
 
 	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/rest"
@@ -35,6 +36,11 @@ func newKubeCollector(kubeconfig string, kubecontext string, discoveryClient dis
 }
 
 func newClientRestConfig(kubeconfig string, kubecontext string, inClusterFn func() (*rest.Config, error), userAgent string) (*rest.Config, error) {
+
+	if kubeconfig == "" {
+		kubeconfig = os.Getenv(clientcmd.RecommendedConfigPathEnvVar)
+	}
+
 	if kubeconfig == "" {
 		if restConfig, err := inClusterFn(); err == nil {
 			restConfig.UserAgent = userAgent
