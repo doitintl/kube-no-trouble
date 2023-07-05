@@ -1,5 +1,6 @@
 ![Kubent (Kube-No-Trouble) logo](./docs/imgs/kubent-logo.svg)
 
+
 __*Easily check your clusters for use of deprecated APIs*__
 
 Kubernetes 1.16 is slowly starting to roll out, not only across various managed
