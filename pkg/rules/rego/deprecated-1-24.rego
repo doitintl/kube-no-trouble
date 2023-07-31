@@ -1,4 +1,4 @@
-package deprecatedFuture
+package deprecated124
 
 main[return] {
 	resource := input[_]
@@ -10,7 +10,7 @@ main[return] {
 		"Kind": resource.kind,
 		"ApiVersion": api.old,
 		"ReplaceWith": api.new,
-		"RuleSet": "Deprecated APIs to be removed in future",
+		"RuleSet": "Deprecated APIs removed in 1.24",
 		"Since": api.since,
 		"Labels": get_default(resource.metadata, "labels", "<undefined>"),
 	}
@@ -25,21 +25,22 @@ deprecated_api(kind, api_version) = api {
 		"VolumeSnapshot": {
 			"old": ["snapshot.storage.k8s.io/v1beta1"],
 			"new": "snapshot.storage.k8s.io/v1",
-			"since": "1.21",
+			"since": "1.20",
 		},
 		"VolumeSnapshotClass": {
 			"old": ["snapshot.storage.k8s.io/v1beta1"],
 			"new": "snapshot.storage.k8s.io/v1",
-			"since": "1.21",
+			"since": "1.20",
 		},
 		"VolumeSnapshotContent": {
 			"old": ["snapshot.storage.k8s.io/v1beta1"],
 			"new": "snapshot.storage.k8s.io/v1",
-			"since": "1.21",
+			"since": "1.20",
 		},
 	}
 
 	deprecated_apis[kind].old[_] == api_version
+
 	api := {
 		"old": api_version,
 		"new": deprecated_apis[kind].new,
