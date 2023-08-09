@@ -21,7 +21,7 @@ jobs:
   test:
     name: test
     runs-on: ubuntu-latest
-    container: golang:1.20-alpine3.17
+    container: golang:1.21-alpine3.17
     steps:
     - name: Install git
       run: apk add --update --no-cache git
@@ -37,7 +37,7 @@ jobs:
   build:
     name: build
     runs-on: ubuntu-latest
-    container: golang:1.20-alpine3.17
+    container: golang:1.21-alpine3.17
     strategy:
       matrix:
         os: [linux, darwin, windows]
@@ -105,7 +105,10 @@ jobs:
           "kindest/node:v1.22.15",
           "kindest/node:v1.23.13",
           "kindest/node:v1.24.7",
-          "kindest/node:v1.25.3"
+          "kindest/node:v1.25.3",
+          "kindest/node:v1.26.6",
+          "kindest/node:v1.27.3",
+          "kindest/node:v1.28.0"
         ]
     steps:
     - name: Checkout
