@@ -22,6 +22,7 @@ type Rule struct {
 }
 
 func FetchRegoRules(additionalResources []schema.GroupVersionKind) ([]Rule, error) {
+
 	fis, err := local.ReadDir(RULES_DIR)
 	if err != nil {
 		return nil, err
@@ -63,7 +64,17 @@ func renderRule(inputData []byte, fileName string, additionalKinds []schema.Grou
 		}
 
 		var tpl bytes.Buffer
-		if err := t.Execute(&tpl, additionalKinds); err != nil {
+		customEntries := make(map[string][]string)
+		for _, gvk := range additionalKinds {
+			kind := gvk.Kind
+			if customEntries[kind] == nil {
+				customEntries[kind] = []string{fmt.Sprintf("%s/%s", gvk.Group, gvk.Version)}
+			} else {
+				customEntries[kind] = append(customEntries[kind], fmt.Sprintf("%s/%s", gvk.Group, gvk.Version))
+			}
+		}
+
+		if err := t.Execute(&tpl, customEntries); err != nil {
 			return nil, fmt.Errorf("failed to render template %s: %w", fileName, err)
 		}
 

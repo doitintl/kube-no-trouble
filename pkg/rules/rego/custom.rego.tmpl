@@ -22,9 +22,9 @@ deprecated_resource(r) = api {
 
 deprecated_api(kind, api_version) = api {
 	deprecated_apis = {
-{{- range . }}
-		"{{ .Kind }}": {
-			"old": ["{{ .Group }}/{{ .Version }}"],
+{{- range $key, $value := . }}
+		"{{ $key }}": {
+			"old": [{{range $value}}"{{.}}",{{end}}],
 		},
 {{- end }}
 	}
