@@ -177,6 +177,11 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Log into Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: dark0dave
+          password: ${{ secrets.DOCKERHUB }}
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
       - name: Build and push Docker image
@@ -188,6 +193,8 @@ jobs:
             linux/arm64
             linux/amd64
           tags: |
+            ${{ format('docker.io/dark0dave/kubent:{0}', needs.create-release.outputs.tag_name) }}
+            ${{ ( !startsWith(github.ref, 'refs/tags/nightly') && format('docker.io/dark0dave/kubent:{0}', 'latest') ) || '' }}
             ${{ format('{0}/{1}:{2}', env.REGISTRY, env.IMAGE_NAME, needs.create-release.outputs.tag_name) }}
             ${{ ( !startsWith(github.ref, 'refs/tags/nightly') && format('{0}/{1}:{2}', env.REGISTRY, env.IMAGE_NAME, 'latest') ) || '' }}
           build-args: |
