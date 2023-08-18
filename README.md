@@ -25,14 +25,34 @@ particular following tools are supported:
 
 ## Install
 
-Run `sh -c "$(curl -sSL https://git.io/install-kubent)"`.
+Run the following command in your terminal to install `kubent` using a shell script:
+
+```sh
+sh -c "$(curl -sSL https://git.io/install-kubent)"
+```
 
 *(The script will download latest version and unpack to `/usr/local/bin`).*
 
-Or download the
+### Manual Installation
+
+You can download the
 [latest release](https://github.com/doitintl/kube-no-trouble/releases/latest)
 for your platform and unpack manually.
 
+### Third-Party Installation
+
+Please note that third-party installation methods are maintained by the community.
+The packages may not always be up-to-date with the latest releases of `kubent`.
+
+#### Homebrew
+
+`kubent` is available as a [formula](https://formulae.brew.sh/formula/kubent)
+on [Homebrew](https://brew.sh/). If you're using macOS or Linux, you can run
+the following command to install `kubent`:
+
+```sh
+brew install kubent
+```
 
 ## Usage
 
