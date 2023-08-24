@@ -1,0 +1,5 @@
+kind: CSIStorageCapacity
+apiVersion: storage.k8s.io/v1beta1
+metadata:
+  name: my-csi-capacity
+storageClassName: gp2

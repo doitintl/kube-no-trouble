@@ -83,6 +83,7 @@ func (c *ClusterCollector) Get() ([]map[string]interface{}, error) {
 		schema.GroupVersionResource{Group: "storage.k8s.io", Version: "v1", Resource: "csinodes"},
 		schema.GroupVersionResource{Group: "storage.k8s.io", Version: "v1", Resource: "storageclasses"},
 		schema.GroupVersionResource{Group: "storage.k8s.io", Version: "v1", Resource: "volumeattachments"},
+		schema.GroupVersionResource{Group: "storage.k8s.io", Version: "v1", Resource: "csistoragecapacities"},
 		schema.GroupVersionResource{Group: "scheduling.k8s.io", Version: "v1", Resource: "priorityclasses"},
 		schema.GroupVersionResource{Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "clusterroles"},
 		schema.GroupVersionResource{Group: "rbac.authorization.k8s.io", Version: "v1", Resource: "clusterrolebindings"},
@@ -107,6 +108,10 @@ func (c *ClusterCollector) Get() ([]map[string]interface{}, error) {
 		schema.GroupVersionResource{Group: "snapshot.storage.k8s.io", Version: "v1", Resource: "volumesnapshots"},
 		schema.GroupVersionResource{Group: "snapshot.storage.k8s.io", Version: "v1", Resource: "volumesnapshotclasses"},
 		schema.GroupVersionResource{Group: "snapshot.storage.k8s.io", Version: "v1", Resource: "volumesnapshotcontents"},
+		schema.GroupVersionResource{Group: "flowcontrol.apiserver.k8s.io", Version: "v1beta2", Resource: "flowschemas"},
+		schema.GroupVersionResource{Group: "flowcontrol.apiserver.k8s.io", Version: "v1beta2", Resource: "prioritylevelconfigurations"},
+		schema.GroupVersionResource{Group: "flowcontrol.apiserver.k8s.io", Version: "v1beta3", Resource: "flowschemas"},
+		schema.GroupVersionResource{Group: "flowcontrol.apiserver.k8s.io", Version: "v1beta3", Resource: "prioritylevelconfigurations"},
 	}
 	gvrs = append(gvrs, c.additionalResources...)
 
