@@ -27,27 +27,28 @@ var (
 )
 
 const (
-	EXIT_CODE_SUCCESS      = 0
-	EXIT_CODE_FAIL_GENERIC = 1
-	EXIT_CODE_FOUND_ISSUES = 200
+	EXIT_CODE_SUCCESS             = 0
+	EXIT_CODE_FAIL_GENERIC        = 1
+	EXIT_CODE_FAIL_GET_COLLECTORS = 100
+	EXIT_CODE_FOUND_ISSUES        = 200
 )
 
 func generateUserAgent() string {
 	return fmt.Sprintf("kubent (%s/%s)", version, gitSha)
 }
 
-func getCollectors(collectors []collector.Collector) []map[string]interface{} {
+func getCollectors(collectors []collector.Collector) ([]map[string]interface{}, error) {
 	var inputs []map[string]interface{}
 	for _, c := range collectors {
 		rs, err := c.Get()
 		if err != nil {
 			log.Error().Err(err).Str("name", c.Name()).Msg("Failed to retrieve data from collector")
-		} else {
-			inputs = append(inputs, rs...)
-			log.Info().Str("name", c.Name()).Msgf("Retrieved %d resources from collector", len(rs))
+			return nil, err
 		}
+		inputs = append(inputs, rs...)
+		log.Info().Str("name", c.Name()).Msgf("Retrieved %d resources from collector", len(rs))
 	}
-	return inputs
+	return inputs, nil
 }
 
 func storeCollector(collector collector.Collector, err error, collectors []collector.Collector) []collector.Collector {
@@ -87,7 +88,6 @@ func getServerVersion(cv *judge.Version, collectors []collector.Collector) (*jud
 				if err != nil {
 					return nil, fmt.Errorf("failed to detect k8s version: %w", err)
 				}
-
 				return version, nil
 			}
 		}
@@ -118,12 +118,15 @@ func main() {
 	log.Info().Msg("Initializing collectors and retrieving data")
 	initCollectors := initCollectors(config)
 
-	config.TargetVersion, err = getServerVersion(config.TargetVersion, initCollectors)
+	config.TargetVersion, _ = getServerVersion(config.TargetVersion, initCollectors)
 	if config.TargetVersion != nil {
 		log.Info().Msgf("Target K8s version is %s", config.TargetVersion.String())
 	}
 
-	collectors := getCollectors(initCollectors)
+	collectors, err := getCollectors(initCollectors)
+	if err != nil {
+		os.Exit(EXIT_CODE_FAIL_GET_COLLECTORS)
+	}
 
 	// this could probably use some error checking in future, but
 	// schema.ParseKindArg does not return any error
