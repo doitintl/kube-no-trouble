@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -49,7 +48,7 @@ func TestGetCollectors(t *testing.T) {
 	initCollectors := []collector.Collector{}
 	initCollectors = append(initCollectors, fileCollector)
 
-	collectors := getCollectors(initCollectors)
+	collectors, _ := getCollectors(initCollectors)
 
 	if collectors != nil && len(collectors) != 1 {
 		t.Errorf("Did not get file collector correctly with error: %s", err)
@@ -102,7 +101,7 @@ func TestStoreCollectorError(t *testing.T) {
 }
 
 func TestMainExitCodes(t *testing.T) {
-	tmpDir, err := ioutil.TempDir(os.TempDir(), "kubent-tests-")
+	tmpDir, err := os.MkdirTemp(os.TempDir(), "kubent-tests-")
 	if err != nil {
 		t.Fatalf("failed to create temp dir for testing: %v", err)
 	}
@@ -128,6 +127,7 @@ func TestMainExitCodes(t *testing.T) {
 		{"version long flag set", []string{"--version"}, 0, "", "", false},
 		{"empty text output", []string{clusterFlagDisabled, helm3FlagDisabled}, 0, "", "", false},
 		{"empty json output", []string{"-o=json", clusterFlagDisabled, helm3FlagDisabled}, 0, "[]\n", "", false},
+		{"fail to get collectors", []string{"-o=json", "-f=fail"}, 100, "[]\n", "", false},
 		{"json-file", []string{"-o=json", clusterFlagDisabled, helm3FlagDisabled, "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0, "", filepath.Join(tmpDir, "json-file.out"), false},
 		{"text-file", []string{"-o=text", clusterFlagDisabled, helm3FlagDisabled, "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0, "", filepath.Join(tmpDir, "text-file.out"), false},
 		{"json-stdout", []string{"-o=json", clusterFlagDisabled, helm3FlagDisabled, "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0, string(expectedJsonOutput), "-", false},
@@ -268,8 +268,8 @@ func decodeBase64(dst *[]string, encoded string) error {
 
 func Test_outputResults(t *testing.T) {
 	testVersion, _ := judge.NewVersion("4.5.6")
-	testResults := []judge.Result{{"name", "ns", "kind",
-		"1.2.3", "rs", "rep", testVersion}}
+	testResults := []judge.Result{{Name: "name", Namespace: "ns", Kind: "kind",
+		ApiVersion: "1.2.3", RuleSet: "rs", ReplaceWith: "rep", Since: testVersion}}
 
 	type args struct {
 		results    []judge.Result
