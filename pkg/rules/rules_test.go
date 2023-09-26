@@ -19,6 +19,9 @@ func TestFetchRules(t *testing.T) {
 		}
 		return nil
 	})
+	if err != nil {
+		t.Errorf("Failed to filenames with: %s", err)
+	}
 
 	rules, err := FetchRegoRules([]schema.GroupVersionKind{})
 	if err != nil {
@@ -39,14 +42,8 @@ func TestFetchRulesWithAdditionalResources(t *testing.T) {
 		}
 		return nil
 	})
-
-	additionalKindsStr := []string{
-		"ManagedCertificate.v1.networking.gke.io",
-		"Fake.v1beta.example.com"}
-	var additionalKinds []schema.GroupVersionKind
-	for _, ar := range additionalKindsStr {
-		gvr, _ := schema.ParseKindArg(ar)
-		additionalKinds = append(additionalKinds, *gvr)
+	if err != nil {
+		t.Errorf("Failed to filenames with: %s", err)
 	}
 
 	rules, err := FetchRegoRules([]schema.GroupVersionKind{})
@@ -69,14 +66,14 @@ func TestRenderRuleRego(t *testing.T) {
 		t.Errorf("Failed to render rule %s: %s", fileName, err)
 	}
 
-	if bytes.Compare(inputData, outputData) != 0 {
+	if !bytes.Equal(inputData, outputData) {
 		t.Errorf("expected the input to be same as output")
 	}
 }
 
 func TestRenderRuleTmpl(t *testing.T) {
 	additionalResources := []schema.GroupVersionKind{
-		schema.GroupVersionKind{
+		{
 			Group:   "example.com",
 			Version: "v2",
 			Kind:    "Test",
@@ -93,7 +90,7 @@ func TestRenderRuleTmpl(t *testing.T) {
 		t.Errorf("failed to render rule %s: %s", fileName, err)
 	}
 
-	if bytes.Compare(expectedData, outputData) != 0 {
+	if !bytes.Equal(expectedData, outputData) {
 		t.Errorf("result does not match expected output, expected: %s, got: %s", expectedData, outputData)
 	}
 }
@@ -112,17 +109,17 @@ func TestRenderRuleTmplFail(t *testing.T) {
 
 func TestRenderMultipleResources(t *testing.T) {
 	additionalResources := []schema.GroupVersionKind{
-		schema.GroupVersionKind{
+		{
 			Group:   "example.com",
 			Version: "v2",
 			Kind:    "Test",
 		},
-		schema.GroupVersionKind{
+		{
 			Group:   "example.com",
 			Version: "v3",
 			Kind:    "Test",
 		},
-		schema.GroupVersionKind{
+		{
 			Group:   "example.com",
 			Version: "v2",
 			Kind:    "Result",
@@ -141,7 +138,7 @@ func TestRenderMultipleResources(t *testing.T) {
 
 	outputData = []byte(strings.TrimSpace(string(outputData)))
 
-	if bytes.Compare(expectedData, outputData) != 0 {
+	if !bytes.Equal(expectedData, outputData) {
 		t.Errorf("result does not match expected output, expected: %s, got: %s", expectedData, outputData)
 	}
 }
