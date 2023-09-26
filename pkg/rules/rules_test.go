@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"strings"
 
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
@@ -82,10 +83,10 @@ func TestRenderRuleTmpl(t *testing.T) {
 		},
 	}
 	fileName := "test.tmpl"
-	inputData := []byte("{{- range . }}" +
-		"{{ .Kind }}.{{ .Version }}.{{ .Group }}" +
+	inputData := []byte("{{- range $key, $value := . }}" +
+		"{{ $key }}: {{range $value}}{{.}}{{end}}" +
 		"{{- end }}")
-	expectedData := []byte("Test.v2.example.com")
+	expectedData := []byte("Test: example.com/v2")
 
 	outputData, err := renderRule(inputData, fileName, additionalResources)
 	if err != nil {
@@ -99,13 +100,49 @@ func TestRenderRuleTmpl(t *testing.T) {
 
 func TestRenderRuleTmplFail(t *testing.T) {
 	fileName := "test.tmpl"
-	inputData := []byte("{{- rangeasd . }}" +
-		"{{ .Kind }}.{{ .Version }}.{{ Group }}" +
+	inputData := []byte("{{- rangeasd $key, $value := . }}" +
+		"{{ $key }}: {{range $value}}{{.}}{{end}}" +
 		"{{- end }}")
 
 	_, err := renderRule(inputData, fileName, []schema.GroupVersionKind{})
 	if err == nil {
 		t.Errorf("expected this to fail")
+	}
+}
+
+func TestRenderMultipleResources(t *testing.T) {
+	additionalResources := []schema.GroupVersionKind{
+		schema.GroupVersionKind{
+			Group:   "example.com",
+			Version: "v2",
+			Kind:    "Test",
+		},
+		schema.GroupVersionKind{
+			Group:   "example.com",
+			Version: "v3",
+			Kind:    "Test",
+		},
+		schema.GroupVersionKind{
+			Group:   "example.com",
+			Version: "v2",
+			Kind:    "Result",
+		},
+	}
+	fileName := "test.tmpl"
+	inputData := []byte("{{- range $key, $value := . }}" +
+		"{{ $key }}: {{range $value}}{{.}} {{end}}" +
+		"{{- end }}")
+	expectedData := []byte("Result: example.com/v2 Test: example.com/v2 example.com/v3")
+
+	outputData, err := renderRule(inputData, fileName, additionalResources)
+	if err != nil {
+		t.Errorf("failed to render rule %s: %s", fileName, err)
+	}
+
+	outputData = []byte(strings.TrimSpace(string(outputData)))
+
+	if bytes.Compare(expectedData, outputData) != 0 {
+		t.Errorf("result does not match expected output, expected: %s, got: %s", expectedData, outputData)
 	}
 }
 
