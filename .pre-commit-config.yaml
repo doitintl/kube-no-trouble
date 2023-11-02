@@ -14,7 +14,7 @@ repos:
         exclude_types: [ png ]
       - id: git-dirty
   - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-    rev: v2.2.0
+    rev: v2.11.0
     hooks:
       - id: pretty-format-golang
   - repo: https://github.com/codespell-project/codespell
