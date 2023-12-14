@@ -34,6 +34,9 @@ GOARCH ?= $(shell go env GOARCH)
 BIN_ARCH ?= $(GOOS)-$(GOARCH)
 RELEASE_SUFFIX ?= $(GIT_REF)-$(BIN_ARCH).tar.gz
 
+OPA_REPO ?= github.com/open-policy-agent/opa
+OPA_VERSION ?= v0.22.0
+
 BIN_DIR ?= bin
 CMD_DIR ?= cmd
 RELEASE_DIR ?= release-artifacts
@@ -47,7 +50,7 @@ SRC ?= $(shell find . -iname '*.go')
 GOCMD ?= go
 GOBUILD ?= $(GOCMD) build
 
-REQ_BINS = go opa
+REQ_BINS = go
 
 _ := $(foreach exec,$(REQ_BINS), \
        $(if $(shell which $(exec)),some string,$(error "No $(exec) binary in $$PATH")))
@@ -81,20 +84,15 @@ $(RELEASE_DIR)/%-$(RELEASE_SUFFIX): $(BIN_DIR)/%-$(BIN_ARCH)$(BIN_SUFFIX)
 	$(TAR) -cvz --transform 's,$(BIN_DIR)/$(*)-$(BIN_ARCH)$(BIN_SUFFIX),$(*)$(BIN_SUFFIX),gi' -f "$@" "$<"
 
 ## Run Go tests
-test: test-fmt test-git
+test: test-fmt
 	go test -v -coverprofile fmtcoverage.html ./...
 .PHONY: test
 
 ## Run go and opt fmt checks
 test-fmt:
-	test -z "$$(opa fmt -l pkg/rules/rego/*)"
+	test -z "$$(go run $(OPA_REPO)@$(OPA_VERSION) fmt -l pkg/rules/rego/*)"
 	test -z "$$(go fmt ./...)"
 .PHONY: test-fmt
-
-## Check git commits formatting
-test-git:
-	./scripts/git-check-commits.sh
-.PHONY: test-git
 
 ## Clean build artifacts
 clean:
@@ -103,5 +101,6 @@ clean:
 
 ## Generate Changelog based on PRs
 changelog:
-	OUTPUT_FILE=$(RELEASE_DIR)/$(CHANGELOG) ./scripts/github-changelog.sh
+	mkdir -p $(RELEASE_DIR)
+	git cliff -u --latest -o $(RELEASE_DIR)/$(CHANGELOG)
 .PHONY: changelog
