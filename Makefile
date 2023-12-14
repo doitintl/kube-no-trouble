@@ -98,5 +98,5 @@ clean:
 
 ## Generate Changelog based on PRs
 changelog:
-	OUTPUT_FILE=$(RELEASE_DIR)/$(CHANGELOG) ./scripts/github-changelog.sh
+	git cliff --latest -o $(RELEASE_DIR)/$(CHANGELOG)
 .PHONY: changelog
