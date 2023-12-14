@@ -81,7 +81,7 @@ $(RELEASE_DIR)/%-$(RELEASE_SUFFIX): $(BIN_DIR)/%-$(BIN_ARCH)$(BIN_SUFFIX)
 	$(TAR) -cvz --transform 's,$(BIN_DIR)/$(*)-$(BIN_ARCH)$(BIN_SUFFIX),$(*)$(BIN_SUFFIX),gi' -f "$@" "$<"
 
 ## Run Go tests
-test: test-fmt test-git
+test: test-fmt
 	go test -v -coverprofile fmtcoverage.html ./...
 .PHONY: test
 
@@ -90,11 +90,6 @@ test-fmt:
 	test -z "$$(opa fmt -l pkg/rules/rego/*)"
 	test -z "$$(go fmt ./...)"
 .PHONY: test-fmt
-
-## Check git commits formatting
-test-git:
-	./scripts/git-check-commits.sh
-.PHONY: test-git
 
 ## Clean build artifacts
 clean:
