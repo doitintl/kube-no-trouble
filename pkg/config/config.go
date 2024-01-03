@@ -11,6 +11,7 @@ import (
 
 	"github.com/doitintl/kube-no-trouble/pkg/judge"
 	"github.com/doitintl/kube-no-trouble/pkg/printer"
+	"k8s.io/client-go/tools/clientcmd"
 
 	"github.com/rs/zerolog"
 	flag "github.com/spf13/pflag"
@@ -46,7 +47,7 @@ func NewFromFlags() (*Config, error) {
 	flag.BoolVarP(&config.KubentVersion, "version", "v", false, "prints the version of kubent and exits")
 	flag.BoolVar(&config.Helm3, "helm3", true, "enable Helm v3 collector")
 	flag.StringSliceVarP(&config.Filenames, "filename", "f", []string{}, "manifests to check, use - for stdin")
-	flag.StringVarP(&config.Kubeconfig, "kubeconfig", "k", "", "path to the kubeconfig file")
+	flag.StringVarP(&config.Kubeconfig, "kubeconfig", "k", os.Getenv(clientcmd.RecommendedConfigPathEnvVar), "path to the kubeconfig file")
 	flag.StringVarP(&config.Output, "output", "o", "text", "output format - [text|json|csv]")
 	flag.StringVarP(&config.OutputFile, "output-file", "O", "-", "output file, use - for stdout")
 	flag.VarP(&config.LogLevel, "log-level", "l", "set log level (trace, debug, info, warn, error, fatal, panic, disabled)")
