@@ -190,13 +190,13 @@ empty:
 kubent -o json | jq -e 'length == 0'
 ```
 
-#### Scanning all files in directory
+#### Scanning all files in directories
 
-If you want to scan all files in a given directory, you can use the following
+If you want to scan all files in the repository directories, you can use the following
 shell snippet:
 
 ```shell
-FILES=($(ls *.yaml)); kubent ${FILES[@]/#/-f} --helm3=false -c=false
+FILES=($(find . -type f -name '*.yaml')); kubent ${FILES[@]/#/-f} --helm3=false -c=false
 ```
 
 ## Development
