@@ -12,7 +12,6 @@ workloads first, before upgrading your Kubernetes cluster.
 This tool will be able to detect deprecated APIs depending on how you deploy
 your resources, as we need the original manifest to be stored somewhere. In
 particular following tools are supported:
-
 - **file**    - local manifests in YAML or JSON
 - **kubectl** - uses the `kubectl.kubernetes.io/last-applied-configuration` annotation
 - **Helm v3** - uses Helm manifests stored as Secrets or ConfigMaps directly in individual namespaces
@@ -20,9 +19,7 @@ particular following tools are supported:
 [1]: https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/
 
 **Additional resources:**
-
-- Blog post on K8s deprecated APIs and introduction of
-  kubent: [Kubernetes: Deprecated APIs aka Introducing Kube-No-Trouble][2]
+- Blog post on K8s deprecated APIs and introduction of kubent: [Kubernetes: Deprecated APIs aka Introducing Kube-No-Trouble][2]
 
 [2]: https://stepan.wtf/kubernetes-deprecated-apis-introducing-kubent/
 
@@ -94,7 +91,6 @@ Ingress   default     test-ingress   extensions/v1beta1
 ### Arguments
 
 You can list all the configuration options available using `--help` switch:
-
 ```sh
 $./kubent -h
 Usage of ./kubent:
@@ -112,7 +108,6 @@ Usage of ./kubent:
   -t, --target-version string           target K8s version in SemVer format (autodetected by default)
   -v, --version                         prints the version of kubent and exits
 ```
-
 - *`--additional-annotation`*
   Check additional annotations for the last applied configuration. This can be useful if a resource was applied
   with a tool other than kubectl. The flag can be used multiple times.
@@ -130,8 +125,7 @@ Usage of ./kubent:
 
 - *`-t, --target-version`*
   `Kubent` will try to detect K8S cluster version and display only relevant findings. This flag allows to override this
-  version for scenarios like use in CI with the file collector only, when detection from an actual cluster is not
-  possible.
+  version for scenarios like use in CI with the file collector only, when detection from an actual cluster is not possible.
   Expected format is `major.minor[.patch]`, e.g. `1.16` or `1.16.3`.
 
 ### Docker Image
@@ -196,13 +190,13 @@ empty:
 kubent -o json | jq -e 'length == 0'
 ```
 
-#### Scanning all files in directories
+#### Scanning all files in directory
 
-If you want to scan all files in the repository directories, you can use the following
+If you want to scan all files in a given directory, you can use the following
 shell snippet:
 
 ```shell
-FILES=($(find . -type f -name '*.yaml')); kubent ${FILES[@]/#/-f} --helm3=false -c=false
+FILES=($(ls *.yaml)); kubent ${FILES[@]/#/-f} --helm3=false -c=false
 ```
 
 ## Development
@@ -218,7 +212,6 @@ go build -o bin/kubent cmd/kubent/main.go
 ```
 
 Otherwise there's `Makefile`
-
 ```sh
 $ make
 make
@@ -243,7 +236,6 @@ We enforce simple version of [Conventional Commits][cc] in the form:
 ```
 
 Where type is one of:
-
 - **build** - Affects build and/or build system
 - **chore** - Other non-functional changes
 - **ci** - Affects CI (e.g. GitHub actions)
@@ -267,7 +259,6 @@ Changelog is generated automatically based on merged PRs using
 [changelog-gen][chlg-gen]. Template can be found in `scripts/changelog.tmpl`.
 
 PRs are categorized based on their labels, into following sections:
-
 - Announcements - `announcement` label
 - Breaking Changes - `breaking-change` label
 - Features - `feature` label
@@ -291,8 +282,6 @@ This is an example release note!
 
 Please open any issues and/or PRs against github.com/doitintl/kube-no-trouble repository.
 
-Please ensure any contributions are signed with a valid gpg key. We use this to validate that you have committed this
-and no one else. You can learn how to create a GPG
-key [here](https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key).
+Please ensure any contributions are signed with a valid gpg key. We use this to validate that you have committed this and no one else. You can learn how to create a GPG key [here](https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key).
 
 Feedback and contributions are always welcome!
