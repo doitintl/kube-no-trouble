@@ -192,11 +192,11 @@ kubent -o json | jq -e 'length == 0'
 
 #### Scanning all files in directory
 
-If you want to scan all files in a given directory, you can use the following
+If you want to recursively scan all files in a repository, you can use the following
 shell snippet:
 
 ```shell
-FILES=($(ls *.yaml)); kubent ${FILES[@]/#/-f} --helm3=false -c=false
+FILES=($(find . -type f -name '*.yaml' -or -name '*.yml')); kubent ${FILES[@]/#/-f} --helm3=false -c=false
 ```
 
 ## Development
