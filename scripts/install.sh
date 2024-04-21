@@ -26,6 +26,10 @@ check_binaries() {
 
 # Check if we have colors available, it looks good
 check_colors(){
+  GREEN=''
+  RED=''
+  YELLOW=''
+  NOCOL=''
   if command -v tput > /dev/null; then
     COLORS="$(tput colors)"
     if [ -n "${COLORS}" ] && [ "${COLORS}" -ge 8 ]; then
@@ -34,11 +38,6 @@ check_colors(){
       YELLOW="$(tput setaf 3)"
       NOCOL="$(tput sgr0)"
     fi
-  else
-    GREEN=''
-    RED=''
-    YELLOW=''
-    NOCOL=''
   fi
 }
 
