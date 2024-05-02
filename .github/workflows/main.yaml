@@ -21,7 +21,7 @@ jobs:
   test:
     name: test
     runs-on: ubuntu-latest
-    container: golang:1.21-alpine3.19
+    container: golang:1.22-alpine3.19
     steps:
     - name: Install git
       run: apk add --update --no-cache git
@@ -37,7 +37,7 @@ jobs:
   build:
     name: build
     runs-on: ubuntu-latest
-    container: golang:1.21-alpine3.19
+    container: golang:1.22-alpine3.19
     strategy:
       matrix:
         os: [linux, darwin, windows]
