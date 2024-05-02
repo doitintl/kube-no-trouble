@@ -2,6 +2,7 @@ package judge
 
 import (
 	"context"
+
 	"github.com/doitintl/kube-no-trouble/pkg/rules"
 	"github.com/open-policy-agent/opa/rego"
 	"github.com/rs/zerolog/log"
@@ -54,6 +55,12 @@ func (j *RegoJudge) Eval(input []map[string]interface{}) ([]Result, error) {
 				since, err := NewVersion(m["Since"].(string))
 				if err != nil {
 					log.Debug().Msgf("Failed to parse version: %s", err)
+				}
+
+				// shouldn't really happen - but if it does fix up and move on
+				if m["Namespace"] == nil {
+					log.Warn().Msgf("Object has invalid namespace: %s/%s %s", m["ApiVersion"].(string), m["Kind"].(string), m["Name"].(string))
+					m["Namespace"] = "<undefined>"
 				}
 
 				results = append(results, Result{
