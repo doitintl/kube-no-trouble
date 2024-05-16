@@ -132,7 +132,7 @@ jobs:
       - name: run integration test
         run: |
           tar xvzf release-artifacts/kubent-*-linux-amd64.tar.gz
-          kubectl version --short
+          kubectl version
           kubectl cluster-info --context kind-kubent-test-cluster
           ./kubent
   create-release:
