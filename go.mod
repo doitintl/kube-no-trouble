@@ -8,7 +8,7 @@ require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/hashicorp/go-version v1.6.0
 	github.com/open-policy-agent/opa v0.64.1
-	github.com/rs/zerolog v1.32.0
+	github.com/rs/zerolog v1.33.0
 	github.com/spf13/pflag v1.0.5
 	helm.sh/helm/v3 v3.13.3
 	k8s.io/apimachinery v0.28.4
