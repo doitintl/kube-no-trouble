@@ -119,12 +119,12 @@ Usage of ./kubent:
 - *`-x, --context`*
   Select context from kubeconfig file (`current-context` from the file is used by default).
 
-- *`k, --kubeconfig`*
+- *`-k, --kubeconfig`*
   Path to kubeconfig file to use. This takes precedence over `KUBECONFIG` environment variable, which is also supported
-  and can contain multiple paths, and default `~.kube/config`.
+  and can contain multiple paths, and default `~/.kube/config`.
 
 - *`-t, --target-version`*
-  `Kubent` will try to detect K8S cluster version and display only relevant findings. This flag allows to override this
+  `kubent` will try to detect K8S cluster version and display only relevant findings. This flag allows to override this
   version for scenarios like use in CI with the file collector only, when detection from an actual cluster is not possible.
   Expected format is `major.minor[.patch]`, e.g. `1.16` or `1.16.3`.
 
