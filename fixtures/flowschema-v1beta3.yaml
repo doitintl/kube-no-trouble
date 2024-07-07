@@ -1,0 +1,30 @@
+apiVersion: flowcontrol.apiserver.k8s.io/v1beta3
+kind: FlowSchema
+metadata:
+  name: service-accounts-test
+spec:
+  distinguisherMethod:
+    type: ByUser
+  matchingPrecedence: 9000
+  priorityLevelConfiguration:
+    name: workload-medium
+  rules:
+  - nonResourceRules:
+    - nonResourceURLs:
+      - '*'
+      verbs:
+      - '*'
+    resourceRules:
+    - apiGroups:
+      - '*'
+      clusterScope: true
+      namespaces:
+      - '*'
+      resources:
+      - '*'
+      verbs:
+      - '*'
+    subjects:
+    - group:
+        name: system:serviceaccounts
+      kind: Group
