@@ -9,6 +9,8 @@ header = ""
 # template for the changelog body
 # https://tera.netlify.app/docs
 body = """
+**Docker Image**: {{ get_env(name='REGISTRY', default='') }}/{{ get_env(name='IMAG_NAME', default='') }}:{{ get_env(name='GITHUB_REF_NAME', default='') }}
+
 ### Changelog \
 {% for group, commits in commits | group_by(attribute="group") %}
     \n#### {{ group | striptags | trim | upper_first }}:
