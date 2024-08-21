@@ -24,7 +24,7 @@ jobs:
   test:
     name: test
     runs-on: ubuntu-latest
-    container: golang:1.22-alpine3.19
+    container: golang:1.23-alpine3.20
     steps:
     - name: Install git
       run: apk add --update --no-cache git
@@ -40,7 +40,7 @@ jobs:
   build:
     name: build
     runs-on: ubuntu-latest
-    container: golang:1.22-alpine3.19
+    container: golang:1.23-alpine3.20
     strategy:
       matrix:
         os: [linux, darwin, windows]
@@ -149,9 +149,12 @@ jobs:
         with:
           fetch-depth: 0
           set-safe-directory: true
-      - name: create release notes
-        run: |
-          make changelog
+      - name: Generate a changelog
+        uses: orhun/git-cliff-action@v3
+        id: git-cliff
+        with:
+          config: cliff.toml
+          args: --verbose --latest
       - uses: actions/download-artifact@v1
         with:
           name: release-artifacts-linux-amd64
