@@ -155,6 +155,8 @@ jobs:
         with:
           config: cliff.toml
           args: --verbose --latest
+        env:
+          OUTPUT: changelog.md
       - uses: actions/download-artifact@v1
         with:
           name: release-artifacts-linux-amd64
@@ -170,7 +172,7 @@ jobs:
         with:
           tag_name: ${{ steps.get_tag.outputs.git_tag }}
           release_name: ${{ steps.get_tag.outputs.git_tag }}
-          body_path: ./release-artifacts/changelog.md
+          body_path: ${{ steps.git-cliff.outputs.changelog }}
           draft: ${{ startsWith(steps.get_tag.outputs.git_tag, 'nightly') != true }}
           prerelease: ${{ startsWith(steps.get_tag.outputs.git_tag, 'nightly') }}
   push-image:
