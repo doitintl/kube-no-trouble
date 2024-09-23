@@ -15,3 +15,6 @@ fmtcoverage.html
 .swp
 .idea
 .DS_Store
+
+# changelog
+changelog.md
