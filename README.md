@@ -54,6 +54,14 @@ the following command to install `kubent`:
 brew install kubent
 ```
 
+#### Scoop
+`kubent` is available for [Scoop](https://scoop.sh/) as an [app](https://bjansen.github.io/scoop-apps/main/kubent/).
+Install `kubent` by running:
+
+```powershell
+scoop install kubent
+```
+
 ## Usage
 
 Configure Kubectl's current context to point to your cluster, `kubent` will
