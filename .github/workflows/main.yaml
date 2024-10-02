@@ -20,7 +20,7 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.2.0
         with:
           set-safe-directory: true
       - uses: actions/setup-python@v5
@@ -33,7 +33,7 @@ jobs:
       - name: Install git
         run: apk add --update --no-cache git
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.0
         with:
           fetch-depth: 0
           set-safe-directory: true
@@ -56,7 +56,7 @@ jobs:
       - name: Install git
         run: apk add --update --no-cache git
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.0
         with:
           fetch-depth: 0
           set-safe-directory: true
@@ -78,7 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.0
         with:
           fetch-depth: 0
           set-safe-directory: true
@@ -120,7 +120,7 @@ jobs:
         ]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.0
         with:
           fetch-depth: 0
           set-safe-directory: true
@@ -150,7 +150,7 @@ jobs:
       tag_name: ${{ steps.get_tag.outputs.git_tag }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@v4.2.0
         with:
           fetch-depth: 0
           set-safe-directory: true
@@ -196,7 +196,7 @@ jobs:
         with:
           string: ${{ env.IMAGE_NAME }}
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.0
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Log in to the Container registry
