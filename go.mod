@@ -10,7 +10,7 @@ require (
 	github.com/open-policy-agent/opa v0.69.0
 	github.com/rs/zerolog v1.33.0
 	github.com/spf13/pflag v1.0.5
-	helm.sh/helm/v3 v3.16.1
+	helm.sh/helm/v3 v3.16.2
 	k8s.io/apimachinery v0.31.1
 	k8s.io/client-go v0.31.1
 	k8s.io/klog/v2 v2.130.1
@@ -87,7 +87,7 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/api v0.31.1 // indirect
-	k8s.io/apiextensions-apiserver v0.31.0 // indirect
+	k8s.io/apiextensions-apiserver v0.31.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20240228011516-70dd3763d340 // indirect
 	k8s.io/utils v0.0.0-20240711033017-18e509b52bc8 // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
