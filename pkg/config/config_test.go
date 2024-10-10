@@ -1,9 +1,11 @@
 package config
 
 import (
-	goversion "github.com/hashicorp/go-version"
+	"context"
 	"os"
 	"testing"
+
+	goversion "github.com/hashicorp/go-version"
 
 	"github.com/spf13/pflag"
 )
@@ -11,6 +13,7 @@ import (
 func TestValidLogLevelFromFlags(t *testing.T) {
 	oldArgs := os.Args[1]
 	defer func() { os.Args[1] = oldArgs }()
+	ctx := context.Background()
 
 	var validLevels = []string{"trace", "debug", "info", "warn", "error", "fatal", "panic", "", "disabled"}
 	for i, level := range validLevels {
@@ -18,7 +21,8 @@ func TestValidLogLevelFromFlags(t *testing.T) {
 		pflag.CommandLine = pflag.NewFlagSet(os.Args[0], pflag.ExitOnError)
 
 		os.Args[1] = "--log-level=" + level
-		config, err := NewFromFlags()
+
+		config, _, err := NewFromFlags(ctx)
 
 		if err != nil {
 			t.Errorf("Flags parsing failed %s", err)
@@ -44,8 +48,9 @@ func TestInvalidLogLevelFromFlags(t *testing.T) {
 func TestNewFromFlags(t *testing.T) {
 	// reset for testing
 	pflag.CommandLine = pflag.NewFlagSet(os.Args[0], pflag.ExitOnError)
+	ctx := context.Background()
 
-	config, err := NewFromFlags()
+	config, _, err := NewFromFlags(ctx)
 
 	if err != nil {
 		t.Errorf("Flags parsing failed %s", err)
@@ -72,9 +77,9 @@ func TestValidateAdditionalResources(t *testing.T) {
 
 func TestValidateAdditionalResourcesFail(t *testing.T) {
 	testCases := [][]string{
-		[]string{"abcdef"},
-		[]string{""},
-		[]string{"test.v1.com"},
+		{"abcdef"},
+		{""},
+		{"test.v1.com"},
 	}
 
 	for _, tc := range testCases {
@@ -90,6 +95,7 @@ func TestTargetVersion(t *testing.T) {
 	validVersions := []string{
 		"1.16", "1.16.3", "1.2.3",
 	}
+	ctx := context.Background()
 
 	oldArgs := os.Args[1]
 	defer func() { os.Args[1] = oldArgs }()
@@ -99,7 +105,7 @@ func TestTargetVersion(t *testing.T) {
 		pflag.CommandLine = pflag.NewFlagSet(os.Args[0], pflag.ExitOnError)
 
 		os.Args[1] = "--target-version=" + v
-		config, err := NewFromFlags()
+		config, _, err := NewFromFlags(ctx)
 
 		if err != nil {
 			t.Errorf("Flags parsing failed %s", err)
@@ -120,7 +126,7 @@ func TestTargetVersionInvalid(t *testing.T) {
 	invalidVersions := []string{
 		"1.blah", "nope",
 	}
-
+	ctx := context.Background()
 	oldArgs := os.Args[1]
 	defer func() { os.Args[1] = oldArgs }()
 
@@ -129,7 +135,7 @@ func TestTargetVersionInvalid(t *testing.T) {
 		pflag.CommandLine = pflag.NewFlagSet(os.Args[0], pflag.ContinueOnError)
 
 		os.Args[1] = "--target-version=" + v
-		config, _ := NewFromFlags()
+		config, _, _ := NewFromFlags(ctx)
 
 		if config.TargetVersion != nil {
 			t.Errorf("expected --target-version flag parsing to fail for: %s", v)
@@ -141,7 +147,7 @@ func TestContext(t *testing.T) {
 	validContexts := []string{
 		"my-context",
 	}
-
+	ctx := context.Background()
 	oldArgs := os.Args[1]
 	defer func() { os.Args[1] = oldArgs }()
 
@@ -150,7 +156,7 @@ func TestContext(t *testing.T) {
 		pflag.CommandLine = pflag.NewFlagSet(os.Args[0], pflag.ExitOnError)
 
 		os.Args[1] = "--context=" + context
-		config, err := NewFromFlags()
+		config, _, err := NewFromFlags(ctx)
 
 		if err != nil {
 			t.Errorf("Flags parsing failed %s", err)

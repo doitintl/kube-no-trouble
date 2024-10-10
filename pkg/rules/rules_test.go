@@ -75,7 +75,7 @@ func TestRenderRuleRego(t *testing.T) {
 
 func TestRenderRuleTmpl(t *testing.T) {
 	additionalResources := []schema.GroupVersionKind{
-		schema.GroupVersionKind{
+		{
 			Group:   "example.com",
 			Version: "v2",
 			Kind:    "Test",

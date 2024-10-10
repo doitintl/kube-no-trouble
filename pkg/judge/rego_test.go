@@ -90,7 +90,7 @@ func TestEvalRules(t *testing.T) {
 				t.Errorf("expected %d findings, instead got: %d", len(tc.expected), len(results))
 			}
 
-			for i, _ := range results {
+			for i := range results {
 				if results[i].Kind != tc.expected[i] {
 					t.Errorf("expected to get %s finding, instead got: %s", tc.expected[i], results[i].Kind)
 				}

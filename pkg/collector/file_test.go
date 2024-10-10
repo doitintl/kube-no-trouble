@@ -52,7 +52,7 @@ func TestFileCollectorGet(t *testing.T) {
 				t.Errorf("Expected to get %d, got %d", len(tc.expected), len(manifests))
 			}
 
-			for i, _ := range manifests {
+			for i := range manifests {
 				if manifests[i]["kind"] != tc.expected[i] {
 					t.Errorf("Expected to get %s, instead got: %s", tc.expected[i], manifests[i]["kind"])
 				}

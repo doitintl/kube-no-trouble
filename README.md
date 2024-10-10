@@ -223,7 +223,7 @@ Otherwise there's `Makefile`
 ```sh
 $ make
 make
-all                            Cean, build and pack
+all                            Clean, build and pack
 help                           Prints list of tasks
 build                          Build binary
 generate                       Go generate

@@ -12,6 +12,7 @@ main[return] {
 		"ReplaceWith": api.new,
 		"RuleSet": "Deprecated APIs removed in 1.27",
 		"Since": api.since,
+		"Labels": get_default(resource.metadata, "labels", "<undefined>"),
 	}
 }
 

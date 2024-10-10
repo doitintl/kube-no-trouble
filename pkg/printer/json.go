@@ -2,6 +2,7 @@ package printer
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"fmt"
 
@@ -29,17 +30,32 @@ func (c *jsonPrinter) Close() error {
 }
 
 // Print will print results in text format
-func (c *jsonPrinter) Print(results []judge.Result) error {
+func (c *jsonPrinter) Print(results []judge.Result, ctx context.Context) error {
 	writer := bufio.NewWriter(c.commonPrinter.outputFile)
 	defer writer.Flush()
 
 	encoder := json.NewEncoder(writer)
 	encoder.SetIndent("", "\t")
 
-	err := encoder.Encode(results)
+	labels, err := shouldShowLabels(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to get labels flag from context: %w", err)
+	} else if labels != nil && !*labels {
+		removeLabels(results)
+	}
+
+	err = encoder.Encode(results)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func removeLabels(results []judge.Result) {
+	for i := range results {
+		if results[i].Labels != nil {
+			results[i].Labels = map[string]interface{}{}
+		}
+	}
 }

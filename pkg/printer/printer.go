@@ -1,6 +1,7 @@
 package printer
 
 import (
+	"context"
 	"fmt"
 	"os"
 
@@ -14,7 +15,7 @@ var printers = map[string]func(string) (Printer, error){
 }
 
 type Printer interface {
-	Print([]judge.Result) error
+	Print([]judge.Result, context.Context) error
 	Close() error
 }
 

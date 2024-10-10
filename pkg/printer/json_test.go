@@ -1,12 +1,14 @@
 package printer
 
 import (
+	"context"
 	"encoding/json"
 	"io/ioutil"
 	"os"
 	"reflect"
 	"testing"
 
+	ctxKey "github.com/doitintl/kube-no-trouble/pkg/context"
 	"github.com/doitintl/kube-no-trouble/pkg/judge"
 )
 
@@ -40,7 +42,6 @@ func Test_newJSONPrinter(t *testing.T) {
 		})
 	}
 }
-
 func Test_jsonPrinter_Print(t *testing.T) {
 	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
 	if err != nil {
@@ -52,10 +53,12 @@ func Test_jsonPrinter_Print(t *testing.T) {
 		commonPrinter: &commonPrinter{tmpFile},
 	}
 
-	version, _ := judge.NewVersion("1.2.3")
-	results := []judge.Result{{"Name", "Namespace", "Kind", "1.2.3", "Test", "4.5.6", version}}
+	results := getTestResult(map[string]interface{}{"key2": "value2"})
 
-	if err := c.Print(results); err != nil {
+	labelsFlag := false
+	ctx := context.WithValue(context.Background(), ctxKey.LABELS_CTX_KEY, &labelsFlag)
+
+	if err := c.Print(results, ctx); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 

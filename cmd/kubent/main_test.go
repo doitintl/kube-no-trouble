@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -13,6 +14,7 @@ import (
 
 	"github.com/doitintl/kube-no-trouble/pkg/collector"
 	"github.com/doitintl/kube-no-trouble/pkg/config"
+	ctxKey "github.com/doitintl/kube-no-trouble/pkg/context"
 	"github.com/doitintl/kube-no-trouble/pkg/judge"
 
 	"github.com/rs/zerolog"
@@ -108,6 +110,7 @@ func TestMainExitCodes(t *testing.T) {
 	defer os.RemoveAll(tmpDir)
 
 	expectedJsonOutput, _ := os.ReadFile(filepath.Join(FIXTURES_DIR, "expected-json-output.json"))
+	expectedJsonOutputLabels, _ := os.ReadFile(filepath.Join(FIXTURES_DIR, "expected-json-output-labels.json"))
 	helm3FlagDisabled := "--helm3=false"
 	clusterFlagDisabled := "--cluster=false"
 	testCases := []struct {
@@ -121,6 +124,7 @@ func TestMainExitCodes(t *testing.T) {
 		{"success", []string{clusterFlagDisabled, helm3FlagDisabled}, 0, "", "", false},
 		{"errorBadFlag", []string{"-c=not-boolean"}, 2, "", "", false},
 		{"successFound", []string{"-o=json", clusterFlagDisabled, helm3FlagDisabled, "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0, string(expectedJsonOutput), "", false},
+		{"successFoundWithLabels", []string{"--labels=true", "-o=json", clusterFlagDisabled, helm3FlagDisabled, "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1-labels.yaml")}, 0, string(expectedJsonOutputLabels), "", false},
 		{"exitErrorFlagNone", []string{clusterFlagDisabled, helm3FlagDisabled, "-e"}, 0, "", "", false},
 		{"exitErrorFlagFound", []string{clusterFlagDisabled, helm3FlagDisabled, "-e", "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 200, "", "", false},
 		{"version short flag set", []string{"-v"}, 0, "", "", false},
@@ -131,6 +135,7 @@ func TestMainExitCodes(t *testing.T) {
 		{"json-file", []string{"-o=json", clusterFlagDisabled, helm3FlagDisabled, "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0, "", filepath.Join(tmpDir, "json-file.out"), false},
 		{"text-file", []string{"-o=text", clusterFlagDisabled, helm3FlagDisabled, "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0, "", filepath.Join(tmpDir, "text-file.out"), false},
 		{"json-stdout", []string{"-o=json", clusterFlagDisabled, helm3FlagDisabled, "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1.yaml")}, 0, string(expectedJsonOutput), "-", false},
+		{"json-stdout-with-labels", []string{"--labels=true", "-o=json", clusterFlagDisabled, helm3FlagDisabled, "-f=" + filepath.Join(FIXTURES_DIR, "deployment-v1beta1-labels.yaml")}, 0, string(expectedJsonOutputLabels), "-", false},
 		{"error-bad-file", []string{clusterFlagDisabled, helm3FlagDisabled}, 1, "", "/this/dir/is/unlikely/to/exist", false},
 		{"no-3rdparty-output", []string{clusterFlagDisabled, helm3FlagDisabled, "-l=disabled"}, 0, "", "", true},
 	}
@@ -286,9 +291,12 @@ func Test_outputResults(t *testing.T) {
 		{"bad-new-printer-file", args{testResults, "text", "/unlikely/to/exist/dir"}, true},
 	}
 
+	labelsFlag := false
+	ctx := context.WithValue(context.Background(), ctxKey.LABELS_CTX_KEY, &labelsFlag)
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := outputResults(tt.args.results, tt.args.outputType, tt.args.outputFile); (err != nil) != tt.wantErr {
+			if err := outputResults(tt.args.results, tt.args.outputType, tt.args.outputFile, ctx); (err != nil) != tt.wantErr {
 				t.Errorf("unexpected error - got: %v, wantErr: %v", err, tt.wantErr)
 			}
 		})
