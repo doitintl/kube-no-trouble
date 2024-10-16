@@ -1,11 +1,12 @@
 package printer
 
 import (
+	"context"
 	"io/ioutil"
 	"os"
 	"testing"
 
-	"github.com/doitintl/kube-no-trouble/pkg/judge"
+	ctxKey "github.com/doitintl/kube-no-trouble/pkg/context"
 )
 
 func Test_newTextPrinter(t *testing.T) {
@@ -50,10 +51,11 @@ func Test_textPrinter_Print(t *testing.T) {
 		commonPrinter: &commonPrinter{tmpFile},
 	}
 
-	version, _ := judge.NewVersion("1.2.3")
-	results := []judge.Result{{"Name", "Namespace", "Kind", "1.2.3", "Test", "4.5.6", version}}
+	results := getTestResult(map[string]interface{}{"key2": "value2"})
+	labelsFlag := false
+	ctx := context.WithValue(context.Background(), ctxKey.LABELS_CTX_KEY, &labelsFlag)
 
-	if err := tp.Print(results); err != nil {
+	if err := tp.Print(results, ctx); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 

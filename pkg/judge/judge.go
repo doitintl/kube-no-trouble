@@ -8,6 +8,7 @@ type Result struct {
 	RuleSet     string
 	ReplaceWith string
 	Since       *Version
+	Labels      map[string]interface{}
 }
 
 type Judge interface {
