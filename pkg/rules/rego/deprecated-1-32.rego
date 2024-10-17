@@ -25,12 +25,12 @@ deprecated_api(kind, api_version) = api {
 		"FlowSchema": {
 			"old": ["flowcontrol.apiserver.k8s.io/v1beta3"],
 			"new": "flowcontrol.apiserver.k8s.io/v1",
-			"since": "1.32",
+			"since": "1.29",
 		},
 		"PriorityLevelConfiguration": {
 			"old": ["flowcontrol.apiserver.k8s.io/v1beta3"],
 			"new": "flowcontrol.apiserver.k8s.io/v1",
-			"since": "1.32",
+			"since": "1.29",
 		},
 	}
 
