@@ -63,6 +63,12 @@ func (j *RegoJudge) Eval(input []map[string]interface{}) ([]Result, error) {
 					m["Namespace"] = "<undefined>"
 				}
 
+				var labels map[string]interface{}
+				if v, ok := m["Labels"].(map[string]interface{}); ok {
+					labels = v
+				} else {
+					labels = make(map[string]interface{})
+				}
 				results = append(results, Result{
 					Name:        m["Name"].(string),
 					Namespace:   m["Namespace"].(string),
@@ -71,6 +77,7 @@ func (j *RegoJudge) Eval(input []map[string]interface{}) ([]Result, error) {
 					ReplaceWith: m["ReplaceWith"].(string),
 					RuleSet:     m["RuleSet"].(string),
 					Since:       since,
+					Labels:      labels,
 				})
 			}
 		}

@@ -57,7 +57,7 @@ _ := $(foreach exec,$(REQ_BINS), \
 
 
 ## Clean, build and pack
-all: build release-artifacts
+all: clean build release-artifacts
 .PHONY: all
 
 ## Prints list of tasks
