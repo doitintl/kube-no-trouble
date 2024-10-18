@@ -1,6 +1,5 @@
 version: 2
 updates:
-
   - package-ecosystem: "gomod"
     directory: "/"
     schedule:
@@ -9,7 +8,7 @@ updates:
     commit-message:
       prefix: "dep: Go "
     reviewers:
-      - "stepanstipl"
+      - "migueldelucasdoit"
       - "dark0dave"
 
   - package-ecosystem: "docker"
@@ -20,5 +19,5 @@ updates:
     commit-message:
       prefix: "dep: Docker "
     reviewers:
-      - "stepanstipl"
+      - "migueldelucasdoit"
       - "dark0dave"

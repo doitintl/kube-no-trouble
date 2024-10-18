@@ -14,7 +14,7 @@ func TestRegoCustom(t *testing.T) {
 	manifestName := "../fixtures/issuer-v1alpha2.yaml"
 	expectedKind := "Issuer"
 	additionalKinds := []schema.GroupVersionKind{
-		schema.GroupVersionKind{
+		{
 			Group:   "cert-manager.io",
 			Version: "v1alpha2",
 			Kind:    "Issuer",

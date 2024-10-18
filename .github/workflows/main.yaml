@@ -9,6 +9,9 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
@@ -21,7 +24,7 @@ jobs:
   test:
     name: test
     runs-on: ubuntu-latest
-    container: golang:1.22-alpine3.19
+    container: golang:1.23-alpine3.20
     steps:
     - name: Install git
       run: apk add --update --no-cache git
@@ -37,7 +40,7 @@ jobs:
   build:
     name: build
     runs-on: ubuntu-latest
-    container: golang:1.22-alpine3.19
+    container: golang:1.23-alpine3.20
     strategy:
       matrix:
         os: [linux, darwin, windows]
@@ -58,12 +61,11 @@ jobs:
           git config --global --add safe.directory /__w/kube-no-trouble/kube-no-trouble
           scripts/alpine-setup.sh
           GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} make all
-          make changelog
         shell: sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive release artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: release-artifacts-${{ matrix.os }}-${{ matrix.arch }}
           path: release-artifacts
@@ -102,13 +104,14 @@ jobs:
           "kindest/node:v1.19.16",
           "kindest/node:v1.20.15",
           "kindest/node:v1.21.14",
-          "kindest/node:v1.22.15",
-          "kindest/node:v1.23.13",
-          "kindest/node:v1.24.7",
-          "kindest/node:v1.25.3",
-          "kindest/node:v1.26.6",
-          "kindest/node:v1.27.3",
-          "kindest/node:v1.28.0"
+          "kindest/node:v1.22.17",
+          "kindest/node:v1.23.17",
+          "kindest/node:v1.24.17",
+          "kindest/node:v1.25.16",
+          "kindest/node:v1.26.14",
+          "kindest/node:v1.27.11",
+          "kindest/node:v1.28.7",
+          "kindest/node:v1.29.2"
         ]
     steps:
     - name: Checkout
@@ -116,19 +119,19 @@ jobs:
       with:
         fetch-depth: 0
         set-safe-directory: true
-    - uses: actions/download-artifact@v1
+    - uses: actions/download-artifact@v4
       with:
         name: release-artifacts-linux-amd64
         path: release-artifacts
     - name: Create k8s Kind Cluster
-      uses: helm/kind-action@v1.4.0
+      uses: helm/kind-action@v1.10.0
       with:
         node_image: ${{ matrix.k8s_version }}
         cluster_name: kubent-test-cluster
     - name: run integration test
       run: |
         tar xvzf release-artifacts/kubent-*-linux-amd64.tar.gz
-        kubectl version --short
+        kubectl version
         kubectl cluster-info --context kind-kubent-test-cluster
         ./kubent
   create-release:
@@ -141,7 +144,20 @@ jobs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
       tag_name: ${{ steps.get_tag.outputs.git_tag }}
     steps:
-      - uses: actions/download-artifact@v1
+      - name: Checkout
+        uses: actions/checkout@v3.0.2
+        with:
+          fetch-depth: 0
+          set-safe-directory: true
+      - name: Generate a changelog
+        uses: orhun/git-cliff-action@v3
+        id: git-cliff
+        with:
+          config: cliff.toml
+          args: --verbose --latest
+        env:
+          OUTPUT: changelog.md
+      - uses: actions/download-artifact@v4
         with:
           name: release-artifacts-linux-amd64
           path: release-artifacts
@@ -156,7 +172,7 @@ jobs:
         with:
           tag_name: ${{ steps.get_tag.outputs.git_tag }}
           release_name: ${{ steps.get_tag.outputs.git_tag }}
-          body_path: ./release-artifacts/changelog.md
+          body_path: ${{ steps.git-cliff.outputs.changelog }}
           draft: ${{ startsWith(steps.get_tag.outputs.git_tag, 'nightly') != true }}
           prerelease: ${{ startsWith(steps.get_tag.outputs.git_tag, 'nightly') }}
   push-image:
@@ -209,7 +225,7 @@ jobs:
             arch: arm64
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
     steps:
-      - uses: actions/download-artifact@v1
+      - uses: actions/download-artifact@v4
         with:
           name: release-artifacts-${{ matrix.os }}-${{ matrix.arch }}
           path: release-artifacts

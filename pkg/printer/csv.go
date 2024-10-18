@@ -1,6 +1,7 @@
 package printer
 
 import (
+	"context"
 	"encoding/csv"
 	"fmt"
 	"sort"
@@ -29,7 +30,7 @@ func (c *csvPrinter) Close() error {
 }
 
 // Print will print results in CSV format
-func (c *csvPrinter) Print(results []judge.Result) error {
+func (c *csvPrinter) Print(results []judge.Result, ctx context.Context) error {
 
 	sort.Slice(results, func(i, j int) bool {
 		return results[i].Name < results[j].Name
@@ -46,7 +47,7 @@ func (c *csvPrinter) Print(results []judge.Result) error {
 
 	w := csv.NewWriter(c.commonPrinter.outputFile)
 
-	w.Write([]string{
+	fields := []string{
 		"api_version",
 		"kind",
 		"namespace",
@@ -54,10 +55,21 @@ func (c *csvPrinter) Print(results []judge.Result) error {
 		"replace_with",
 		"since",
 		"rule_set",
-	})
+	}
+
+	labels, err := shouldShowLabels(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to get labels: %w", err)
+	}
+
+	if labels != nil && *labels {
+		fields = append(fields, "labels")
+	}
+
+	w.Write(fields)
 
 	for _, r := range results {
-		w.Write([]string{
+		row := []string{
 			r.ApiVersion,
 			r.Kind,
 			r.Namespace,
@@ -65,7 +77,13 @@ func (c *csvPrinter) Print(results []judge.Result) error {
 			r.ReplaceWith,
 			r.Since.String(),
 			r.RuleSet,
-		})
+		}
+
+		if labels != nil && *labels {
+			row = append(row, mapToCommaSeparatedString(r.Labels))
+		}
+
+		w.Write(row)
 	}
 
 	w.Flush()
