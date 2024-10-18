@@ -1,7 +1,7 @@
 package collector
 
 import (
-	"github.com/doitintl/kube-no-trouble/pkg/judge"
+	"github.com/LeMyst/kube-no-trouble/pkg/judge"
 )
 
 const (

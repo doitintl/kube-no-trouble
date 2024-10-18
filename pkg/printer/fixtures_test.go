@@ -1,6 +1,6 @@
 package printer
 
-import "github.com/doitintl/kube-no-trouble/pkg/judge"
+import "github.com/LeMyst/kube-no-trouble/pkg/judge"
 
 func getTestResult(labels map[string]interface{}) []judge.Result {
 	version, _ := judge.NewVersion("1.2.3")

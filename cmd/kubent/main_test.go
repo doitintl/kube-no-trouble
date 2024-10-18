@@ -11,10 +11,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/doitintl/kube-no-trouble/pkg/collector"
-	"github.com/doitintl/kube-no-trouble/pkg/config"
-	"github.com/doitintl/kube-no-trouble/pkg/judge"
-	"github.com/doitintl/kube-no-trouble/pkg/printer"
+	"github.com/LeMyst/kube-no-trouble/pkg/collector"
+	"github.com/LeMyst/kube-no-trouble/pkg/config"
+	"github.com/LeMyst/kube-no-trouble/pkg/judge"
+	"github.com/LeMyst/kube-no-trouble/pkg/printer"
 
 	"github.com/rs/zerolog"
 )
