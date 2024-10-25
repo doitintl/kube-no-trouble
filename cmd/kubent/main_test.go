@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"context"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -14,8 +13,8 @@ import (
 
 	"github.com/doitintl/kube-no-trouble/pkg/collector"
 	"github.com/doitintl/kube-no-trouble/pkg/config"
-	ctxKey "github.com/doitintl/kube-no-trouble/pkg/context"
 	"github.com/doitintl/kube-no-trouble/pkg/judge"
+	"github.com/doitintl/kube-no-trouble/pkg/printer"
 
 	"github.com/rs/zerolog"
 )
@@ -288,15 +287,15 @@ func Test_outputResults(t *testing.T) {
 	}{
 		{"good", args{testResults, "text", "-"}, false},
 		{"bad-new-printer-type", args{testResults, "unknown", "-"}, true},
-		{"bad-new-printer-file", args{testResults, "text", "/unlikely/to/exist/dir"}, true},
 	}
-
-	labelsFlag := false
-	ctx := context.WithValue(context.Background(), ctxKey.LABELS_CTX_KEY, &labelsFlag)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := outputResults(tt.args.results, tt.args.outputType, tt.args.outputFile, ctx); (err != nil) != tt.wantErr {
+			options, err := printer.NewPrinterOptions(tt.args.outputFile, false)
+			if err != nil {
+				t.Errorf("unexpected error - got: %v, wantErr: %v", err, tt.wantErr)
+			}
+			if err = outputResults(tt.args.results, tt.args.outputType, options); (err != nil) != tt.wantErr {
 				t.Errorf("unexpected error - got: %v, wantErr: %v", err, tt.wantErr)
 			}
 		})
@@ -305,6 +304,6 @@ func Test_outputResults(t *testing.T) {
 
 func Test_configureGlobalLogging(t *testing.T) {
 	// just make sure the method runs, this is mostly covered
-	//by the Test_MainExitCodes
+	// by the Test_MainExitCodes
 	configureGlobalLogging()
 }

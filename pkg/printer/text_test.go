@@ -1,33 +1,28 @@
 package printer
 
 import (
-	"context"
-	"io/ioutil"
 	"os"
 	"testing"
-
-	ctxKey "github.com/doitintl/kube-no-trouble/pkg/context"
 )
 
 func Test_newTextPrinter(t *testing.T) {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
+	tmpFile, err := os.CreateTemp(os.TempDir(), tempFilePrefix)
 	if err != nil {
 		t.Fatalf(tempFileCreateFailureMessage, err)
 	}
 	defer os.Remove(tmpFile.Name())
 
 	tests := []struct {
-		name           string
-		outputFileName string
-		wantErr        bool
+		name    string
+		options PrinterOptions
+		wantErr bool
 	}{
-		{"good-stdout", "-", false},
-		{"good-file", tmpFile.Name(), false},
-		{"bad-empty", "", true},
+		{"good-stdout", PrinterOptions{outputFile: os.Stdout}, false},
+		{"good-file", PrinterOptions{outputFile: tmpFile}, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := newTextPrinter(tt.outputFileName)
+			got, err := newTextPrinter(&tt.options)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Unexpected error %v, wantErr %v", err, tt.wantErr)
 				return
@@ -41,21 +36,19 @@ func Test_newTextPrinter(t *testing.T) {
 }
 
 func Test_textPrinter_Print(t *testing.T) {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
+	tmpFile, err := os.CreateTemp(os.TempDir(), tempFilePrefix)
 	if err != nil {
 		t.Fatalf(tempFileCreateFailureMessage, err)
 	}
 	defer os.Remove(tmpFile.Name())
-
+	options := &PrinterOptions{outputFile: tmpFile}
 	tp := &textPrinter{
-		commonPrinter: &commonPrinter{tmpFile},
+		commonPrinter: &commonPrinter{options},
 	}
 
 	results := getTestResult(map[string]interface{}{"key2": "value2"})
-	labelsFlag := false
-	ctx := context.WithValue(context.Background(), ctxKey.LABELS_CTX_KEY, &labelsFlag)
 
-	if err := tp.Print(results, ctx); err != nil {
+	if err := tp.Print(results); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
@@ -66,24 +59,24 @@ func Test_textPrinter_Print(t *testing.T) {
 }
 
 func Test_textPrinter_Close(t *testing.T) {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
+	tmpFile, err := os.CreateTemp(os.TempDir(), tempFilePrefix)
 	if err != nil {
 		t.Fatalf(tempFileCreateFailureMessage, err)
 	}
 	defer os.Remove(tmpFile.Name())
 
 	tests := []struct {
-		name       string
-		outputFile *os.File
-		wantErr    bool
+		name    string
+		options PrinterOptions
+		wantErr bool
 	}{
-		{"good-file", tmpFile, false},
-		{"bad-closed-file", tmpFile, true},
+		{"good-file", PrinterOptions{outputFile: tmpFile}, false},
+		{"bad-closed-file", PrinterOptions{outputFile: tmpFile}, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &textPrinter{
-				commonPrinter: &commonPrinter{tt.outputFile},
+				commonPrinter: &commonPrinter{&tt.options},
 			}
 			if err := c.Close(); (err != nil) != tt.wantErr {
 				t.Errorf("Unexpected error - got: %v, expected error: %v", err, tt.wantErr)

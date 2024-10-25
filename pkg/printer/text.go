@@ -1,7 +1,6 @@
 package printer
 
 import (
-	"context"
 	"fmt"
 	"sort"
 	"strings"
@@ -15,8 +14,8 @@ type textPrinter struct {
 }
 
 // newTextPrinter creates new text printer that prints to given output file
-func newTextPrinter(outputFileName string) (Printer, error) {
-	cp, err := newCommonPrinter(outputFileName)
+func newTextPrinter(options *PrinterOptions) (Printer, error) {
+	cp, err := newCommonPrinter(options)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create new common printer: %w", err)
 	}
@@ -31,8 +30,7 @@ func (c *textPrinter) Close() error {
 	return c.commonPrinter.Close()
 }
 
-func (c *textPrinter) Print(results []judge.Result, ctx context.Context) error {
-
+func (c *textPrinter) Print(results []judge.Result) error {
 	sort.Slice(results, func(i, j int) bool {
 		return results[i].Name < results[j].Name
 	})
@@ -47,12 +45,7 @@ func (c *textPrinter) Print(results []judge.Result, ctx context.Context) error {
 	})
 
 	ruleSet := ""
-	w := tabwriter.NewWriter(c.commonPrinter.outputFile, 10, 0, 3, ' ', 0)
-
-	labels, err := shouldShowLabels(ctx)
-	if err != nil {
-		return fmt.Errorf("failed to get labels flag from context: %w", err)
-	}
+	w := tabwriter.NewWriter(c.commonPrinter.options.outputFile, 10, 0, 3, ' ', 0)
 
 	for _, r := range results {
 		if ruleSet != r.RuleSet {
@@ -60,14 +53,14 @@ func (c *textPrinter) Print(results []judge.Result, ctx context.Context) error {
 			fmt.Fprintf(w, "%s\n", strings.Repeat("_", 90))
 			fmt.Fprintf(w, ">>> %s <<<\n", ruleSet)
 			fmt.Fprintf(w, "%s\n", strings.Repeat("-", 90))
-			if labels != nil && *labels {
+			if c.commonPrinter.options.showLabels {
 				fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s \t(%s) \t%s\n", "KIND", "NAMESPACE", "NAME", "API_VERSION", "REPLACE_WITH", "SINCE", "LABELS")
 			} else {
 				fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s \t(%s)\n", "KIND", "NAMESPACE", "NAME", "API_VERSION", "REPLACE_WITH", "SINCE")
 			}
 
 		}
-		if labels != nil && *labels {
+		if c.commonPrinter.options.showLabels {
 			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s \t(%s) \t%s\n", r.Kind, r.Namespace, r.Name, r.ApiVersion, r.ReplaceWith, r.Since, mapToCommaSeparatedString(r.Labels))
 		} else {
 			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s \t(%s) \n", r.Kind, r.Namespace, r.Name, r.ApiVersion, r.ReplaceWith, r.Since)

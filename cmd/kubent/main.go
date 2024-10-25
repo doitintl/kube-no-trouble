@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"io"
@@ -97,12 +96,11 @@ func getServerVersion(cv *judge.Version, collectors []collector.Collector) (*jud
 }
 
 func main() {
-	ctx := context.Background()
 	exitCode := EXIT_CODE_FAIL_GENERIC
 
 	configureGlobalLogging()
 
-	config, ctx, err := config.NewFromFlags(ctx)
+	config, err := config.NewFromFlags()
 
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to parse config flags")
@@ -159,7 +157,12 @@ func main() {
 		log.Fatal().Err(err).Str("name", "Rego").Msg("Failed to filter results")
 	}
 
-	err = outputResults(results, config.Output, config.OutputFile, ctx)
+	options, err := printer.NewPrinterOptions(config.OutputFile, config.ShowLabels)
+	if err != nil {
+		log.Fatal().Err(err).Msgf("Failed to create output file")
+	}
+
+	err = outputResults(results, config.Output, options)
 	if err != nil {
 		log.Fatal().Err(err).Msgf("Failed to output results")
 	}
@@ -183,14 +186,14 @@ func configureGlobalLogging() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 }
 
-func outputResults(results []judge.Result, outputType string, outputFile string, ctx context.Context) error {
-	printer, err := printer.NewPrinter(outputType, outputFile)
+func outputResults(results []judge.Result, outputType string, options *printer.PrinterOptions) error {
+	printer, err := printer.NewPrinter(outputType, options)
 	if err != nil {
 		return fmt.Errorf("failed to create printer: %v", err)
 	}
 	defer printer.Close()
 
-	err = printer.Print(results, ctx)
+	err = printer.Print(results)
 	if err != nil {
 		return fmt.Errorf("failed to print results: %v", err)
 	}

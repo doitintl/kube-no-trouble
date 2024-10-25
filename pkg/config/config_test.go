@@ -1,7 +1,6 @@
 package config
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -13,7 +12,6 @@ import (
 func TestValidLogLevelFromFlags(t *testing.T) {
 	oldArgs := os.Args[1]
 	defer func() { os.Args[1] = oldArgs }()
-	ctx := context.Background()
 
 	var validLevels = []string{"trace", "debug", "info", "warn", "error", "fatal", "panic", "", "disabled"}
 	for i, level := range validLevels {
@@ -22,7 +20,7 @@ func TestValidLogLevelFromFlags(t *testing.T) {
 
 		os.Args[1] = "--log-level=" + level
 
-		config, _, err := NewFromFlags(ctx)
+		config, err := NewFromFlags()
 
 		if err != nil {
 			t.Errorf("Flags parsing failed %s", err)
@@ -48,9 +46,8 @@ func TestInvalidLogLevelFromFlags(t *testing.T) {
 func TestNewFromFlags(t *testing.T) {
 	// reset for testing
 	pflag.CommandLine = pflag.NewFlagSet(os.Args[0], pflag.ExitOnError)
-	ctx := context.Background()
 
-	config, _, err := NewFromFlags(ctx)
+	config, err := NewFromFlags()
 
 	if err != nil {
 		t.Errorf("Flags parsing failed %s", err)
@@ -95,7 +92,6 @@ func TestTargetVersion(t *testing.T) {
 	validVersions := []string{
 		"1.16", "1.16.3", "1.2.3",
 	}
-	ctx := context.Background()
 
 	oldArgs := os.Args[1]
 	defer func() { os.Args[1] = oldArgs }()
@@ -105,7 +101,7 @@ func TestTargetVersion(t *testing.T) {
 		pflag.CommandLine = pflag.NewFlagSet(os.Args[0], pflag.ExitOnError)
 
 		os.Args[1] = "--target-version=" + v
-		config, _, err := NewFromFlags(ctx)
+		config, err := NewFromFlags()
 
 		if err != nil {
 			t.Errorf("Flags parsing failed %s", err)
@@ -126,7 +122,7 @@ func TestTargetVersionInvalid(t *testing.T) {
 	invalidVersions := []string{
 		"1.blah", "nope",
 	}
-	ctx := context.Background()
+
 	oldArgs := os.Args[1]
 	defer func() { os.Args[1] = oldArgs }()
 
@@ -135,7 +131,7 @@ func TestTargetVersionInvalid(t *testing.T) {
 		pflag.CommandLine = pflag.NewFlagSet(os.Args[0], pflag.ContinueOnError)
 
 		os.Args[1] = "--target-version=" + v
-		config, _, _ := NewFromFlags(ctx)
+		config, _ := NewFromFlags()
 
 		if config.TargetVersion != nil {
 			t.Errorf("expected --target-version flag parsing to fail for: %s", v)
@@ -147,7 +143,6 @@ func TestContext(t *testing.T) {
 	validContexts := []string{
 		"my-context",
 	}
-	ctx := context.Background()
 	oldArgs := os.Args[1]
 	defer func() { os.Args[1] = oldArgs }()
 
@@ -156,7 +151,7 @@ func TestContext(t *testing.T) {
 		pflag.CommandLine = pflag.NewFlagSet(os.Args[0], pflag.ExitOnError)
 
 		os.Args[1] = "--context=" + context
-		config, _, err := NewFromFlags(ctx)
+		config, err := NewFromFlags()
 
 		if err != nil {
 			t.Errorf("Flags parsing failed %s", err)
