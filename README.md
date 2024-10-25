@@ -31,18 +31,30 @@ Run the following command in your terminal to install `kubent` using a shell scr
 sh -c "$(curl -sSL https://git.io/install-kubent)"
 ```
 
-*(The script will download latest version and unpack to `/usr/local/bin`).*
+*(Unless specified the script will download latest version and unpack to `/usr/local/bin/`).*
+
+> Note: Do not run random scripts from strangers on the internet. Read what the above script does first.
 
 ### Manual Installation
 
 You can download the
 [latest release](https://github.com/doitintl/kube-no-trouble/releases/latest)
-for your platform and unpack manually.
+for your cpu architectures and operating system. You can then place it on your path.
+
+We currently maintain, the following operating systems and cpu architectures:
+
+- Linux amd64
+- Linux arm64
+- Darwin amd64
+- Darwin arm64
+- Windows amd64
+
+*Historically Windows on arm, has not received the best support. If this changes we may add it.*
 
 ### Third-Party Installation
 
 Please note that third-party installation methods are maintained by the community.
-The packages may not always be up-to-date with the latest releases of `kubent`.
+**The packages may not always be up-to-date with the latest releases of** `kubent`.
 
 #### Homebrew
 
@@ -216,7 +228,7 @@ The simplest way to build `kubent` is:
 git clone https://github.com/doitintl/kube-no-trouble.git
 cd kube-no-trouble/
 # Build
-go build -o bin/kubent cmd/kubent/main.go
+go build -o bin/kubent ./...
 ```
 
 Otherwise there's `Makefile`
@@ -260,6 +272,24 @@ Where type is one of:
 Use imperative, present tense (Add, not ~Added~), capitalize first letter of
 summary, no dot at the and. The body and footer are optional. Relevant GitHub
 issues should be referenced in the footer in the form `Fixes #123, fixes #456`.
+
+#### Branches
+
+All PRs should be at the HEAD, that is to say we use merge commits with [semi-linear history](https://docs.gitlab.com/ee/user/project/merge_requests/methods/#merge-commit-with-semi-linear-history).
+
+![](https://devblogs.microsoft.com/devops/wp-content/uploads/sites/6/2019/04/semilinear-1.gif)
+
+If not they should be rebased on master, do not merge master into your branches. Do not create branches that already exist, please use a new name. Branches are deleted upon merging. Thank you.
+
+```sh
+git fetch -v
+git checkout my-branch
+git rebase origin/master
+```
+
+We also maintain an author merges policy. We will approve your pr then you can merge it.
+
+Additionally we ask that you do not squash your prs or introduce a large number of commits per feature. If your pr becomes too large we may ask you to split the functionality out into more than one pr.
 
 ### Changelog
 
