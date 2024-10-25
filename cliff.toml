@@ -1,5 +1,6 @@
-# git-cliff ~ default configuration file
+# git-cliff ~ configuration file
 # https://git-cliff.org/docs/configuration
+# Remote for git-cliff
 [remote.github]
 owner = "doitintl"
 repo = "kube-no-trouble"
@@ -9,7 +10,7 @@ header = ""
 # template for the changelog body
 # https://tera.netlify.app/docs
 body = """
-**Docker Image**: {{ get_env(name='REGISTRY', default='') }}/{{ get_env(name='IMAG_NAME', default='') }}:{{ get_env(name='GITHUB_REF_NAME', default='') }}
+**Docker Image**: {{ get_env(name='REGISTRY', default='ghcr.io/doitintl') }}/{{ get_env(name='IMAG_NAME', default='kube-no-trouble') }}:{{ get_env(name='GITHUB_REF_NAME', default='latest') }}
 
 ### Changelog \
 {% for group, commits in commits | group_by(attribute="group") %}
@@ -20,24 +21,20 @@ body = """
     | filter(attribute="merge_commit", value=false) %}
         - {{commit.scope}}: \
             {{ commit.message }}\
-            {% if not commit.github.pr_number %} [{{ commit.id | truncate(length=7, end="") }}]({{ self::remote_url() }}/commit/{{ commit.id }}){%- endif %}\
+            {% if not commit.github.pr_number %} []({{ self::remote_url() }}/commit/{{ commit.id }}){%- endif %}\
             {% if commit.github.username %} by @{{ commit.github.username }}\
             {% else %} by [{{ commit.author.name }}](https://github.com/{{ commit.author.name }}){%- endif %}\
     {%- endfor -%}
 {% endfor %}
-{% if version %}
-    {% if previous.version %}\
-Full Changelog: [{{ previous.version }}...{{ version }}]({{ self::remote_url() }}/compare/{{ previous.version }}...{{ version }})\
-    {% endif %}\
-{% else -%}\
-  {% raw %}\n{% endraw %}\
-{% endif %}\
 {% if github.contributors | filter(attribute="is_first_time", value=true) | length != 0 %}
 ### New Contributors
 {% for contributor in github.contributors | filter(attribute="is_first_time", value=true) %}
-  * @{{ contributor.username }} made their first contribution in #{{ contributor.pr_number }}
+  * @{{ contributor.username }} made their first contribution {% if contributor.pr_number %} in #{{ contributor.pr_number }} {%- endif %}
 {%- endfor -%}
 {%- endif %}
+
+Full Changelog: [{{ previous.version }}...{{ version }}]({{ self::remote_url() }}/compare/{{ previous.version }}...{{ version }})
+
 {%- macro remote_url() -%}
   https://github.com/{{ remote.github.owner }}/{{ remote.github.repo }}
 {%- endmacro -%}
@@ -60,8 +57,6 @@ split_commits = false
 # regex for preprocessing the commit messages
 commit_preprocessors = [
   # { pattern = '\((\w+\s)?#([0-9]+)\)', replace = "([#${2}](<REPO>/issues/${2}))"}, # replace issue numbers
-    # remove pr numbers from commits
-    { pattern = '\((\w+\s)?#([0-9]+)\)', replace = "" },
 ]
 # regex for parsing and grouping commits
 commit_parsers = [
