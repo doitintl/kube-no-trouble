@@ -31,18 +31,30 @@ Run the following command in your terminal to install `kubent` using a shell scr
 sh -c "$(curl -sSL https://git.io/install-kubent)"
 ```
 
-*(The script will download latest version and unpack to `/usr/local/bin`).*
+*(Unless specified the script will download latest version and unpack to `/usr/local/bin/`).*
+
+> Note: Do not run random scripts from strangers on the internet. Read what the above script does first.
 
 ### Manual Installation
 
 You can download the
 [latest release](https://github.com/doitintl/kube-no-trouble/releases/latest)
-for your platform and unpack manually.
+for your cpu architectures and operating system. You can then place it on your path.
+
+We currently maintain, the following operating systems and cpu architectures:
+
+- Linux amd64
+- Linux arm64
+- Darwin amd64
+- Darwin arm64
+- Windows amd64
+
+*Historically Windows on arm, has not received the best support. If this changes we may add it.*
 
 ### Third-Party Installation
 
 Please note that third-party installation methods are maintained by the community.
-The packages may not always be up-to-date with the latest releases of `kubent`.
+**The packages may not always be up-to-date with the latest releases of** `kubent`.
 
 #### Homebrew
 
@@ -216,7 +228,7 @@ The simplest way to build `kubent` is:
 git clone https://github.com/doitintl/kube-no-trouble.git
 cd kube-no-trouble/
 # Build
-go build -o bin/kubent cmd/kubent/main.go
+go build -o bin/kubent ./...
 ```
 
 Otherwise there's `Makefile`
@@ -231,65 +243,6 @@ release-artifacts              Create release artifacts
 clean                          Clean build artifacts
 ```
 
-### Commit messages
-
-We enforce simple version of [Conventional Commits][cc] in the form:
-
-```
-<type>: <summary>
-
-[optional body]
-
-[optional footer(s)]
-```
-
-Where type is one of:
-- **build** - Affects build and/or build system
-- **chore** - Other non-functional changes
-- **ci** - Affects CI (e.g. GitHub actions)
-- **dep** - Dependency update
-- **docs** - Documentation only change
-- **feat** - A new feature
-- **fix** - A bug fix
-- **ref** - Code refactoring without functionality change
-- **style** - Formatting changes
-- **test** - Adding/changing tests
-
-[cc]: https://www.conventionalcommits.org/
-
-Use imperative, present tense (Add, not ~Added~), capitalize first letter of
-summary, no dot at the and. The body and footer are optional. Relevant GitHub
-issues should be referenced in the footer in the form `Fixes #123, fixes #456`.
-
-### Changelog
-
-Changelog is generated automatically based on merged PRs using
-[changelog-gen][chlg-gen]. Template can be found in `scripts/changelog.tmpl`.
-
-PRs are categorized based on their labels, into following sections:
-- Announcements - `announcement` label
-- Breaking Changes - `breaking-change` label
-- Features - `feature` label
-- Changes - `change` label
-- Fixes - `fix` label
-- Internal/Other - everything else
-
-PR can be excluded from changelog with `no-release-note` label. PR title is
-used by default, however, the copy can be customized by including following
-block in the PR body:
-
-~~~
-```release-note
-This is an example release note!
-```
-~~~
-
-[chlg-gen]: https://github.com/paultyng/changelog-gen
-
 ## Issues and Contributions
 
-Please open any issues and/or PRs against github.com/doitintl/kube-no-trouble repository.
-
-Please ensure any contributions are signed with a valid gpg key. We use this to validate that you have committed this and no one else. You can learn how to create a GPG key [here](https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key).
-
-Feedback and contributions are always welcome!
+Please open any issues and/or PRs against github.com/doitintl/kube-no-trouble repository. See our [contribution guide](.github/CONTRIBUTING.md) for more details
