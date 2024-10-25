@@ -1,7 +1,7 @@
 default_install_hook_types: [pre-commit, commit-msg]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v5.0.0
     hooks:
       - id: check-json
         stages: [pre-commit]
@@ -21,17 +21,17 @@ repos:
       - id: git-dirty
         stages: [pre-commit]
   - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-    rev: v2.11.0
+    rev: v2.14.0
     hooks:
       - id: pretty-format-golang
         stages: [pre-commit]
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.6
+    rev: v2.3.0
     hooks:
       - id: codespell
         stages: [pre-commit]
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v3.13.0
+    rev: v3.30.0
     hooks:
       - id: commitizen
         stages: [commit-msg]
