@@ -14,6 +14,7 @@
 - [Code Review](#mark-code-review)
 - [Coding Style](#coding-style)
 - [Changelog](#changelog)
+- [Release](#releases)
 - [Credits](#credits)
 
 > **This guide serves to set clear expectations for everyone involved with the project. We are indebted to @stepanstipl for creating this project.**
@@ -177,6 +178,58 @@ Additionally we will reference any new contributors between the release versions
 
     @dark0dave made their first contribution in #1
 ```
+
+## Releases
+
+We use [semantic versioning](https://semver.org/) in kubent.
+
+> Given a version number MAJOR.MINOR.PATCH, increment the:
+>
+> - MAJOR version when you make incompatible API changes
+> - MINOR version when you add functionality in a backward compatible manner
+> - PATCH version when you make backward compatible bug fixes
+>
+> Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.
+
+### Triggering a release
+
+Releases are triggered by pushing a new tag, it is **imperative** you keep to the style of tag defined in the cliff.toml file otherwise git-cliff will not generate valid release notes.
+
+### Expected tag structure
+
+From the cliff toml file:
+```toml
+tag_pattern = "^[0-9]+.[0-9]+.[0-9]+$"
+```
+Example:
+- 0.7.1
+- 0.7.2
+- 0.7.3
+
+#### Nightly
+
+Nightly release happen on weekly schedule, this important for good health of the repo. This insures all our ci is always running properly. The intent here, is to release versions so that developers can test recent functionality in the wild. We can not foresee all out comes so we must rely on others.
+
+#### When to release
+
+We create [milestones](https://github.com/doitintl/kube-no-trouble/milestones) in the github repo which guide us towards minor releases, such as 0.7.0 or 0.6.0. @stepanstipl the creator of this repo has always avoided releasing 1.0.0 because that would lock our existing functionality in. Currently there are large outstanding issue which prevent us from having a stable API, ie version 1.0.0. This is in line with the semver doc see [here](https://semver.org/#how-do-i-know-when-to-release-100).
+
+All that to say, our patches tend to be a mixture of small features and bugfixes. Example:
+
+```md
+#### Features:
+    feat: Add rego for v1.32 deprecations b4da33a by @dark0dave
+    feat: Fix github actions for creating release notes edd2dc3 by @dark0dave
+#### Fixes:
+    fix: Script install.sh in dumb TERM 35927e8 by @FabioAntunes
+    fix: warn and fix invalid namespace 83308e1 by @justdan96
+    fix: Add docker image back 6de101d by @dark0dave
+    fix: Add fix for git cliff 9d487c9 by @dark0dave
+#### Internal/Other:
+    dep: Bump lots of deps 7cdf86a by @dark0dave
+```
+
+Please make an effort to stay with in these guidelines. A **smaller number** releases is preferred to a large number of releases. Additionally, We DO NOT SUPPORT `hotfixing` releases, see [hotfix explained](https://en.wikipedia.org/wiki/Hotfix). Releases stay static and immutable once released. In our view hotfixes cause more problems than they solve and introduce a burden on maintainers attempting to catch bugs and resolve issues.
 
 ## Credits
 
