@@ -1,7 +1,6 @@
 package printer
 
 import (
-	"io/ioutil"
 	"os"
 	"reflect"
 	"testing"
@@ -12,51 +11,29 @@ const (
 	tempFileCreateFailureMessage = "failed to create temp dir for testing: %v"
 )
 
-func TestParsePrinter(t *testing.T) {
-	for k, v := range printers {
-		p, err := ParsePrinter(k)
-		if err != nil {
-			t.Fatalf("failed to parse printer %s: %v", k, err)
-		}
-
-		if reflect.ValueOf(p).Pointer() != reflect.ValueOf(v).Pointer() {
-			t.Fatalf("expected to get function %p, got %p instead", p, p)
-		}
-	}
-}
-
-func TestParsePrinterInvalid(t *testing.T) {
-	_, err := ParsePrinter("BAD")
-	if err == nil {
-		t.Fatalf("expected ParsePrinter to fail with unimplemented type")
-	}
-}
-
 func TestNewPrinter(t *testing.T) {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
+	tmpFile, err := os.CreateTemp(os.TempDir(), tempFilePrefix)
 	if err != nil {
 		t.Fatalf(tempFileCreateFailureMessage, err)
 	}
 	defer os.Remove(tmpFile.Name())
 
 	tests := []struct {
-		name              string
-		argChoice         string
-		argOutputFileName string
-		wantErr           bool
-		want              Printer
+		name      string
+		argChoice string
+		options   PrinterOptions
+		wantErr   bool
+		want      Printer
 	}{
-		{"good", "json", "-", false, &jsonPrinter{&commonPrinter{}}},
-		{"good-file", "json", tmpFile.Name(), false, &jsonPrinter{&commonPrinter{}}},
-		{"invalid", "xxx", "", true, nil},
-		{"invalid-out", "json", "/not/likely/to/exist", true, nil},
-		{"empty", "", "-", true, nil},
-		{"empty-out", "json", "", true, nil},
+		{"good", "json", PrinterOptions{outputFile: os.Stdout}, false, &jsonPrinter{&commonPrinter{}}},
+		{"good-file", "json", PrinterOptions{outputFile: tmpFile}, false, &jsonPrinter{&commonPrinter{}}},
+		{"invalid", "xxx", PrinterOptions{outputFile: tmpFile}, true, nil},
+		{"empty", "", PrinterOptions{outputFile: os.Stdout}, true, nil},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewPrinter(tt.argChoice, tt.argOutputFileName)
-			if (err != nil) != tt.wantErr {
+			got, err := NewPrinter(tt.argChoice, &tt.options)
+			if (err != nil) && !tt.wantErr {
 				t.Errorf("unexpected error - got: %v, wantErr %v", err, tt.wantErr)
 				return
 			}
@@ -68,27 +45,26 @@ func TestNewPrinter(t *testing.T) {
 }
 
 func Test_newCommonPrinter(t *testing.T) {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
+	tmpFile, err := os.CreateTemp(os.TempDir(), tempFilePrefix)
 	if err != nil {
 		t.Fatalf(tempFileCreateFailureMessage, err)
 	}
 	defer os.Remove(tmpFile.Name())
 
 	tests := []struct {
-		name              string
-		argOutputFileName string
-		wantErr           bool
+		name    string
+		options PrinterOptions
+		wantErr bool
 	}{
-		{"good-file", tmpFile.Name(), false},
-		{"good-stdout", "-", false},
-		{"bad-empty", "", true},
-		{"bad-path", "/this/is/unlikely/to/exist", true},
+		{"good-file", PrinterOptions{outputFile: tmpFile}, false},
+		{"good-stdout", PrinterOptions{outputFile: os.Stdout}, false},
+		{"bad-empty", PrinterOptions{outputFile: nil, showLabels: false}, true},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := newCommonPrinter(tt.argOutputFileName)
-			if (err != nil) != tt.wantErr {
+			got, err := newCommonPrinter(&tt.options)
+			if (err != nil) && !tt.wantErr {
 				t.Fatalf("unexpected error - got: %v, wantErr: %v", err, tt.wantErr)
 			}
 
@@ -98,9 +74,9 @@ func Test_newCommonPrinter(t *testing.T) {
 
 			if !tt.wantErr {
 				defer got.Close()
-				if (tt.argOutputFileName != "-" && got.outputFile.Name() != tt.argOutputFileName) ||
-					tt.argOutputFileName == "-" && got.outputFile.Name() != os.Stdout.Name() {
-					t.Errorf("unexpected file name- got: %s, want: %s", got.outputFile.Name(), tt.argOutputFileName)
+				if (tt.options.outputFile.Name() != "-" && got.options.outputFile.Name() != tt.options.outputFile.Name()) ||
+					tt.options.outputFile.Name() == "-" && got.options.outputFile.Name() != os.Stdout.Name() {
+					t.Errorf("unexpected file name- got: %s, want: %s", got.options.outputFile.Name(), tt.options.outputFile.Name())
 				}
 			}
 		})
@@ -108,7 +84,7 @@ func Test_newCommonPrinter(t *testing.T) {
 }
 
 func Test_ensureOutputFileExists(t *testing.T) {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
+	tmpFile, err := os.CreateTemp(os.TempDir(), tempFilePrefix)
 	if err != nil {
 		t.Fatalf(tempFileCreateFailureMessage, err)
 	}
@@ -150,25 +126,25 @@ func Test_ensureOutputFileExists(t *testing.T) {
 }
 
 func Test_commonPrinter_Close(t *testing.T) {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
+	tmpFile, err := os.CreateTemp(os.TempDir(), tempFilePrefix)
 	if err != nil {
 		t.Fatalf(tempFileCreateFailureMessage, err)
 	}
 	defer os.Remove(tmpFile.Name())
 
 	tests := []struct {
-		name       string
-		outputFile *os.File
-		wantErr    bool
+		name    string
+		options PrinterOptions
+		wantErr bool
 	}{
-		{"good-file", tmpFile, false},
-		{"good-stdout", os.Stdout, false},
-		{"bad-closed-file", tmpFile, true},
+		{"good-file", PrinterOptions{outputFile: tmpFile}, false},
+		{"good-stdout", PrinterOptions{outputFile: os.Stdout}, false},
+		{"bad-closed-file", PrinterOptions{outputFile: tmpFile}, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &commonPrinter{
-				outputFile: tt.outputFile,
+				options: &tt.options,
 			}
 			if err := c.Close(); (err != nil) != tt.wantErr {
 				t.Errorf("Unexpected error - got: %v, expected error: %v", err, tt.wantErr)

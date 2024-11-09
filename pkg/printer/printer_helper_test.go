@@ -1,13 +1,9 @@
 package printer
 
 import (
-	"context"
-	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
-
-	ctxKey "github.com/doitintl/kube-no-trouble/pkg/context"
 )
 
 func TestTypePrinterPrint(t *testing.T) {
@@ -29,20 +25,20 @@ func TestTypePrinterPrint(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
+			tmpFile, err := os.CreateTemp(os.TempDir(), tempFilePrefix)
 			if err != nil {
 				t.Fatalf(tempFileCreateFailureMessage, err)
 			}
 			defer os.Remove(tmpFile.Name())
+			options := &PrinterOptions{outputFile: tmpFile}
 
 			tp := &csvPrinter{
-				commonPrinter: &commonPrinter{tmpFile},
+				commonPrinter: &commonPrinter{options},
 			}
 
 			results := getTestResult(tt.labels)
 
-			ctx := context.WithValue(context.Background(), ctxKey.LABELS_CTX_KEY, &tt.withLabels)
-			if err := tp.Print(results, ctx); err != nil {
+			if err := tp.Print(results); err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}
 

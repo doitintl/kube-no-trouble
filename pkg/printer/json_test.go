@@ -1,71 +1,65 @@
 package printer
 
 import (
-	"context"
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"reflect"
 	"testing"
 
-	ctxKey "github.com/doitintl/kube-no-trouble/pkg/context"
 	"github.com/doitintl/kube-no-trouble/pkg/judge"
 )
 
 func Test_newJSONPrinter(t *testing.T) {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
+	tmpFile, err := os.CreateTemp(os.TempDir(), tempFilePrefix)
 	if err != nil {
 		t.Fatalf(tempFileCreateFailureMessage, err)
 	}
 	defer os.Remove(tmpFile.Name())
 
 	tests := []struct {
-		name           string
-		outputFileName string
-		wantErr        bool
+		name    string
+		options PrinterOptions
+		wantErr bool
 	}{
-		{"good-stdout", "-", false},
-		{"good-file", tmpFile.Name(), false},
-		{"bad-empty", "", true},
+		{"good-stdout", PrinterOptions{outputFile: os.Stdout}, false},
+		{"good-file", PrinterOptions{outputFile: tmpFile}, false},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := newJSONPrinter(tt.outputFileName)
+			got, err := newJSONPrinter(&tt.options)
 			if (err != nil) != tt.wantErr {
 				t.Fatalf("unexpected error: %v, expected error: %v", err, tt.wantErr)
 			}
 
-			if err != nil && got != nil {
+			if err != nil || got == nil {
 				t.Errorf("expected nil in case of an error, got %v", got)
 			}
 		})
 	}
 }
 func Test_jsonPrinter_Print(t *testing.T) {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
+	tmpFile, err := os.CreateTemp(os.TempDir(), tempFilePrefix)
 	if err != nil {
 		t.Fatalf(tempFileCreateFailureMessage, err)
 	}
 	defer os.Remove(tmpFile.Name())
 
+	options := &PrinterOptions{outputFile: tmpFile}
 	c := &jsonPrinter{
-		commonPrinter: &commonPrinter{tmpFile},
+		commonPrinter: &commonPrinter{options},
 	}
 
 	results := getTestResult(map[string]interface{}{"key2": "value2"})
 
-	labelsFlag := false
-	ctx := context.WithValue(context.Background(), ctxKey.LABELS_CTX_KEY, &labelsFlag)
-
-	if err := c.Print(results, ctx); err != nil {
+	if err := c.Print(results); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
 	tmpFile.Seek(0, 0)
 
 	var readResults []judge.Result
-	readBytes, err := ioutil.ReadAll(tmpFile)
+	readBytes, err := os.ReadFile(tmpFile.Name())
 	if err != nil {
 		t.Fatalf("unexpected error reading back the file: %v", err)
 	}
@@ -78,24 +72,24 @@ func Test_jsonPrinter_Print(t *testing.T) {
 }
 
 func Test_jsonPrinter_Close(t *testing.T) {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), tempFilePrefix)
+	tmpFile, err := os.CreateTemp(os.TempDir(), tempFilePrefix)
 	if err != nil {
 		t.Fatalf(tempFileCreateFailureMessage, err)
 	}
 	defer os.Remove(tmpFile.Name())
 
 	tests := []struct {
-		name       string
-		outputFile *os.File
-		wantErr    bool
+		name    string
+		options PrinterOptions
+		wantErr bool
 	}{
-		{"good-file", tmpFile, false},
-		{"bad-closed-file", tmpFile, true},
+		{"good-file", PrinterOptions{outputFile: tmpFile}, false},
+		{"bad-closed-file", PrinterOptions{outputFile: tmpFile}, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &jsonPrinter{
-				commonPrinter: &commonPrinter{tt.outputFile},
+				commonPrinter: &commonPrinter{&tt.options},
 			}
 			if err := c.Close(); (err != nil) != tt.wantErr {
 				t.Errorf("Unexpected error - got: %v, expected error: %v", err, tt.wantErr)

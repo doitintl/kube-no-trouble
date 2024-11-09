@@ -1,7 +1,6 @@
 package printer
 
 import (
-	"context"
 	"encoding/csv"
 	"fmt"
 	"sort"
@@ -14,8 +13,8 @@ type csvPrinter struct {
 }
 
 // newCSVPrinter creates new CSV printer that prints to given output file
-func newCSVPrinter(outputFileName string) (Printer, error) {
-	cp, err := newCommonPrinter(outputFileName)
+func newCSVPrinter(options *PrinterOptions) (Printer, error) {
+	cp, err := newCommonPrinter(options)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create new common printer: %w", err)
 	}
@@ -30,7 +29,7 @@ func (c *csvPrinter) Close() error {
 }
 
 // Print will print results in CSV format
-func (c *csvPrinter) Print(results []judge.Result, ctx context.Context) error {
+func (c *csvPrinter) Print(results []judge.Result) error {
 
 	sort.Slice(results, func(i, j int) bool {
 		return results[i].Name < results[j].Name
@@ -45,7 +44,7 @@ func (c *csvPrinter) Print(results []judge.Result, ctx context.Context) error {
 		return results[i].RuleSet < results[j].RuleSet
 	})
 
-	w := csv.NewWriter(c.commonPrinter.outputFile)
+	w := csv.NewWriter(c.commonPrinter.options.outputFile)
 
 	fields := []string{
 		"api_version",
@@ -57,12 +56,7 @@ func (c *csvPrinter) Print(results []judge.Result, ctx context.Context) error {
 		"rule_set",
 	}
 
-	labels, err := shouldShowLabels(ctx)
-	if err != nil {
-		return fmt.Errorf("failed to get labels: %w", err)
-	}
-
-	if labels != nil && *labels {
+	if c.options.showLabels {
 		fields = append(fields, "labels")
 	}
 
@@ -79,7 +73,7 @@ func (c *csvPrinter) Print(results []judge.Result, ctx context.Context) error {
 			r.RuleSet,
 		}
 
-		if labels != nil && *labels {
+		if c.options.showLabels {
 			row = append(row, mapToCommaSeparatedString(r.Labels))
 		}
 

@@ -1,7 +1,6 @@
 package config
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"io/fs"
@@ -10,7 +9,6 @@ import (
 	"strings"
 	"unicode"
 
-	ctxKey "github.com/doitintl/kube-no-trouble/pkg/context"
 	"github.com/doitintl/kube-no-trouble/pkg/judge"
 	"k8s.io/client-go/tools/clientcmd"
 
@@ -38,15 +36,14 @@ type Config struct {
 	OutputFile            string
 	TargetVersion         *judge.Version
 	KubentVersion         bool
+	ShowLabels            bool
 }
 
-func NewFromFlags(ctx context.Context) (*Config, context.Context, error) {
+func NewFromFlags() (*Config, error) {
 	config := Config{
 		LogLevel:      ZeroLogLevel(zerolog.InfoLevel),
 		TargetVersion: &judge.Version{},
 	}
-
-	var labels bool
 
 	flag.StringSliceVarP(&config.AdditionalKinds, "additional-kind", "a", []string{}, "additional kinds of resources to report in Kind.version.group.com format")
 	flag.StringSliceVarP(&config.AdditionalAnnotations, "additional-annotation", "A", []string{}, "additional annotations that should be checked to determine the last applied config")
@@ -57,26 +54,23 @@ func NewFromFlags(ctx context.Context) (*Config, context.Context, error) {
 	flag.BoolVar(&config.Helm3, "helm3", true, "enable Helm v3 collector")
 	flag.StringSliceVarP(&config.Filenames, "filename", "f", []string{}, "manifests to check, use - for stdin")
 	flag.StringVarP(&config.Kubeconfig, "kubeconfig", "k", os.Getenv(clientcmd.RecommendedConfigPathEnvVar), "path to the kubeconfig file")
-	flag.StringVarP(&config.Output, "output", "o", "text", "output format - [text|json|csv]")
+	flag.StringVarP(&config.Output, "output", "o", TEXT, "output format - [text|json|csv]")
 	flag.StringVarP(&config.OutputFile, "output-file", "O", "-", "output file, use - for stdout")
 	flag.VarP(&config.LogLevel, "log-level", "l", "set log level (trace, debug, info, warn, error, fatal, panic, disabled)")
 	flag.VarP(config.TargetVersion, "target-version", "t", "target K8s version in SemVer format (autodetected by default)")
-	flag.BoolVar(&labels, "labels", false, "print resource labels")
-
+	flag.BoolVar(&config.ShowLabels, "labels", false, "print resource labels")
 	flag.Parse()
 
-	newContext := context.WithValue(ctx, ctxKey.LABELS_CTX_KEY, &labels)
-
 	if !isValidOutputFormat(config.Output) {
-		return nil, nil, fmt.Errorf("failed to validate argument output: %s", config.Output)
+		return nil, fmt.Errorf("failed to validate argument output: %s", config.Output)
 	}
 
 	if err := validateOutputFile(config.OutputFile); err != nil {
-		return nil, nil, fmt.Errorf("failed to validate argument output-file: %w", err)
+		return nil, fmt.Errorf("failed to validate argument output-file: %w", err)
 	}
 
 	if err := validateAdditionalResources(config.AdditionalKinds); err != nil {
-		return nil, nil, fmt.Errorf("failed to validate arguments: %w", err)
+		return nil, fmt.Errorf("failed to validate arguments: %w", err)
 	}
 
 	// This is a little ugly, but I think preferred to implementing
@@ -86,10 +80,10 @@ func NewFromFlags(ctx context.Context) (*Config, context.Context, error) {
 		config.TargetVersion = nil
 	}
 
-	return &config, newContext, nil
+	return &config, nil
 }
 
-// Previuosly this was handled by a printer.go ParsePrinter function
+// Previously this was handled by a printer.go ParsePrinter function
 // but we need to avoid cycle imports in order to inject the additional flags
 func isValidOutputFormat(format string) bool {
 	switch format {

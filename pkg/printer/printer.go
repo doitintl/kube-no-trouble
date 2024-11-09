@@ -1,66 +1,67 @@
 package printer
 
 import (
-	"context"
 	"fmt"
 	"os"
 
 	"github.com/doitintl/kube-no-trouble/pkg/judge"
 )
 
-var printers = map[string]func(string) (Printer, error){
-	"json": newJSONPrinter,
-	"text": newTextPrinter,
-	"csv":  newCSVPrinter,
-}
-
 type Printer interface {
-	Print([]judge.Result, context.Context) error
+	Print([]judge.Result) error
 	Close() error
 }
 
-type commonPrinter struct {
+type PrinterOptions struct {
+	showLabels bool
 	outputFile *os.File
 }
 
-// newCommonPrinter creates new printer that prints to given output file
-func newCommonPrinter(outputFileName string) (*commonPrinter, error) {
-	outputFile, err := ensureOutputFileExists(outputFileName)
+type commonPrinter struct {
+	options *PrinterOptions
+}
+
+func NewPrinterOptions(fileName string, showLabels bool) (*PrinterOptions, error) {
+	outputFile, err := ensureOutputFileExists(fileName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to ensure output device: %v", err)
 	}
+	return &PrinterOptions{
+		showLabels,
+		outputFile,
+	}, nil
+}
 
+// newCommonPrinter creates new printer that prints to given output file
+func newCommonPrinter(options *PrinterOptions) (*commonPrinter, error) {
 	return &commonPrinter{
-		outputFile: outputFile,
+		options,
 	}, nil
 }
 
 // NewPrinter creates new printer of given type that prints to given output file
-func NewPrinter(choice string, outputFileName string) (Printer, error) {
-	printer, err := ParsePrinter(choice)
-	if err != nil {
-		return nil, err
+func NewPrinter(choice string, options *PrinterOptions) (Printer, error) {
+	switch choice {
+	case "json":
+		return newJSONPrinter(options)
+	case "text":
+		return newTextPrinter(options)
+	case "csv":
+		return newCSVPrinter(options)
+	default:
+		return nil, fmt.Errorf("unknown printer type %s", choice)
 	}
-	return printer(outputFileName)
 }
 
 // Close will free resources used by the printer
 func (c *commonPrinter) Close() error {
-	if c.outputFile.Name() != os.Stdout.Name() {
-		if err := c.outputFile.Close(); err != nil {
+	if c.options.outputFile.Name() != os.Stdout.Name() {
+		if err := c.options.outputFile.Close(); err != nil {
 			return fmt.Errorf("failed to close output file: %w", err)
 		}
 	}
 
 	return nil
-}
-
-func ParsePrinter(choice string) (func(string) (Printer, error), error) {
-	printer, exists := printers[choice]
-	if !exists {
-		return nil, fmt.Errorf("unknown printer type %s", choice)
-	}
-	return printer, nil
 }
 
 // ensureOutputFileExists will open file for writing, or create one if non-existent
