@@ -56,6 +56,14 @@ func TestNewFromFlags(t *testing.T) {
 	if !config.Cluster && config.Output != "text" {
 		t.Errorf("Config not parsed correctly")
 	}
+
+	err = pflag.CommandLine.Parse([]string{"--output", "json"})
+	if err != nil {
+		t.Errorf("Flag parsing failed: %v", err)
+	}
+	if config.Output != "json" {
+		t.Errorf("Expected output format to be 'json', got '%s'", config.Output)
+	}
 }
 
 func TestValidateAdditionalResources(t *testing.T) {
@@ -179,6 +187,35 @@ func Test_validateOutputFile(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if err := validateOutputFile(tt.arg); (err != nil) != tt.wantErr {
 				t.Errorf("expected error = %v, got %v instead", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestValidOutputFormatValues(t *testing.T) {
+	validFormats := []string{"json", "text", "csv"}
+	for _, format := range validFormats {
+		t.Run("Valid "+format, func(t *testing.T) {
+			var output OutputFormat
+			err := output.Set(format)
+			if err != nil {
+				t.Errorf("Expected no error for valid format '%s', got %v", format, err)
+			}
+			if output.String() != format {
+				t.Errorf("Expected output format to be '%s', got '%s'", format, output.String())
+			}
+		})
+	}
+}
+
+func TestInvalidOutputFormatValues(t *testing.T) {
+	invalidFormats := []string{"xml", "yaml", "pdf"}
+	for _, format := range invalidFormats {
+		t.Run("Invalid "+format, func(t *testing.T) {
+			var output OutputFormat
+			err := output.Set(format)
+			if err == nil {
+				t.Errorf("Expected an error for invalid format '%s', but got none", format)
 			}
 		})
 	}
