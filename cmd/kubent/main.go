@@ -162,7 +162,7 @@ func main() {
 		log.Fatal().Err(err).Msgf("Failed to create output file")
 	}
 
-	err = outputResults(results, config.Output, options)
+	err = outputResults(results, config.Output.String(), options)
 	if err != nil {
 		log.Fatal().Err(err).Msgf("Failed to output results")
 	}

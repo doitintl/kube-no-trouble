@@ -16,12 +16,6 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
-const (
-	JSON = "json"
-	TEXT = "text"
-	CSV  = "csv"
-)
-
 type Config struct {
 	AdditionalKinds       []string
 	AdditionalAnnotations []string
@@ -32,7 +26,7 @@ type Config struct {
 	Helm3                 bool
 	Kubeconfig            string
 	LogLevel              ZeroLogLevel
-	Output                string
+	Output                OutputFormat
 	OutputFile            string
 	TargetVersion         *judge.Version
 	KubentVersion         bool
@@ -43,6 +37,7 @@ func NewFromFlags() (*Config, error) {
 	config := Config{
 		LogLevel:      ZeroLogLevel(zerolog.InfoLevel),
 		TargetVersion: &judge.Version{},
+		Output:        TEXT,
 	}
 
 	flag.StringSliceVarP(&config.AdditionalKinds, "additional-kind", "a", []string{}, "additional kinds of resources to report in Kind.version.group.com format")
@@ -54,16 +49,12 @@ func NewFromFlags() (*Config, error) {
 	flag.BoolVar(&config.Helm3, "helm3", true, "enable Helm v3 collector")
 	flag.StringSliceVarP(&config.Filenames, "filename", "f", []string{}, "manifests to check, use - for stdin")
 	flag.StringVarP(&config.Kubeconfig, "kubeconfig", "k", os.Getenv(clientcmd.RecommendedConfigPathEnvVar), "path to the kubeconfig file")
-	flag.StringVarP(&config.Output, "output", "o", TEXT, "output format - [text|json|csv]")
+	flag.VarP(&config.Output, "output", "o", "output format - [text|json|csv]")
 	flag.StringVarP(&config.OutputFile, "output-file", "O", "-", "output file, use - for stdout")
 	flag.VarP(&config.LogLevel, "log-level", "l", "set log level (trace, debug, info, warn, error, fatal, panic, disabled)")
 	flag.VarP(config.TargetVersion, "target-version", "t", "target K8s version in SemVer format (autodetected by default)")
 	flag.BoolVar(&config.ShowLabels, "labels", false, "print resource labels")
 	flag.Parse()
-
-	if !isValidOutputFormat(config.Output) {
-		return nil, fmt.Errorf("failed to validate argument output: %s", config.Output)
-	}
 
 	if err := validateOutputFile(config.OutputFile); err != nil {
 		return nil, fmt.Errorf("failed to validate argument output-file: %w", err)
@@ -81,17 +72,6 @@ func NewFromFlags() (*Config, error) {
 	}
 
 	return &config, nil
-}
-
-// Previously this was handled by a printer.go ParsePrinter function
-// but we need to avoid cycle imports in order to inject the additional flags
-func isValidOutputFormat(format string) bool {
-	switch format {
-	case JSON, TEXT, CSV:
-		return true
-	default:
-		return false
-	}
 }
 
 // validateAdditionalResources check that all resources are provided in full form
