@@ -105,13 +105,13 @@ jobs:
     strategy:
       matrix:
         k8s_version: [
-          "kindest/node:v1.25.16",
           "kindest/node:v1.26.15",
           "kindest/node:v1.27.16",
           "kindest/node:v1.28.15",
           "kindest/node:v1.29.10",
           "kindest/node:v1.30.6",
-          "kindest/node:v1.31.2"
+          "kindest/node:v1.31.4",
+          "kindest/node:v1.32.0"
         ]
     steps:
       - name: Checkout
