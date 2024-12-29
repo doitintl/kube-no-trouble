@@ -8,13 +8,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
-          set-safe-directory: true
       - name: Set tag name
         id: git_tag
-        run: echo "::set-output name=tag::$(git describe --tags --match '[0-9].[0-9].[0-9]')"
+        run: echo "tag=$(git describe --tags --match '[0-9].[0-9].[0-9]')" >> "$GITHUB_OUTPUT"
       - name: check if tag exists
         id: tag_exists
         run: |
@@ -22,7 +21,7 @@ jobs:
           exists=false
           [ "$(git tag -l "${TAG}")" = "${TAG}" ] && exists=true
           [ "$(git tag -l "nightly-${TAG}")" = "nightly-${TAG}" ] && exists=true
-          echo "::set-output name=result::${exists}"
+          echo "result=${exists}" >> "$GITHUB_OUTPUT"
         env:
           TAG: ${{ steps.git_tag.outputs.tag }}
       - name: Setup SSH Keys and known_hosts
