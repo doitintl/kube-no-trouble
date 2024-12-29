@@ -163,7 +163,7 @@ jobs:
           path: release-artifacts
       - name: Get the tag
         id: get_tag
-        run: echo ::set-output name=git_tag::${GITHUB_REF/refs\/tags\//}
+        run: echo "git_tag=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_OUTPUT
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
