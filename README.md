@@ -21,7 +21,7 @@ particular following tools are supported:
 **Additional resources:**
 - Blog post on K8s deprecated APIs and introduction of kubent: [Kubernetes: Deprecated APIs aka Introducing Kube-No-Trouble][2]
 
-[2]: https://stepan.wtf/kubernetes-deprecated-apis-introducing-kubent/
+[2]: https://web.archive.org/web/20250317072923/https://stepan.wtf/kubernetes-deprecated-apis-introducing-kubent/
 
 ## Install
 
