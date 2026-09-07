@@ -11,7 +11,7 @@ require (
 	helm.sh/helm/v3 v3.13.3
 	k8s.io/apimachinery v0.31.2
 	k8s.io/client-go v0.28.4 // Change me and break everything
-	k8s.io/klog/v2 v2.130.1
+	k8s.io/klog/v2 v2.140.0
 )
 
 require (
