@@ -1,0 +1,10 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: IPAddress
+metadata:
+  name: 10.96.0.20
+spec:
+  parentRef:
+    group: ""
+    resource: services
+    name: test-service
+    namespace: default

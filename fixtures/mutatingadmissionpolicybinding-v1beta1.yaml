@@ -1,0 +1,6 @@
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingAdmissionPolicyBinding
+metadata:
+  name: sidecar-binding-test.example.com
+spec:
+  policyName: sidecar-policy.example.com

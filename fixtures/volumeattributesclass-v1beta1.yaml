@@ -1,0 +1,8 @@
+apiVersion: storage.k8s.io/v1beta1
+kind: VolumeAttributesClass
+metadata:
+  name: silver
+driverName: pd.csi.storage.gke.io
+parameters:
+  provisioned-iops: "3000"
+  provisioned-throughput: "50"

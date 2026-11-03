@@ -1,0 +1,7 @@
+apiVersion: certificates.k8s.io/v1beta1
+kind: ClusterTrustBundle
+metadata:
+  name: example.com:mysigner:foo
+spec:
+  signerName: example.com/mysigner
+  trustBundle: "<... PEM data ...>"

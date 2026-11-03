@@ -1,0 +1,11 @@
+apiVersion: resource.k8s.io/v1beta2
+kind: ResourceSlice
+metadata:
+  name: node-1-gpu.example.com
+spec:
+  driver: gpu.example.com
+  nodeName: node-1
+  pool:
+    name: node-1
+    generation: 1
+    resourceSliceCount: 1

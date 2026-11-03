@@ -1,0 +1,8 @@
+apiVersion: storagemigration.k8s.io/v1beta1
+kind: StorageVersionMigration
+metadata:
+  name: test-migration
+spec:
+  resource:
+    group: apps
+    resource: deployments

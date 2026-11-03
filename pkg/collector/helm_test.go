@@ -86,7 +86,7 @@ func TestFixNamespace(t *testing.T) {
 
 			fcs := fake.NewSimpleClientset()
 			fcs.Resources = []*metav1.APIResourceList{FAKE_API_RESOURCES}
-			fixNamespace(&unstructured.Unstructured{tc.input}, tc.expected, fcs.Discovery())
+			fixNamespace(&unstructured.Unstructured{Object: tc.input}, tc.expected, fcs.Discovery())
 
 			meta, ok := tc.input["metadata"]
 			if !ok {

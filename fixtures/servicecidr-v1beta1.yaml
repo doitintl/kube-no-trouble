@@ -1,0 +1,7 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: ServiceCIDR
+metadata:
+  name: test-servicecidr
+spec:
+  cidrs:
+  - 10.97.0.0/16

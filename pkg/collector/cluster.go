@@ -112,6 +112,18 @@ func (c *ClusterCollector) Get() ([]map[string]interface{}, error) {
 		{Group: "flowcontrol.apiserver.k8s.io", Version: "v1beta2", Resource: "prioritylevelconfigurations"},
 		{Group: "flowcontrol.apiserver.k8s.io", Version: "v1beta3", Resource: "flowschemas"},
 		{Group: "flowcontrol.apiserver.k8s.io", Version: "v1beta3", Resource: "prioritylevelconfigurations"},
+		{Group: "admissionregistration.k8s.io", Version: "v1", Resource: "validatingadmissionpolicies"},
+		{Group: "admissionregistration.k8s.io", Version: "v1", Resource: "validatingadmissionpolicybindings"},
+		{Group: "admissionregistration.k8s.io", Version: "v1", Resource: "mutatingadmissionpolicies"},
+		{Group: "admissionregistration.k8s.io", Version: "v1", Resource: "mutatingadmissionpolicybindings"},
+		{Group: "networking.k8s.io", Version: "v1", Resource: "servicecidrs"},
+		{Group: "storage.k8s.io", Version: "v1", Resource: "volumeattributesclasses"},
+		{Group: "resource.k8s.io", Version: "v1", Resource: "deviceclasses"},
+		{Group: "resource.k8s.io", Version: "v1", Resource: "resourceclaims"},
+		{Group: "resource.k8s.io", Version: "v1", Resource: "resourceclaimtemplates"},
+		{Group: "resource.k8s.io", Version: "v1", Resource: "resourceslices"},
+		{Group: "certificates.k8s.io", Version: "v1", Resource: "clustertrustbundles"},
+		{Group: "storagemigration.k8s.io", Version: "v1", Resource: "storageversionmigrations"},
 	}
 	gvrs = append(gvrs, c.additionalResources...)
 

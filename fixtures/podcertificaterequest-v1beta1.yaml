@@ -1,0 +1,15 @@
+apiVersion: certificates.k8s.io/v1beta1
+kind: PodCertificateRequest
+metadata:
+  name: test-podcertificaterequest
+  namespace: default
+spec:
+  signerName: example.com/mysigner
+  podName: test-pod
+  podUID: 00000000-0000-0000-0000-000000000000
+  serviceAccountName: default
+  serviceAccountUID: 00000000-0000-0000-0000-000000000001
+  nodeName: node-1
+  nodeUID: 00000000-0000-0000-0000-000000000002
+  pkixPublicKey: ""
+  proofOfPossession: ""
